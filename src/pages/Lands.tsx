@@ -6,8 +6,10 @@ import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { PropertyCard } from "@/components/PropertyCard";
 
+type LandStatus = "residential" | "eco_tourism" | "industrial" | "commercial" | "agriculture" | null;
+
 export const Lands = () => {
-  const [selectedStatus, setSelectedStatus] = useState<"building" | "agriculture" | null>(null);
+  const [selectedStatus, setSelectedStatus] = useState<LandStatus>(null);
 
   const { data: lands = [], isLoading } = useQuery({
     queryKey: ["lands", selectedStatus],
@@ -41,6 +43,15 @@ export const Lands = () => {
     },
   });
 
+  const categories: { label: string; value: LandStatus }[] = [
+    { label: "All", value: null },
+    { label: "Residential", value: "residential" },
+    { label: "Eco Tourism", value: "eco_tourism" },
+    { label: "Industrial", value: "industrial" },
+    { label: "Commercial", value: "commercial" },
+    { label: "Agricultural", value: "agriculture" },
+  ];
+
   return (
     <div className="min-h-screen pb-20">
       <header className="bg-white shadow-sm py-4 px-4 mb-6">
@@ -58,24 +69,15 @@ export const Lands = () => {
 
       <main className="container mx-auto px-4">
         <div className="flex gap-4 mb-8 overflow-x-auto pb-2">
-          <Button
-            variant={selectedStatus === null ? "default" : "outline"}
-            onClick={() => setSelectedStatus(null)}
-          >
-            All
-          </Button>
-          <Button
-            variant={selectedStatus === "building" ? "default" : "outline"}
-            onClick={() => setSelectedStatus("building")}
-          >
-            Building Land
-          </Button>
-          <Button
-            variant={selectedStatus === "agriculture" ? "default" : "outline"}
-            onClick={() => setSelectedStatus("agriculture")}
-          >
-            Agricultural Land
-          </Button>
+          {categories.map((category) => (
+            <Button
+              key={category.label}
+              variant={selectedStatus === category.value ? "default" : "outline"}
+              onClick={() => setSelectedStatus(category.value)}
+            >
+              {category.label}
+            </Button>
+          ))}
         </div>
 
         {isLoading ? (
