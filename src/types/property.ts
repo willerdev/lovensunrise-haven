@@ -13,6 +13,7 @@ export interface Property {
   city: string;
   state: string;
   zip_code: string;
+  location?: string; // Adding this for backward compatibility
   images?: string[];
   features?: string[];
   property_images?: { image_url: string }[];

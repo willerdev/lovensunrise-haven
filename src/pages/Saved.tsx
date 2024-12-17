@@ -1,10 +1,31 @@
 import { MobileNav } from "../components/MobileNav";
 import { PropertyCard } from "../components/PropertyCard";
-import { properties } from "../data/properties";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const Saved = () => {
-  // In a real app, this would be managed by a proper state management solution
-  const savedProperties = properties.slice(0, 3); // Showing first 3 as example
+  const { data: savedProperties = [] } = useQuery({
+    queryKey: ["saved-properties"],
+    queryFn: async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return [];
+
+      const { data, error } = await supabase
+        .from("saved_properties")
+        .select(`
+          property:properties (
+            *,
+            property_images (
+              image_url
+            )
+          )
+        `)
+        .eq("user_id", session.user.id);
+
+      if (error) throw error;
+      return data?.map(item => item.property) || [];
+    },
+  });
 
   return (
     <div className="min-h-screen pb-20">

@@ -24,6 +24,12 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
     land_sell: "Land for Sale",
   };
 
+  // Get the first image URL from either property_images or images array
+  const imageUrl = property.property_images?.[0]?.image_url || property.images?.[0];
+
+  // Construct location string from address components
+  const locationString = `${property.address}, ${property.city}, ${property.state}`;
+
   return (
     <div className="property-card">
       <div className="relative">
@@ -31,7 +37,7 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
           <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-t-xl" />
         )}
         <img
-          src={property.images[0]}
+          src={imageUrl}
           alt={property.title}
           className={`w-full h-48 object-cover rounded-t-xl transition-opacity duration-300 ${
             imageLoaded ? "opacity-100" : "opacity-0"
@@ -54,13 +60,13 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
       </div>
       <Link to={`/property/${property.id}`} className="block p-4">
         <span className="text-xs font-medium px-2 py-1 bg-gray-100 rounded-full">
-          {typeLabel[property.type]}
+          {property.type && typeLabel[property.type]}
         </span>
         <h3 className="mt-2 text-lg font-semibold text-gray-900 line-clamp-1">
           {property.title}
         </h3>
         <p className="mt-1 text-gray-500 text-sm line-clamp-1">
-          {property.location}
+          {locationString}
         </p>
         <div className="mt-2 flex items-center gap-4 text-sm text-gray-600">
           {property.bedrooms && (
@@ -73,7 +79,7 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
         </div>
         <p className="mt-2 text-lg font-semibold text-gray-900">
           {formatPrice(property.price)}
-          {property.type.includes('rent') && '/month'}
+          {property.type?.includes('rent') && '/month'}
         </p>
       </Link>
     </div>

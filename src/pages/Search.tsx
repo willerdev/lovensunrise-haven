@@ -1,17 +1,36 @@
 import { useState } from "react";
 import { MobileNav } from "../components/MobileNav";
-import { properties } from "../data/properties";
 import { PropertyCard } from "../components/PropertyCard";
 import { Search as SearchIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const Search = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
+  const { data: properties = [] } = useQuery({
+    queryKey: ["properties"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("properties")
+        .select(`
+          *,
+          property_images (
+            image_url
+          )
+        `);
+
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
   const filteredProperties = properties.filter(
     (property) =>
       property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      property.location.toLowerCase().includes(searchTerm.toLowerCase())
+      property.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      property.city.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
