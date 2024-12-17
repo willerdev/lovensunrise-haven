@@ -14,10 +14,10 @@ const categories = [
     href: "/category/house_sell",
   },
   {
-    title: "House to Buy",
-    description: "Explore houses to buy",
+    title: "Apartment for Rent",
+    description: "Explore apartments for rent",
     image: "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800&auto=format&fit=crop&q=60",
-    href: "/category/buy",
+    href: "/category/apartment_rent",
   },
   {
     title: "Hotel",
