@@ -21,11 +21,11 @@ const hotelCategories = {
 };
 
 const priceRanges = [
-  { min: 0, max: 100, label: "Under $100" },
-  { min: 100, max: 300, label: "$100 - $300" },
-  { min: 300, max: 500, label: "$300 - $500" },
-  { min: 500, max: 1000, label: "$500 - $1,000" },
-  { min: 1000, max: null, label: "Above $1,000" }
+  { min: 0, max: 100, label: "Under $100", value: "0-100" },
+  { min: 100, max: 300, label: "$100 - $300", value: "100-300" },
+  { min: 300, max: 500, label: "$300 - $500", value: "300-500" },
+  { min: 500, max: 1000, label: "$500 - $1,000", value: "500-1000" },
+  { min: 1000, max: null, label: "Above $1,000", value: "1000-up" }
 ];
 
 export const Hotels = () => {
@@ -93,14 +93,13 @@ export const Hotels = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Category Filter */}
             <Select
-              value={selectedCategory || ""}
-              onValueChange={(value) => setSelectedCategory(value || null)}
+              value={selectedCategory || undefined}
+              onValueChange={(value) => setSelectedCategory(value)}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select Category" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Categories</SelectItem>
                 {Object.entries(hotelCategories).map(([value, label]) => (
                   <SelectItem key={value} value={value}>
                     {label}
@@ -111,18 +110,17 @@ export const Hotels = () => {
 
             {/* Price Range Filter */}
             <Select
-              value={selectedPriceRange || ""}
-              onValueChange={(value) => setSelectedPriceRange(value || null)}
+              value={selectedPriceRange || undefined}
+              onValueChange={(value) => setSelectedPriceRange(value)}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Price Range" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Any Price</SelectItem>
-                {priceRanges.map((range, index) => (
+                {priceRanges.map((range) => (
                   <SelectItem 
-                    key={index} 
-                    value={`${range.min}-${range.max || ''}`}
+                    key={range.value} 
+                    value={range.value}
                   >
                     {range.label}
                   </SelectItem>
