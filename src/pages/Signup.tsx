@@ -4,25 +4,13 @@ import { Input } from "@/components/ui/input";
 import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
-import type { Database } from "@/integrations/supabase/types";
-
-type UserRole = Database["public"]["Enums"]["user_role"];
 
 const Signup = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
-  const [role, setRole] = useState<UserRole>("tenant");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -30,17 +18,11 @@ const Signup = () => {
     setIsLoading(true);
 
     try {
-      console.log("Attempting signup with:", { email, role, name });
+      console.log("Attempting signup with:", { email });
       
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: email.trim(),
         password,
-        options: {
-          data: {
-            role,
-            full_name: name
-          }
-        }
       });
 
       if (authError) {
@@ -58,23 +40,11 @@ const Signup = () => {
         
         toast({
           title: "Success!",
-          description: "Your account has been created successfully.",
+          description: "Your account has been created. Please complete your profile.",
         });
 
-        // Redirect based on role
-        switch (role) {
-          case "landlord":
-            navigate("/landlord-dashboard");
-            break;
-          case "tenant":
-            navigate("/tenant-dashboard");
-            break;
-          case "broker":
-            navigate("/broker-dashboard");
-            break;
-          default:
-            navigate("/");
-        }
+        // Redirect to profile completion page
+        navigate("/complete-profile");
       }
     } catch (error) {
       console.error('Error during signup:', error);
@@ -103,19 +73,6 @@ const Signup = () => {
       <main className="container mx-auto p-4 max-w-md">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <label htmlFor="name" className="text-sm font-medium">
-              Full Name
-            </label>
-            <Input
-              id="name"
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              disabled={isLoading}
-            />
-          </div>
-          <div className="space-y-2">
             <label htmlFor="email" className="text-sm font-medium">
               Email
             </label>
@@ -141,25 +98,6 @@ const Signup = () => {
               disabled={isLoading}
               minLength={6}
             />
-          </div>
-          <div className="space-y-2">
-            <label htmlFor="role" className="text-sm font-medium">
-              I am a
-            </label>
-            <Select
-              value={role}
-              onValueChange={(value: UserRole) => setRole(value)}
-              disabled={isLoading}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select your role" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="tenant">Tenant</SelectItem>
-                <SelectItem value="landlord">Landlord</SelectItem>
-                <SelectItem value="broker">Broker</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
           <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? "Creating account..." : "Sign Up"}

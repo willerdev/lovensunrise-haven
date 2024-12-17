@@ -10,6 +10,7 @@ import Saved from "./pages/Saved";
 import Profile from "./pages/Profile";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import CompleteProfile from "./pages/CompleteProfile";
 import Booking from "./pages/Booking";
 import BookingSuccess from "./pages/BookingSuccess";
 import TenantDashboard from "./pages/TenantDashboard";
@@ -32,6 +33,7 @@ const App = () => (
           <Route path="/profile" element={<Profile />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/complete-profile" element={<CompleteProfile />} />
           <Route path="/booking/:id" element={<Booking />} />
           <Route path="/booking-success" element={<BookingSuccess />} />
           <Route path="/tenant-dashboard" element={<TenantDashboard />} />
