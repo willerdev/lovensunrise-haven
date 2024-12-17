@@ -36,9 +36,9 @@ const App = () => (
           <Route path="/complete-profile" element={<CompleteProfile />} />
           <Route path="/booking/:id" element={<Booking />} />
           <Route path="/booking-success" element={<BookingSuccess />} />
-          <Route path="/tenant-dashboard" element={<TenantDashboard />} />
-          <Route path="/landlord-dashboard" element={<LandlordDashboard />} />
-          <Route path="/broker-dashboard" element={<BrokerDashboard />} />
+          <Route path="/tenant-dashboard/*" element={<TenantDashboard />} />
+          <Route path="/landlord-dashboard/*" element={<LandlordDashboard />} />
+          <Route path="/broker-dashboard/*" element={<BrokerDashboard />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>

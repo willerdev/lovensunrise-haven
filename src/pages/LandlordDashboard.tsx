@@ -2,6 +2,10 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { DashboardStats } from "@/components/landlord/DashboardStats";
+import { PropertyList } from "@/components/landlord/PropertyList";
+import { LandlordMobileNav } from "@/components/landlord/MobileNav";
 
 const LandlordDashboard = () => {
   const navigate = useNavigate();
@@ -15,7 +19,6 @@ const LandlordDashboard = () => {
         return;
       }
 
-      // Check if user is a landlord
       const { data: profile, error } = await supabase
         .from("profiles")
         .select("role")
@@ -36,27 +39,45 @@ const LandlordDashboard = () => {
   }, [navigate, toast]);
 
   return (
-    <div className="min-h-screen p-4">
-      <header className="mb-8">
-        <h1 className="text-2xl font-bold">Landlord Dashboard</h1>
+    <div className="min-h-screen pb-16 bg-gray-50">
+      <header className="bg-white shadow-sm py-4 px-4 mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">Landlord Dashboard</h1>
       </header>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <div className="p-6 bg-white rounded-lg shadow">
-          <h2 className="text-lg font-semibold mb-4">My Properties</h2>
-          {/* Properties content will be implemented later */}
-        </div>
+      <div className="container mx-auto px-4">
+        <Tabs defaultValue="overview" className="space-y-4">
+          <TabsList className="hidden md:flex">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="properties">Properties</TabsTrigger>
+            <TabsTrigger value="bookings">Bookings</TabsTrigger>
+            <TabsTrigger value="payments">Payments</TabsTrigger>
+          </TabsList>
 
-        <div className="p-6 bg-white rounded-lg shadow">
-          <h2 className="text-lg font-semibold mb-4">Booking Requests</h2>
-          {/* Booking requests content will be implemented later */}
-        </div>
+          <TabsContent value="overview">
+            <DashboardStats />
+          </TabsContent>
 
-        <div className="p-6 bg-white rounded-lg shadow">
-          <h2 className="text-lg font-semibold mb-4">Messages</h2>
-          {/* Messages content will be implemented later */}
-        </div>
+          <TabsContent value="properties">
+            <PropertyList />
+          </TabsContent>
+
+          <TabsContent value="bookings">
+            {/* Bookings content will be implemented in a separate PR */}
+            <div className="text-center py-8 text-gray-500">
+              Bookings feature coming soon
+            </div>
+          </TabsContent>
+
+          <TabsContent value="payments">
+            {/* Payments content will be implemented in a separate PR */}
+            <div className="text-center py-8 text-gray-500">
+              Payments feature coming soon
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
+
+      <LandlordMobileNav />
     </div>
   );
 };
