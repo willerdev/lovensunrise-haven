@@ -12,6 +12,7 @@ interface PropertyBasicDetailsProps {
   onStatusChange: (value: string) => void;
   onFurnishingChange: (value: string) => void;
   onTypeChange: (value: PropertyType) => void;
+  onCategoryChange: (value: "VVIP" | "VIP" | "Middle Class" | "Lower Class") => void;
 }
 
 export const PropertyBasicDetails = ({
@@ -20,6 +21,7 @@ export const PropertyBasicDetails = ({
   onStatusChange,
   onFurnishingChange,
   onTypeChange,
+  onCategoryChange,
 }: PropertyBasicDetailsProps) => {
   return (
     <div className="space-y-4">
@@ -60,6 +62,32 @@ export const PropertyBasicDetails = ({
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="land_sell" id="land_sell" />
             <Label htmlFor="land_sell">Land for Sale</Label>
+          </div>
+        </RadioGroup>
+      </div>
+
+      <div className="space-y-2">
+        <Label>Property Category</Label>
+        <RadioGroup
+          value={formData.category}
+          onValueChange={onCategoryChange}
+          className="flex flex-wrap gap-4"
+        >
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="VVIP" id="VVIP" />
+            <Label htmlFor="VVIP">VVIP</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="VIP" id="VIP" />
+            <Label htmlFor="VIP">VIP</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="Middle Class" id="middle_class" />
+            <Label htmlFor="middle_class">Middle Class</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="Lower Class" id="lower_class" />
+            <Label htmlFor="lower_class">Lower Class</Label>
           </div>
         </RadioGroup>
       </div>

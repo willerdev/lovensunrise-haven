@@ -20,4 +20,5 @@ export interface PropertyFormData {
   status: "rent" | "sale";
   furnishing: "furnished" | "unfurnished";
   type: PropertyType;
+  category: "VVIP" | "VIP" | "Middle Class" | "Lower Class";
 }

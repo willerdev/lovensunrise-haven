@@ -26,6 +26,7 @@ export const PropertyForm = ({ propertyId, onSuccess, onCancel }: PropertyFormPr
     status: "rent",
     furnishing: "unfurnished",
     type: "house_rent",
+    category: "Middle Class",
   });
   const { toast } = useToast();
 
@@ -59,6 +60,7 @@ export const PropertyForm = ({ propertyId, onSuccess, onCancel }: PropertyFormPr
           status: data.status as "rent" | "sale" || "rent",
           furnishing: data.furnishing_status as "furnished" | "unfurnished" || "unfurnished",
           type: data.type as PropertyType || "house_rent",
+          category: data.category as "VVIP" | "VIP" | "Middle Class" | "Lower Class" || "Middle Class",
         });
       }
     };
@@ -86,6 +88,10 @@ export const PropertyForm = ({ propertyId, onSuccess, onCancel }: PropertyFormPr
 
   const handleTypeChange = (value: PropertyType) => {
     setFormData((prev) => ({ ...prev, type: value }));
+  };
+
+  const handleCategoryChange = (value: "VVIP" | "VIP" | "Middle Class" | "Lower Class") => {
+    setFormData((prev) => ({ ...prev, category: value }));
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -130,6 +136,7 @@ export const PropertyForm = ({ propertyId, onSuccess, onCancel }: PropertyFormPr
         status: formData.status,
         furnishing_status: formData.furnishing,
         type: formData.type,
+        category: formData.category,
         owner_id: session.user.id,
       };
 
@@ -201,6 +208,7 @@ export const PropertyForm = ({ propertyId, onSuccess, onCancel }: PropertyFormPr
             onStatusChange={handleStatusChange}
             onFurnishingChange={handleFurnishingChange}
             onTypeChange={handleTypeChange}
+            onCategoryChange={handleCategoryChange}
           />
           <div className="flex justify-between">
             <Button type="button" variant="outline" onClick={onCancel}>
