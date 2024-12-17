@@ -22,6 +22,7 @@ import { Plus } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { PropertyForm } from "@/components/landlord/PropertyForm";
 import { PropertyCard } from "@/components/landlord/PropertyCard";
+import { mapDbPropertyToProperty } from "@/types/property";
 
 const Properties = () => {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -45,10 +46,7 @@ const Properties = () => {
         `)
         .eq("owner_id", session.user.id);
 
-      return data?.map(property => ({
-        ...property,
-        images: property.property_images?.map((img: { image_url: string }) => img.image_url) || []
-      })) || [];
+      return data?.map(mapDbPropertyToProperty) || [];
     },
   });
 
