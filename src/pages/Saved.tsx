@@ -2,13 +2,30 @@ import { MobileNav } from "../components/MobileNav";
 import { PropertyCard } from "../components/PropertyCard";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Saved = () => {
-  const { data: savedProperties = [] } = useQuery({
+  const navigate = useNavigate();
+
+  // Check if user is logged in
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate("/login");
+      }
+    };
+    checkAuth();
+  }, [navigate]);
+
+  const { data: savedProperties = [], isLoading } = useQuery({
     queryKey: ["saved-properties"],
     queryFn: async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return [];
+
+      console.log("Fetching saved properties for user:", session.user.id);
 
       const { data, error } = await supabase
         .from("saved_properties")
@@ -22,8 +39,17 @@ const Saved = () => {
         `)
         .eq("user_id", session.user.id);
 
-      if (error) throw error;
-      return data?.map(item => item.property) || [];
+      if (error) {
+        console.error("Error fetching saved properties:", error);
+        throw error;
+      }
+
+      console.log("Fetched saved properties:", data);
+
+      return data?.map(item => ({
+        ...item.property,
+        images: item.property.property_images?.map((img: { image_url: string }) => img.image_url) || []
+      })) || [];
     },
   });
 
@@ -34,7 +60,13 @@ const Saved = () => {
       </header>
 
       <main className="container mx-auto p-4">
-        {savedProperties.length > 0 ? (
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-[400px] bg-gray-100 animate-pulse rounded-xl" />
+            ))}
+          </div>
+        ) : savedProperties.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {savedProperties.map((property) => (
               <PropertyCard key={property.id} property={property} />

@@ -1,7 +1,9 @@
 import { Property } from "../types/property";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Heart } from "lucide-react";
 import { Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
 
 interface PropertyCardProps {
   property: Property;
@@ -10,6 +12,81 @@ interface PropertyCardProps {
 export const PropertyCard = ({ property }: PropertyCardProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
+  const { toast } = useToast();
+
+  // Check if property is liked on component mount
+  useEffect(() => {
+    const checkIfLiked = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      const { data } = await supabase
+        .from("saved_properties")
+        .select()
+        .eq("property_id", property.id)
+        .eq("user_id", session.user.id)
+        .single();
+
+      setIsLiked(!!data);
+    };
+
+    checkIfLiked();
+  }, [property.id]);
+
+  const handleLikeToggle = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      toast({
+        title: "Please login",
+        description: "You need to be logged in to save properties",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (isLiked) {
+      const { error } = await supabase
+        .from("saved_properties")
+        .delete()
+        .eq("property_id", property.id)
+        .eq("user_id", session.user.id);
+
+      if (error) {
+        console.error("Error removing property from favorites:", error);
+        toast({
+          title: "Error",
+          description: "Could not remove property from favorites",
+          variant: "destructive",
+        });
+        return;
+      }
+    } else {
+      const { error } = await supabase
+        .from("saved_properties")
+        .insert({
+          property_id: property.id,
+          user_id: session.user.id,
+        });
+
+      if (error) {
+        console.error("Error saving property to favorites:", error);
+        toast({
+          title: "Error",
+          description: "Could not save property to favorites",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
+    setIsLiked(!isLiked);
+    toast({
+      title: isLiked ? "Removed from favorites" : "Added to favorites",
+      description: isLiked ? "Property removed from your favorites" : "Property saved to your favorites",
+    });
+  };
 
   const formatPrice = (price: number) => {
     return price >= 1000000
@@ -45,10 +122,7 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
           onLoad={() => setImageLoaded(true)}
         />
         <button
-          onClick={(e) => {
-            e.preventDefault();
-            setIsLiked(!isLiked);
-          }}
+          onClick={handleLikeToggle}
           className="absolute top-3 right-3 p-2 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white transition-colors"
         >
           <Heart
