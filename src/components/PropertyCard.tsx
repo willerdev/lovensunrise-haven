@@ -25,17 +25,19 @@ export const PropertyCard = ({ property, onImageClick, isLand }: PropertyCardPro
 
       console.log("Checking if property is liked:", {
         property_id: property.id,
-        user_id: session.user.id
+        user_id: session.user.id,
+        isLand
       });
 
+      // Check in the appropriate table based on whether it's a land or property
       const { data, error } = await supabase
-        .from("saved_properties")
+        .from(isLand ? "saved_lands" : "saved_properties")
         .select()
-        .eq("property_id", property.id)
+        .eq(isLand ? "land_id" : "property_id", property.id)
         .eq("user_id", session.user.id);
 
       if (error) {
-        console.error("Error checking if property is liked:", error);
+        console.error("Error checking if item is liked:", error);
         return;
       }
 
@@ -43,7 +45,7 @@ export const PropertyCard = ({ property, onImageClick, isLand }: PropertyCardPro
     };
 
     checkIfLiked();
-  }, [property.id]);
+  }, [property.id, isLand]);
 
   const handleLikeToggle = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -59,19 +61,22 @@ export const PropertyCard = ({ property, onImageClick, isLand }: PropertyCardPro
     }
 
     try {
+      const tableName = isLand ? "saved_lands" : "saved_properties";
+      const idField = isLand ? "land_id" : "property_id";
+
       if (isLiked) {
         const { error } = await supabase
-          .from("saved_properties")
+          .from(tableName)
           .delete()
-          .eq("property_id", property.id)
+          .eq(idField, property.id)
           .eq("user_id", session.user.id);
 
         if (error) throw error;
       } else {
         const { error } = await supabase
-          .from("saved_properties")
+          .from(tableName)
           .insert({
-            property_id: property.id,
+            [idField]: property.id,
             user_id: session.user.id,
           });
 
@@ -81,13 +86,13 @@ export const PropertyCard = ({ property, onImageClick, isLand }: PropertyCardPro
       setIsLiked(!isLiked);
       toast({
         title: isLiked ? "Removed from favorites" : "Added to favorites",
-        description: isLiked ? "Property removed from your favorites" : "Property saved to your favorites",
+        description: isLiked ? "Item removed from your favorites" : "Item saved to your favorites",
       });
     } catch (error) {
-      console.error('Error toggling property favorite:', error);
+      console.error('Error toggling favorite:', error);
       toast({
         title: "Error",
-        description: isLiked ? "Could not remove property from favorites" : "Could not save property to favorites",
+        description: isLiked ? "Could not remove from favorites" : "Could not save to favorites",
         variant: "destructive",
       });
     }
