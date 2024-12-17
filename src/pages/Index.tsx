@@ -8,6 +8,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { Home, Building2, MapPin, User, PlusCircle } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { PropertySkeleton } from "@/components/skeletons/PropertySkeleton";
 
 const propertyTypes: { value: PropertyType; label: string; icon: React.ReactNode }[] = [
   { value: "house_rent", label: "Houses for Rent", icon: <Home className="w-4 h-4" /> },
@@ -37,7 +38,7 @@ const Index = () => {
     },
   });
 
-  const { data: properties = [] } = useQuery({
+  const { data: properties = [], isLoading } = useQuery({
     queryKey: ["properties", selectedType],
     queryFn: async () => {
       let query = supabase
@@ -159,9 +160,15 @@ const Index = () => {
 
       <main className="container mx-auto p-4">
         <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'} gap-4`}>
-          {properties.map((property) => (
-            <PropertyCard key={property.id} property={property} />
-          ))}
+          {isLoading ? (
+            Array.from({ length: 6 }).map((_, index) => (
+              <PropertySkeleton key={index} />
+            ))
+          ) : (
+            properties.map((property) => (
+              <PropertyCard key={property.id} property={property} />
+            ))
+          )}
         </div>
       </main>
 

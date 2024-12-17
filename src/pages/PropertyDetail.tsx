@@ -17,6 +17,9 @@ import { PropertyActions } from "@/components/property/PropertyActions";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { PropertySkeleton } from "@/components/skeletons/PropertySkeleton";
+import { Link } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 
 export const PropertyDetail = () => {
   const { id } = useParams();
@@ -44,7 +47,7 @@ export const PropertyDetail = () => {
     fetchUser();
   }, []);
 
-  const { data: property } = useQuery({
+  const { data: property, isLoading } = useQuery({
     queryKey: ["property", id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -69,6 +72,14 @@ export const PropertyDetail = () => {
       };
     },
   });
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto p-4">
+        <PropertySkeleton />
+      </div>
+    );
+  }
 
   if (!property) {
     return <div>Property not found</div>;
@@ -122,6 +133,17 @@ export const PropertyDetail = () => {
 
   return (
     <div className="pb-20">
+      <header className="bg-white shadow-sm py-4 px-4 mb-6">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" asChild>
+            <Link to="/">
+              <ArrowLeft className="h-5 w-5" />
+            </Link>
+          </Button>
+          <h1 className="text-2xl font-semibold">{property.title}</h1>
+        </div>
+      </header>
+
       <PropertyHeader 
         isLiked={isLiked}
         onLikeToggle={() => setIsLiked(!isLiked)}
@@ -136,7 +158,6 @@ export const PropertyDetail = () => {
         />
 
         <div className="p-4 space-y-4">
-          <h1 className="text-2xl font-semibold">{property.title}</h1>
           <p className="text-gray-600 flex items-center gap-2">
             <Home className="w-4 h-4" />
             {locationString}

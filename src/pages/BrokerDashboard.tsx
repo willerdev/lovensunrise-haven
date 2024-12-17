@@ -1,7 +1,9 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 
 const BrokerDashboard = () => {
   const navigate = useNavigate();
@@ -38,7 +40,14 @@ const BrokerDashboard = () => {
   return (
     <div className="min-h-screen p-4">
       <header className="mb-8">
-        <h1 className="text-2xl font-bold">Broker Dashboard</h1>
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" asChild>
+            <Link to="/">
+              <ArrowLeft className="h-5 w-5" />
+            </Link>
+          </Button>
+          <h1 className="text-2xl font-bold">Broker Dashboard</h1>
+        </div>
       </header>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

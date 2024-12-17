@@ -10,6 +10,9 @@ import LandlordBookings from "./landlord/Bookings";
 import LandlordPayments from "./landlord/Payments";
 import LandlordProfile from "./landlord/Profile";
 import Properties from "./landlord/Properties";
+import { ArrowLeft } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 const LandlordDashboard = () => {
   const navigate = useNavigate();
@@ -45,7 +48,16 @@ const LandlordDashboard = () => {
   return (
     <div className="min-h-screen pb-16 bg-gray-50">
       <header className="bg-white shadow-sm py-4 px-4 mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Landlord Dashboard</h1>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" size="icon" asChild>
+              <Link to="/">
+                <ArrowLeft className="h-5 w-5" />
+              </Link>
+            </Button>
+            <h1 className="text-2xl font-bold text-gray-900">Landlord Dashboard</h1>
+          </div>
+        </div>
       </header>
 
       <div className="container mx-auto px-4">

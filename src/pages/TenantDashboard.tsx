@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Home, Calendar, CreditCard, MessageCircle, AlertTriangle, User } from "lucide-react";
 import { format } from "date-fns";
+import { Button } from "@/components/ui/button";
 
 const TenantDashboard = () => {
   const navigate = useNavigate();
@@ -98,7 +99,16 @@ const TenantDashboard = () => {
   return (
     <div className="min-h-screen pb-16 bg-gray-50">
       <header className="bg-white shadow-sm py-4 px-4 mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Tenant Dashboard</h1>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" size="icon" asChild>
+              <Link to="/">
+                <ArrowLeft className="h-5 w-5" />
+              </Link>
+            </Button>
+            <h1 className="text-2xl font-bold text-gray-900">Tenant Dashboard</h1>
+          </div>
+        </div>
       </header>
 
       <div className="container mx-auto px-4">
