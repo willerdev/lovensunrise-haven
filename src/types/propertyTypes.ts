@@ -1,6 +1,3 @@
-export type PropertyStatus = 'rent' | 'sale';
-export type FurnishingStatus = 'furnished' | 'unfurnished';
-
 export interface PropertyFormData {
   title: string;
   price: string;
@@ -12,6 +9,6 @@ export interface PropertyFormData {
   city: string;
   state: string;
   zip_code: string;
-  status: PropertyStatus;
-  furnishing: FurnishingStatus;
+  status: "rent" | "sale";
+  furnishing: "furnished" | "unfurnished";
 }

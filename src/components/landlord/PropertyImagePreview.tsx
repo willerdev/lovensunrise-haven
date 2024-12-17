@@ -8,7 +8,7 @@ interface PropertyImagePreviewProps {
 
 export const PropertyImagePreview = ({ files, onRemove }: PropertyImagePreviewProps) => {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
       {files.map((file, index) => (
         <div key={index} className="relative group">
           <img
@@ -19,7 +19,7 @@ export const PropertyImagePreview = ({ files, onRemove }: PropertyImagePreviewPr
           <Button
             variant="destructive"
             size="icon"
-            className="absolute top-2 right-2 hidden group-hover:flex"
+            className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
             onClick={() => onRemove(index)}
           >
             <X className="h-4 w-4" />
