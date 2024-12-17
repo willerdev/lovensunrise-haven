@@ -27,6 +27,8 @@ import Lands from "./pages/Lands";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import Properties from "./pages/admin/Properties";
 import AdminLands from "./pages/admin/Lands";
+import Categories from "./pages/admin/Categories";
+import Users from "./pages/admin/Users";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -68,8 +70,8 @@ const App = () => {
               <Route path="/admin-dashboard" element={<AdminDashboard />}>
                 <Route path="properties" element={<Properties />} />
                 <Route path="lands" element={<AdminLands />} />
-                <Route path="categories" element={<div>Manage Categories</div>} />
-                <Route path="users" element={<div>Manage Users</div>} />
+                <Route path="categories" element={<Categories />} />
+                <Route path="users" element={<Users />} />
                 <Route path="partners" element={<div>Manage Partners</div>} />
                 <Route path="complaints" element={<div>Manage Complaints</div>} />
                 <Route path="procurations" element={<div>Manage Procurations</div>} />
