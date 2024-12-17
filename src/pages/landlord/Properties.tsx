@@ -18,10 +18,17 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Plus, Building2, Trash2, PenSquare } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { PropertyForm } from "@/components/landlord/PropertyForm";
-import { PropertyCard } from "@/components/landlord/PropertyCard";
 import { mapDbPropertyToProperty } from "@/types/property";
 import { useNavigate } from "react-router-dom";
 
@@ -82,11 +89,6 @@ const Properties = () => {
     }
   };
 
-  const handleEdit = (id: string) => {
-    setSelectedPropertyId(id);
-    setIsEditDialogOpen(true);
-  };
-
   const handleAddLand = () => {
     navigate("/landlord-dashboard/add-land");
   };
@@ -94,7 +96,7 @@ const Properties = () => {
   return (
     <div className="container mx-auto p-4">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">My Properties</h1>
+        <h1 className="text-2xl font-bold">My Account</h1>
         <div className="flex gap-4">
           <Button onClick={() => setIsAddDialogOpen(true)}>
             <Plus className="mr-2 h-4 w-4" />
@@ -107,24 +109,50 @@ const Properties = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {properties?.map((property) => (
-          <PropertyCard
-            key={property.id}
-            property={property}
-            onDelete={(id) => setPropertyToDelete(id)}
-            onEdit={(id) => {
-              setSelectedPropertyId(id);
-              setIsEditDialogOpen(true);
-            }}
-          />
-        ))}
-        {!properties?.length && (
-          <p className="text-center col-span-full text-gray-500">
-            No properties found. Add your first property!
-          </p>
-        )}
-      </div>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Image</TableHead>
+            <TableHead>Name</TableHead>
+            <TableHead>Price</TableHead>
+            <TableHead className="text-right">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {properties?.map((property) => (
+            <TableRow key={property.id}>
+              <TableCell>
+                <img
+                  src={property.property_images?.[0]?.image_url || property.images?.[0]}
+                  alt={property.title}
+                  className="w-16 h-16 object-cover rounded"
+                />
+              </TableCell>
+              <TableCell>{property.title}</TableCell>
+              <TableCell>${property.price.toLocaleString()}</TableCell>
+              <TableCell className="text-right">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    setSelectedPropertyId(property.id);
+                    setIsEditDialogOpen(true);
+                  }}
+                >
+                  <PenSquare className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setPropertyToDelete(property.id)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
 
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
         <DialogContent className="sm:max-w-[600px]">

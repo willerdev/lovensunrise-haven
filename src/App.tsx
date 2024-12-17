@@ -18,6 +18,7 @@ import BookingSuccess from "./pages/BookingSuccess";
 import TenantDashboard from "./pages/TenantDashboard";
 import LandlordDashboard from "./pages/LandlordDashboard";
 import BrokerDashboard from "./pages/BrokerDashboard";
+import AddLand from "./pages/landlord/AddLand";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +44,7 @@ const App = () => (
             <Route path="/tenant-dashboard/*" element={<TenantDashboard />} />
             <Route path="/landlord-dashboard/*" element={<LandlordDashboard />} />
             <Route path="/broker-dashboard/*" element={<BrokerDashboard />} />
+            <Route path="/landlord-dashboard/add-land" element={<AddLand />} />
           </Routes>
           <Footer />
         </BrowserRouter>

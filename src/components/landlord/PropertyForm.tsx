@@ -1,15 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowRight, ArrowLeft } from "lucide-react";
 import { PropertyBasicDetails } from "./PropertyBasicDetails";
 import { PropertyLocationDetails } from "./PropertyLocationDetails";
 import { PropertyImageUpload } from "./PropertyImageUpload";
 import { PropertyFormData, PropertyFormProps } from "@/types/formTypes";
 import { PropertyType } from "@/types/property";
 
-export const PropertyForm = ({ onSuccess, onCancel }: PropertyFormProps) => {
+export const PropertyForm = ({ propertyId, onSuccess, onCancel }: PropertyFormProps) => {
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -29,6 +28,43 @@ export const PropertyForm = ({ onSuccess, onCancel }: PropertyFormProps) => {
     type: "house_rent",
   });
   const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchPropertyData = async () => {
+      if (!propertyId) return;
+
+      const { data, error } = await supabase
+        .from("properties")
+        .select("*")
+        .eq("id", propertyId)
+        .single();
+
+      if (error) {
+        console.error("Error fetching property:", error);
+        return;
+      }
+
+      if (data) {
+        setFormData({
+          title: data.title || "",
+          price: data.price?.toString() || "",
+          bedrooms: data.bedrooms?.toString() || "",
+          bathrooms: data.bathrooms?.toString() || "",
+          area: data.area?.toString() || "",
+          description: data.description || "",
+          address: data.address || "",
+          city: data.city || "",
+          state: data.state || "",
+          zip_code: data.zip_code || "",
+          status: data.status as "rent" | "sale" || "rent",
+          furnishing: data.furnishing_status as "furnished" | "unfurnished" || "unfurnished",
+          type: data.type as PropertyType || "house_rent",
+        });
+      }
+    };
+
+    fetchPropertyData();
+  }, [propertyId]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -71,7 +107,6 @@ export const PropertyForm = ({ onSuccess, onCancel }: PropertyFormProps) => {
 
     try {
       const { data: { session } } = await supabase.auth.getSession();
-
       if (!session) {
         toast({
           title: "Error",
@@ -81,63 +116,74 @@ export const PropertyForm = ({ onSuccess, onCancel }: PropertyFormProps) => {
         return;
       }
 
-      const { data: property, error: propertyError } = await supabase
-        .from("properties")
-        .insert({
-          title: formData.title,
-          description: formData.description,
-          price: Number(formData.price),
-          bedrooms: Number(formData.bedrooms),
-          bathrooms: Number(formData.bathrooms),
-          area: Number(formData.area),
-          address: formData.address,
-          city: formData.city,
-          state: formData.state,
-          zip_code: formData.zip_code,
-          owner_id: session.user.id,
-          status: formData.status,
-          furnishing_status: formData.furnishing,
-          type: formData.type,
-        })
-        .select()
-        .single();
+      const propertyData = {
+        title: formData.title,
+        description: formData.description,
+        price: Number(formData.price),
+        bedrooms: Number(formData.bedrooms),
+        bathrooms: Number(formData.bathrooms),
+        area: Number(formData.area),
+        address: formData.address,
+        city: formData.city,
+        state: formData.state,
+        zip_code: formData.zip_code,
+        status: formData.status,
+        furnishing_status: formData.furnishing,
+        type: formData.type,
+        owner_id: session.user.id,
+      };
 
-      if (propertyError) throw propertyError;
+      if (propertyId) {
+        const { error: updateError } = await supabase
+          .from("properties")
+          .update(propertyData)
+          .eq("id", propertyId);
 
-      if (selectedFiles.length > 0) {
-        const imagePromises = selectedFiles.map(async (file) => {
-          const fileExt = file.name.split(".").pop();
-          const filePath = `${property.id}/${crypto.randomUUID()}.${fileExt}`;
+        if (updateError) throw updateError;
+      } else {
+        const { data: property, error: insertError } = await supabase
+          .from("properties")
+          .insert(propertyData)
+          .select()
+          .single();
 
-          const { error: uploadError } = await supabase.storage
-            .from("properties_images")
-            .upload(filePath, file);
+        if (insertError) throw insertError;
 
-          if (uploadError) throw uploadError;
+        if (selectedFiles.length > 0) {
+          const imagePromises = selectedFiles.map(async (file) => {
+            const fileExt = file.name.split(".").pop();
+            const filePath = `${property.id}/${crypto.randomUUID()}.${fileExt}`;
 
-          const { data: { publicUrl } } = supabase.storage
-            .from("properties_images")
-            .getPublicUrl(filePath);
+            const { error: uploadError } = await supabase.storage
+              .from("properties_images")
+              .upload(filePath, file);
 
-          return supabase.from("property_images").insert({
-            property_id: property.id,
-            image_url: publicUrl,
+            if (uploadError) throw uploadError;
+
+            const { data: { publicUrl } } = supabase.storage
+              .from("properties_images")
+              .getPublicUrl(filePath);
+
+            return supabase.from("property_images").insert({
+              property_id: property.id,
+              image_url: publicUrl,
+            });
           });
-        });
 
-        await Promise.all(imagePromises);
+          await Promise.all(imagePromises);
+        }
       }
 
       toast({
         title: "Success",
-        description: "Property added successfully",
+        description: propertyId ? "Property updated successfully" : "Property added successfully",
       });
       onSuccess();
     } catch (error) {
-      console.error("Error adding property:", error);
+      console.error("Error saving property:", error);
       toast({
         title: "Error",
-        description: "Failed to add property",
+        description: propertyId ? "Failed to update property" : "Failed to add property",
         variant: "destructive",
       });
     } finally {
@@ -161,7 +207,7 @@ export const PropertyForm = ({ onSuccess, onCancel }: PropertyFormProps) => {
               Cancel
             </Button>
             <Button type="button" onClick={() => setStep(2)}>
-              Next <ArrowRight className="ml-2 h-4 w-4" />
+              Next
             </Button>
           </div>
         </div>
@@ -178,7 +224,6 @@ export const PropertyForm = ({ onSuccess, onCancel }: PropertyFormProps) => {
           />
           <div className="flex justify-between">
             <Button type="button" onClick={() => setStep(1)}>
-              <ArrowLeft className="mr-2 h-4 w-4" />
               Back
             </Button>
             <div className="space-x-2">
@@ -186,7 +231,7 @@ export const PropertyForm = ({ onSuccess, onCancel }: PropertyFormProps) => {
                 Cancel
               </Button>
               <Button type="submit" disabled={isLoading}>
-                {isLoading ? "Adding..." : "Add Property"}
+                {isLoading ? "Saving..." : (propertyId ? "Update" : "Add")}
               </Button>
             </div>
           </div>
