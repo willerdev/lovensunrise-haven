@@ -41,20 +41,20 @@ const categories = {
       "lower": "Lower Class"
     }
   }
-};
+} as const;
 
 const priceRanges = [
-  { min: 0, max: 1000, label: "Under $1,000" },
-  { min: 1000, max: 5000, label: "$1,000 - $5,000" },
-  { min: 5000, max: 10000, label: "$5,000 - $10,000" },
-  { min: 10000, max: 50000, label: "$10,000 - $50,000" },
-  { min: 50000, max: null, label: "Above $50,000" }
-];
+  { min: 0, max: 1000, label: "Under $1,000", value: "0-1000" },
+  { min: 1000, max: 5000, label: "$1,000 - $5,000", value: "1000-5000" },
+  { min: 5000, max: 10000, label: "$5,000 - $10,000", value: "5000-10000" },
+  { min: 10000, max: 50000, label: "$10,000 - $50,000", value: "10000-50000" },
+  { min: 50000, max: null, label: "Above $50,000", value: "50000-up" }
+] as const;
 
 export const CategoryView = () => {
-  const { type } = useParams();
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedPriceRange, setSelectedPriceRange] = useState<string | null>(null);
+  const { type } = useParams<{ type: keyof typeof categories }>();
+  const [selectedCategory, setSelectedCategory] = useState<string | undefined>();
+  const [selectedPriceRange, setSelectedPriceRange] = useState<string | undefined>();
   const [location, setLocation] = useState("");
 
   const { data: properties = [], isLoading } = useQuery({
@@ -70,17 +70,14 @@ export const CategoryView = () => {
           )
         `);
 
-      // Filter by property type
       if (type) {
         query = query.eq('type', type);
       }
 
-      // Apply category filter if selected
       if (selectedCategory) {
         query = query.eq("category", selectedCategory);
       }
 
-      // Apply price range filter if selected
       if (selectedPriceRange) {
         const [min, max] = selectedPriceRange.split("-").map(Number);
         query = query.gte("price", min);
@@ -89,7 +86,6 @@ export const CategoryView = () => {
         }
       }
 
-      // Apply location filter if entered
       if (location) {
         query = query.or(`city.ilike.%${location}%,address.ilike.%${location}%,state.ilike.%${location}%`);
       }
@@ -126,19 +122,17 @@ export const CategoryView = () => {
 
       <main className="container mx-auto px-4">
         <div className="flex flex-col gap-4 mb-8">
-          {/* Filters */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Category Filter */}
             {categoryConfig && (
               <Select
-                value={selectedCategory || ""}
-                onValueChange={(value) => setSelectedCategory(value || null)}
+                value={selectedCategory}
+                onValueChange={setSelectedCategory}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select Category" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Categories</SelectItem>
                   {Object.entries(categoryConfig.categories).map(([value, label]) => (
                     <SelectItem key={value} value={value}>
                       {label}
@@ -150,18 +144,17 @@ export const CategoryView = () => {
 
             {/* Price Range Filter */}
             <Select
-              value={selectedPriceRange || ""}
-              onValueChange={(value) => setSelectedPriceRange(value || null)}
+              value={selectedPriceRange}
+              onValueChange={setSelectedPriceRange}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Price Range" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Any Price</SelectItem>
-                {priceRanges.map((range, index) => (
+                {priceRanges.map((range) => (
                   <SelectItem 
-                    key={index} 
-                    value={`${range.min}-${range.max || ''}`}
+                    key={range.value} 
+                    value={range.value}
                   >
                     {range.label}
                   </SelectItem>
