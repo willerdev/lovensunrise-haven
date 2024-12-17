@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { PropertySection } from "@/components/home/PropertySection";
 import { LandSection } from "@/components/home/LandSection";
+import { TrustedPartners } from "@/components/home/TrustedPartners";
 import { mapDbPropertyToProperty } from "@/types/property";
 
 const propertyTypes: { value: PropertyType; label: string; icon: React.ReactNode }[] = [
@@ -218,6 +219,8 @@ const Index = () => {
           onImageClick={handleItemClick}
         />
       </main>
+
+      <TrustedPartners />
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="sm:max-w-[425px]">
