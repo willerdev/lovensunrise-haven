@@ -55,7 +55,7 @@ export const PropertyForm = ({ onSuccess, onCancel }: PropertyFormProps) => {
       if (propertyError) throw propertyError;
 
       // Upload images
-      for (const file of selectedFiles) {
+      const imagePromises = selectedFiles.map(async (file) => {
         const fileExt = file.name.split('.').pop();
         const filePath = `${property.id}/${crypto.randomUUID()}.${fileExt}`;
 
@@ -78,7 +78,9 @@ export const PropertyForm = ({ onSuccess, onCancel }: PropertyFormProps) => {
           });
 
         if (imageError) throw imageError;
-      }
+      });
+
+      await Promise.all(imagePromises);
 
       toast({
         title: "Success",

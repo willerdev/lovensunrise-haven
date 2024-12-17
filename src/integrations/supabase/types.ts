@@ -210,6 +210,35 @@ export type Database = {
           },
         ]
       }
+      property_images: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string
+          property_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url: string
+          property_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string
+          property_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_images_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       saved_properties: {
         Row: {
           created_at: string

@@ -5,7 +5,6 @@ export interface Property {
   title: string;
   type?: PropertyType;
   price: number;
-  location?: string;
   bedrooms?: number;
   bathrooms?: number;
   area: number;
@@ -16,4 +15,5 @@ export interface Property {
   zip_code: string;
   images?: string[];
   features?: string[];
+  property_images?: { image_url: string }[];
 }

@@ -24,7 +24,7 @@ const Properties = () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return [];
 
-      const { data: properties } = await supabase
+      const { data } = await supabase
         .from("properties")
         .select(`
           *,
@@ -34,33 +34,53 @@ const Properties = () => {
         `)
         .eq("owner_id", session.user.id);
 
-      return properties?.map(property => ({
+      return data?.map(property => ({
         ...property,
-        images: property.property_images?.map(img => img.image_url) || []
+        images: property.property_images?.map((img: { image_url: string }) => img.image_url) || []
       })) || [];
     },
   });
 
   const handleDelete = async (id: string) => {
-    const { error } = await supabase
-      .from("properties")
-      .delete()
-      .eq("id", id);
+    try {
+      // Delete images from storage first
+      const { data: propertyImages } = await supabase
+        .from('property_images')
+        .select('image_url')
+        .eq('property_id', id);
 
-    if (error) {
+      if (propertyImages) {
+        for (const { image_url } of propertyImages) {
+          const path = image_url.split('/').pop();
+          if (path) {
+            await supabase.storage
+              .from('properties_images')
+              .remove([`${id}/${path}`]);
+          }
+        }
+      }
+
+      // Delete property (this will cascade delete property_images records)
+      const { error } = await supabase
+        .from("properties")
+        .delete()
+        .eq("id", id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Property deleted successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: ["landlord-properties"] });
+    } catch (error) {
+      console.error('Error deleting property:', error);
       toast({
         title: "Error",
         description: "Failed to delete property",
         variant: "destructive",
       });
-      return;
     }
-
-    toast({
-      title: "Success",
-      description: "Property deleted successfully",
-    });
-    queryClient.invalidateQueries({ queryKey: ["landlord-properties"] });
   };
 
   const handleEdit = (id: string) => {
