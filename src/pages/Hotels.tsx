@@ -18,7 +18,7 @@ const hotelCategories = {
   "eco_resort": "Eco Resorts",
   "high_end_lodge": "High End Lodge",
   "hotel": "Hotels"
-};
+} as const;
 
 const priceRanges = [
   { min: 0, max: 100, label: "Under $100", value: "0-100" },
@@ -26,11 +26,11 @@ const priceRanges = [
   { min: 300, max: 500, label: "$300 - $500", value: "300-500" },
   { min: 500, max: 1000, label: "$500 - $1,000", value: "500-1000" },
   { min: 1000, max: null, label: "Above $1,000", value: "1000-up" }
-];
+] as const;
 
 export const Hotels = () => {
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedPriceRange, setSelectedPriceRange] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string>();
+  const [selectedPriceRange, setSelectedPriceRange] = useState<string>();
   const [location, setLocation] = useState("");
 
   const { data: hotels = [], isLoading } = useQuery({
@@ -91,9 +91,8 @@ export const Hotels = () => {
       <main className="container mx-auto px-4">
         <div className="flex flex-col gap-4 mb-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Category Filter */}
             <Select
-              value={selectedCategory || undefined}
+              value={selectedCategory}
               onValueChange={(value) => setSelectedCategory(value)}
             >
               <SelectTrigger>
@@ -108,9 +107,8 @@ export const Hotels = () => {
               </SelectContent>
             </Select>
 
-            {/* Price Range Filter */}
             <Select
-              value={selectedPriceRange || undefined}
+              value={selectedPriceRange}
               onValueChange={(value) => setSelectedPriceRange(value)}
             >
               <SelectTrigger>
@@ -128,7 +126,6 @@ export const Hotels = () => {
               </SelectContent>
             </Select>
 
-            {/* Location Filter */}
             <Input
               placeholder="Search by location..."
               value={location}
