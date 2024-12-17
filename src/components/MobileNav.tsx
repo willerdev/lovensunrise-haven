@@ -1,10 +1,16 @@
 import { Home, Search, Heart, User } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export const MobileNav = () => {
   const location = useLocation();
+  const isMobile = useIsMobile();
 
   const isActive = (path: string) => location.pathname === path;
+
+  if (!isMobile) {
+    return null;
+  }
 
   return (
     <nav className="mobile-nav animate-slideUp">
@@ -20,8 +26,8 @@ export const MobileNav = () => {
         <span>Search</span>
       </Link>
       <Link
-        to="/favorites"
-        className={`nav-item ${isActive("/favorites") ? "text-gray-900" : ""}`}
+        to="/saved"
+        className={`nav-item ${isActive("/saved") ? "text-gray-900" : ""}`}
       >
         <Heart className="w-6 h-6" />
         <span>Saved</span>
