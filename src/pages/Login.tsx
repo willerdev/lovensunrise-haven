@@ -26,21 +26,45 @@ const Login = () => {
 
       if (error) {
         console.error("Login error:", error);
-        toast({
-          variant: "destructive",
-          title: "Login Failed",
-          description: error.message || "Invalid email or password",
-        });
+        
+        // Provide more specific error messages based on the error type
+        if (error.message.includes("Invalid login credentials")) {
+          toast({
+            variant: "destructive",
+            title: "Login Failed",
+            description: "Invalid email or password. Please check your credentials and try again.",
+          });
+        } else {
+          toast({
+            variant: "destructive",
+            title: "Login Failed",
+            description: error.message || "An error occurred during login",
+          });
+        }
         return;
       }
 
       if (data.user) {
         console.log("Login successful:", data.user);
+        
+        // Fetch user profile to check role
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", data.user.id)
+          .single();
+
         toast({
           title: "Success!",
           description: "You have been logged in successfully.",
         });
-        navigate("/");
+
+        // Redirect based on user role
+        if (!profile?.role) {
+          navigate("/complete-profile");
+        } else {
+          navigate("/");
+        }
       }
     } catch (error) {
       console.error("Unexpected error during login:", error);
