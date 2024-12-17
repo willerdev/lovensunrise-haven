@@ -10,19 +10,32 @@ export const DashboardStats = () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return null;
 
+      // First, get the property IDs owned by the landlord
+      const { data: properties } = await supabase
+        .from("properties")
+        .select("id")
+        .eq("owner_id", session.user.id);
+
+      const propertyIds = properties?.map(prop => prop.id) || [];
+
+      // Then use these IDs for subsequent queries
       const [propertiesCount, bookingsCount, paymentsSum] = await Promise.all([
-        supabase.from("properties").select("id", { count: "exact" }).eq("owner_id", session.user.id),
+        supabase.from("properties")
+          .select("id", { count: "exact" })
+          .eq("owner_id", session.user.id),
         supabase.from("bookings")
           .select("id", { count: "exact" })
-          .in("property_id", 
-            supabase.from("properties").select("id").eq("owner_id", session.user.id)
-          ),
+          .in("property_id", propertyIds),
         supabase.from("bookings")
           .select("total_price")
-          .in("property_id",
-            supabase.from("properties").select("id").eq("owner_id", session.user.id)
-          )
+          .in("property_id", propertyIds)
       ]);
+
+      console.log("Stats fetched:", {
+        properties: propertiesCount.count,
+        bookings: bookingsCount.count,
+        payments: paymentsSum.data
+      });
 
       return {
         properties: propertiesCount.count || 0,
