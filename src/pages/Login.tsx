@@ -19,15 +19,15 @@ const Login = () => {
 
     try {
       console.log("Attempting login with email:", email);
+      
       const { data, error } = await supabase.auth.signInWithPassword({
         email: email.trim(),
         password,
       });
 
       if (error) {
-        console.error("Login error:", error);
+        console.error("Login error:", error.message);
         
-        // Provide more specific error messages based on the error type
         if (error.message.includes("Invalid login credentials")) {
           toast({
             variant: "destructive",
@@ -38,7 +38,7 @@ const Login = () => {
           toast({
             variant: "destructive",
             title: "Login Failed",
-            description: error.message || "An error occurred during login",
+            description: "An error occurred during login. Please try again.",
           });
         }
         return;

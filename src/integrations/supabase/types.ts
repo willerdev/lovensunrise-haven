@@ -533,7 +533,7 @@ export type Database = {
         | "commercial"
         | "agriculture"
       procuration_contract_type: "sell" | "buy" | "rent" | "donate"
-      user_role: "landlord" | "tenant" | "broker"
+      user_role: "landlord" | "tenant" | "broker" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
