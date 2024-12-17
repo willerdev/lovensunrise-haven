@@ -31,10 +31,10 @@ export const PropertyCard = ({ property, onImageClick, isLand }: PropertyCardPro
 
       // Check in the appropriate table based on whether it's a land or property
       const { data, error } = await supabase
-        .from(isLand ? "saved_lands" : "saved_properties")
+        .from(isLand ? 'saved_lands' : 'saved_properties')
         .select()
-        .eq(isLand ? "land_id" : "property_id", property.id)
-        .eq("user_id", session.user.id);
+        .eq(isLand ? 'land_id' : 'property_id', property.id)
+        .eq('user_id', session.user.id);
 
       if (error) {
         console.error("Error checking if item is liked:", error);
@@ -61,15 +61,15 @@ export const PropertyCard = ({ property, onImageClick, isLand }: PropertyCardPro
     }
 
     try {
-      const tableName = isLand ? "saved_lands" : "saved_properties";
-      const idField = isLand ? "land_id" : "property_id";
+      const tableName = isLand ? 'saved_lands' : 'saved_properties';
+      const idField = isLand ? 'land_id' : 'property_id';
 
       if (isLiked) {
         const { error } = await supabase
           .from(tableName)
           .delete()
           .eq(idField, property.id)
-          .eq("user_id", session.user.id);
+          .eq('user_id', session.user.id);
 
         if (error) throw error;
       } else {
