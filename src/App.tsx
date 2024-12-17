@@ -1,9 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ProcurationIndex from "@/pages/procuration/Index";
 import ProcurationForm from "@/pages/procuration/Form";
-import Home from "@/pages/Home";
-import About from "@/pages/About";
-import Contact from "@/pages/Contact";
 
 const App = () => {
   return (
