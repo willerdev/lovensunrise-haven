@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { PropertyCard } from "../components/PropertyCard";
-import { PropertyType, mapDbPropertyToProperty } from "../types/property";
+import { PropertyType } from "../types/property";
 import { MobileNav } from "../components/MobileNav";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -8,8 +7,10 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { Home, Building2, MapPin, User, PlusCircle } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { PropertySkeleton } from "@/components/skeletons/PropertySkeleton";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { PropertySection } from "@/components/home/PropertySection";
+import { LandSection } from "@/components/home/LandSection";
+import { mapDbPropertyToProperty } from "@/types/property";
 
 const propertyTypes: { value: PropertyType; label: string; icon: React.ReactNode }[] = [
   { value: "house_rent", label: "Houses for Rent", icon: <Home className="w-4 h-4" /> },
@@ -44,8 +45,6 @@ const Index = () => {
   const { data: properties = [], isLoading: isLoadingProperties } = useQuery({
     queryKey: ["properties", selectedType],
     queryFn: async () => {
-      console.log("Fetching properties with type:", selectedType);
-      
       let query = supabase
         .from("properties")
         .select(`
@@ -121,9 +120,6 @@ const Index = () => {
     setIsModalOpen(true);
   };
 
-  const displayItems = selectedType === "land_sell" ? lands : properties;
-  const isLoading = selectedType === "land_sell" ? isLoadingLands : isLoadingProperties;
-
   return (
     <div className="min-h-screen pb-20">
       <header className="p-4 bg-white/80 backdrop-blur-md sticky top-0 z-40">
@@ -189,22 +185,17 @@ const Index = () => {
       </header>
 
       <main className="container mx-auto p-4">
-        <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'} gap-4`}>
-          {isLoading ? (
-            Array.from({ length: 6 }).map((_, index) => (
-              <PropertySkeleton key={index} />
-            ))
-          ) : (
-            displayItems.map((item) => (
-              <PropertyCard 
-                key={item.id} 
-                property={item} 
-                onImageClick={() => handleItemClick(item)}
-                isLand={selectedType === "land_sell"}
-              />
-            ))
-          )}
-        </div>
+        <PropertySection 
+          properties={properties}
+          isLoading={isLoadingProperties}
+          onImageClick={handleItemClick}
+        />
+        
+        <LandSection 
+          lands={lands}
+          isLoading={isLoadingLands}
+          onImageClick={handleItemClick}
+        />
       </main>
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
