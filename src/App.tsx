@@ -24,6 +24,8 @@ import ProcurationForm from "./pages/procuration/ProcurationForm";
 import { CategoryView } from "./pages/CategoryView";
 import { Hotels } from "./pages/Hotels";
 import Lands from "./pages/Lands";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import Properties from "./pages/admin/Properties";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -62,6 +64,16 @@ const App = () => {
               <Route path="/broker-dashboard/*" element={<BrokerDashboard />} />
               <Route path="/landlord-dashboard/add-land" element={<AddLand />} />
               <Route path="/procuration" element={<ProcurationForm />} />
+              <Route path="/admin-dashboard" element={<AdminDashboard />}>
+                <Route path="properties" element={<Properties />} />
+                <Route path="lands" element={<div>Manage Lands</div>} />
+                <Route path="categories" element={<div>Manage Categories</div>} />
+                <Route path="users" element={<div>Manage Users</div>} />
+                <Route path="partners" element={<div>Manage Partners</div>} />
+                <Route path="complaints" element={<div>Manage Complaints</div>} />
+                <Route path="procurations" element={<div>Manage Procurations</div>} />
+                <Route path="brokers" element={<div>Manage Brokers</div>} />
+              </Route>
             </Routes>
             <Footer />
           </BrowserRouter>
