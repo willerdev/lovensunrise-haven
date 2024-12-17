@@ -20,7 +20,7 @@ const Login = () => {
     try {
       console.log("Attempting login with email:", email);
       
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { data: { session }, error } = await supabase.auth.signInWithPassword({
         email: email.trim(),
         password,
       });
@@ -44,14 +44,14 @@ const Login = () => {
         return;
       }
 
-      if (data.user) {
-        console.log("Login successful:", data.user);
+      if (session) {
+        console.log("Login successful:", session.user);
         
         // Fetch user profile to check role
         const { data: profile } = await supabase
           .from("profiles")
           .select("role")
-          .eq("id", data.user.id)
+          .eq("id", session.user.id)
           .single();
 
         toast({
