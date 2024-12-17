@@ -14,13 +14,9 @@ import {
 } from "@/components/ui/table";
 import { toast } from "sonner";
 import { Edit, Trash2 } from "lucide-react";
+import { Database } from "@/integrations/supabase/types";
 
-type Category = {
-  id: string;
-  name: string;
-  description: string;
-  created_at: string;
-};
+type PropertyCategory = Database['public']['Tables']['property_categories']['Row'];
 
 const Categories = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -38,7 +34,7 @@ const Categories = () => {
         throw error;
       }
 
-      return data as Category[];
+      return data as PropertyCategory[];
     },
   });
 
