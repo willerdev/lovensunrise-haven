@@ -32,13 +32,12 @@ const Signup = () => {
     try {
       console.log("Attempting signup with:", { email, role, name });
       
-      // Sign up the user with additional metadata
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: email.trim(),
         password,
         options: {
           data: {
-            role: role,
+            role,
             full_name: name
           }
         }
@@ -46,7 +45,12 @@ const Signup = () => {
 
       if (authError) {
         console.error("Signup error:", authError);
-        throw authError;
+        toast({
+          variant: "destructive",
+          title: "Signup Failed",
+          description: authError.message,
+        });
+        return;
       }
 
       if (authData.user) {
