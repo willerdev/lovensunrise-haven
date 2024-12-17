@@ -8,6 +8,10 @@ import { PropertyDetail } from "./pages/PropertyDetail";
 import Search from "./pages/Search";
 import Saved from "./pages/Saved";
 import Profile from "./pages/Profile";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import Booking from "./pages/Booking";
+import BookingSuccess from "./pages/BookingSuccess";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +27,10 @@ const App = () => (
           <Route path="/search" element={<Search />} />
           <Route path="/saved" element={<Saved />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/booking/:id" element={<Booking />} />
+          <Route path="/booking-success" element={<BookingSuccess />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
