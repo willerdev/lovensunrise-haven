@@ -446,6 +446,54 @@ export type Database = {
           },
         ]
       }
+      property_reports: {
+        Row: {
+          created_at: string | null
+          description: string
+          id: string
+          property_id: string | null
+          report_type: string
+          reporter_id: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description: string
+          id?: string
+          property_id?: string | null
+          report_type: string
+          reporter_id?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string
+          id?: string
+          property_id?: string | null
+          report_type?: string
+          reporter_id?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_reports_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "property_reports_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       saved_lands: {
         Row: {
           created_at: string

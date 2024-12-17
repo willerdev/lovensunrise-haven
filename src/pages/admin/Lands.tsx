@@ -12,52 +12,51 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { Property } from "@/types/property";
 import { toast } from "sonner";
 
-const Properties = () => {
+const Lands = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
-  const { data: properties, isLoading } = useQuery({
-    queryKey: ["admin-properties"],
+  const { data: lands, isLoading } = useQuery({
+    queryKey: ["admin-lands"],
     queryFn: async () => {
-      console.log("Fetching properties for admin...");
+      console.log("Fetching lands for admin...");
       const { data, error } = await supabase
-        .from("properties")
+        .from("lands")
         .select(`
           *,
-          property_images (image_url),
+          land_images (image_url),
           profiles (full_name)
         `);
       
       if (error) {
-        console.error("Error fetching properties:", error);
-        toast.error("Failed to load properties");
+        console.error("Error fetching lands:", error);
+        toast.error("Failed to load lands");
         throw error;
       }
       
-      console.log("Properties fetched:", data);
+      console.log("Lands fetched:", data);
       return data;
     },
   });
 
-  const filteredProperties = properties?.filter((property) =>
-    property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    property.address.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredLands = lands?.filter((land) =>
+    land.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    land.address.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleDelete = async (id: string) => {
     try {
       const { error } = await supabase
-        .from("properties")
+        .from("lands")
         .delete()
         .eq("id", id);
 
       if (error) throw error;
-      toast.success("Property deleted successfully");
+      toast.success("Land deleted successfully");
     } catch (error) {
-      console.error("Error deleting property:", error);
-      toast.error("Failed to delete property");
+      console.error("Error deleting land:", error);
+      toast.error("Failed to delete land");
     }
   };
 
@@ -66,10 +65,10 @@ const Properties = () => {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Manage Properties</h1>
+        <h1 className="text-2xl font-bold">Manage Lands</h1>
         <div className="flex gap-4">
           <Input
-            placeholder="Search properties..."
+            placeholder="Search lands..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-[300px]"
@@ -83,19 +82,21 @@ const Properties = () => {
             <TableHead>Title</TableHead>
             <TableHead>Address</TableHead>
             <TableHead>Price</TableHead>
-            <TableHead>Owner</TableHead>
+            <TableHead>Area (sqm)</TableHead>
             <TableHead>Status</TableHead>
+            <TableHead>Owner</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {filteredProperties?.map((property) => (
-            <TableRow key={property.id}>
-              <TableCell>{property.title}</TableCell>
-              <TableCell>{property.address}</TableCell>
-              <TableCell>${property.price}</TableCell>
-              <TableCell>{property.profiles?.full_name || "N/A"}</TableCell>
-              <TableCell>{property.status}</TableCell>
+          {filteredLands?.map((land) => (
+            <TableRow key={land.id}>
+              <TableCell>{land.title}</TableCell>
+              <TableCell>{land.address}</TableCell>
+              <TableCell>${land.price}</TableCell>
+              <TableCell>{land.area_sqm}</TableCell>
+              <TableCell>{land.status}</TableCell>
+              <TableCell>{land.profiles?.full_name || "N/A"}</TableCell>
               <TableCell>
                 <div className="flex gap-2">
                   <Button
@@ -103,7 +104,7 @@ const Properties = () => {
                     size="sm"
                     onClick={() => {
                       // View details functionality
-                      console.log("View property:", property.id);
+                      console.log("View land:", land.id);
                     }}
                   >
                     View
@@ -111,7 +112,7 @@ const Properties = () => {
                   <Button
                     variant="destructive"
                     size="sm"
-                    onClick={() => handleDelete(property.id)}
+                    onClick={() => handleDelete(land.id)}
                   >
                     Delete
                   </Button>
@@ -125,4 +126,4 @@ const Properties = () => {
   );
 };
 
-export default Properties;
+export default Lands;

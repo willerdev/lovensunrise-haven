@@ -26,6 +26,7 @@ import { Hotels } from "./pages/Hotels";
 import Lands from "./pages/Lands";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import Properties from "./pages/admin/Properties";
+import AdminLands from "./pages/admin/Lands";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -66,7 +67,7 @@ const App = () => {
               <Route path="/procuration" element={<ProcurationForm />} />
               <Route path="/admin-dashboard" element={<AdminDashboard />}>
                 <Route path="properties" element={<Properties />} />
-                <Route path="lands" element={<div>Manage Lands</div>} />
+                <Route path="lands" element={<AdminLands />} />
                 <Route path="categories" element={<div>Manage Categories</div>} />
                 <Route path="users" element={<div>Manage Users</div>} />
                 <Route path="partners" element={<div>Manage Partners</div>} />
