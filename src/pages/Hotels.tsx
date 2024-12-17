@@ -1,3 +1,4 @@
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -19,10 +20,10 @@ export const Hotels = () => {
       </header>
 
       <main className="container mx-auto px-4">
-        <div className="text-center py-12">
+        <div className="flex flex-col items-center justify-center min-h-[50vh] text-center">
           <h2 className="text-2xl font-semibold mb-4">Coming Soon</h2>
           <p className="text-gray-600">
-            Our hotels section is currently under development. Check back soon for exciting updates!
+            We're working on bringing you the best hotel options. Check back soon!
           </p>
         </div>
       </main>

@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import { PropertyCard } from "@/components/PropertyCard";
 import { useQuery } from "@tanstack/react-query";
