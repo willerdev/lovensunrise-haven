@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { supabase } from "@/integrations/supabase/client";
 import { PropertyImageUpload } from "@/components/landlord/PropertyImageUpload";
+import { LandStatus } from "@/integrations/supabase/enumTypes";
 
 const AddLand = () => {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ const AddLand = () => {
     city: "",
     state: "",
     zip_code: "",
-    status: "building" as "building" | "agriculture", // Updated to use correct type
+    status: "residential" as LandStatus,
   });
 
   const handleInputChange = (
@@ -33,7 +34,7 @@ const AddLand = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleStatusChange = (value: "building" | "agriculture") => {
+  const handleStatusChange = (value: LandStatus) => {
     setFormData((prev) => ({ ...prev, status: value }));
   };
 
@@ -156,11 +157,23 @@ const AddLand = () => {
             <RadioGroup
               value={formData.status}
               onValueChange={handleStatusChange}
-              className="flex space-x-4"
+              className="flex flex-wrap gap-4"
             >
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="building" id="building" />
-                <Label htmlFor="building">Building</Label>
+                <RadioGroupItem value="residential" id="residential" />
+                <Label htmlFor="residential">Residential</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="commercial" id="commercial" />
+                <Label htmlFor="commercial">Commercial</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="industrial" id="industrial" />
+                <Label htmlFor="industrial">Industrial</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="eco_tourism" id="eco_tourism" />
+                <Label htmlFor="eco_tourism">Eco Tourism</Label>
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="agriculture" id="agriculture" />
