@@ -10,15 +10,21 @@ const ProcurationView = () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return null;
 
-      const { data } = await supabase
+      // Remove .single() and handle the array of results
+      const { data, error } = await supabase
         .from("procuration_requests")
         .select("*")
         .eq("user_id", session.user.id)
         .order("created_at", { ascending: false })
-        .limit(1)
-        .single();
+        .limit(1);
 
-      return data;
+      if (error) {
+        console.error("Error fetching procuration data:", error);
+        return null;
+      }
+
+      // Return the first item if it exists, otherwise null
+      return data && data.length > 0 ? data[0] : null;
     },
   });
 
