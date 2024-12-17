@@ -3,13 +3,15 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, User, Mail, Phone, MapPin, CreditCard } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const Booking = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -19,14 +21,60 @@ const Booking = () => {
     paymentMethod: "credit_card",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Booking submitted:", { propertyId: id, ...formData });
-    toast({
-      title: "Booking Successful!",
-      description: "We'll contact you shortly with more details.",
-    });
-    navigate("/booking-success");
+    setIsLoading(true);
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast({
+          title: "Please login",
+          description: "You need to be logged in to make a booking",
+          variant: "destructive",
+        });
+        navigate("/login");
+        return;
+      }
+
+      // Get property details to calculate total price
+      const { data: property } = await supabase
+        .from("properties")
+        .select("price")
+        .eq("id", id)
+        .single();
+
+      if (!property) {
+        throw new Error("Property not found");
+      }
+
+      // Create booking record
+      const { error: bookingError } = await supabase
+        .from("bookings")
+        .insert({
+          property_id: id,
+          tenant_id: session.user.id,
+          total_price: property.price,
+          status: "pending",
+        });
+
+      if (bookingError) throw bookingError;
+
+      toast({
+        title: "Booking Successful!",
+        description: "We'll contact you shortly with more details.",
+      });
+      navigate("/booking-success");
+    } catch (error) {
+      console.error("Booking error:", error);
+      toast({
+        title: "Error",
+        description: "Failed to create booking. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleChange = (
@@ -54,89 +102,114 @@ const Booking = () => {
             <label htmlFor="name" className="text-sm font-medium">
               Full Name
             </label>
-            <Input
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-            />
+            <div className="relative">
+              <User className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
+              <Input
+                id="name"
+                name="name"
+                className="pl-9"
+                value={formData.name}
+                onChange={handleChange}
+                required
+              />
+            </div>
           </div>
 
           <div className="space-y-2">
             <label htmlFor="email" className="text-sm font-medium">
               Email
             </label>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
+            <div className="relative">
+              <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                className="pl-9"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <label htmlFor="phone" className="text-sm font-medium">
-              Phone Number
-            </label>
-            <Input
-              id="phone"
-              name="phone"
-              type="tel"
-              value={formData.phone}
-              onChange={handleChange}
-              required
-            />
-          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label htmlFor="phone" className="text-sm font-medium">
+                Phone Number
+              </label>
+              <div className="relative">
+                <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
+                <Input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  className="pl-9"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+            </div>
 
-          <div className="space-y-2">
-            <label htmlFor="whatsapp" className="text-sm font-medium">
-              WhatsApp Number
-            </label>
-            <Input
-              id="whatsapp"
-              name="whatsapp"
-              type="tel"
-              value={formData.whatsapp}
-              onChange={handleChange}
-            />
+            <div className="space-y-2">
+              <label htmlFor="whatsapp" className="text-sm font-medium">
+                WhatsApp
+              </label>
+              <div className="relative">
+                <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
+                <Input
+                  id="whatsapp"
+                  name="whatsapp"
+                  type="tel"
+                  className="pl-9"
+                  value={formData.whatsapp}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
           </div>
 
           <div className="space-y-2">
             <label htmlFor="address" className="text-sm font-medium">
               Address
             </label>
-            <Textarea
-              id="address"
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-              required
-            />
+            <div className="relative">
+              <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
+              <Textarea
+                id="address"
+                name="address"
+                className="pl-9 min-h-[100px]"
+                value={formData.address}
+                onChange={handleChange}
+                required
+              />
+            </div>
           </div>
 
           <div className="space-y-2">
             <label htmlFor="paymentMethod" className="text-sm font-medium">
               Payment Method
             </label>
-            <select
-              id="paymentMethod"
-              name="paymentMethod"
-              value={formData.paymentMethod}
-              onChange={handleChange}
-              className="w-full rounded-md border border-input bg-background px-3 py-2"
-              required
-            >
-              <option value="credit_card">Credit Card</option>
-              <option value="bank_transfer">Bank Transfer</option>
-              <option value="cash">Cash</option>
-            </select>
+            <div className="relative">
+              <CreditCard className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
+              <select
+                id="paymentMethod"
+                name="paymentMethod"
+                value={formData.paymentMethod}
+                onChange={handleChange}
+                className="w-full rounded-md border border-input bg-background pl-9 py-2 pr-3"
+                required
+              >
+                <option value="credit_card">Credit Card</option>
+                <option value="bank_transfer">Bank Transfer</option>
+                <option value="cash">Cash</option>
+              </select>
+            </div>
           </div>
 
-          <Button type="submit" className="w-full">
-            Confirm Booking
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? "Processing..." : "Confirm Booking"}
           </Button>
         </form>
       </main>
