@@ -27,21 +27,65 @@ const Index = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
 
-  const { data: userProfile } = useQuery({
-    queryKey: ["userProfile"],
+  // Fetch properties
+  const { data: properties = [], isLoading: isLoadingProperties } = useQuery({
+    queryKey: ["properties", selectedType],
     queryFn: async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return null;
+      console.log("Fetching properties with type:", selectedType);
+      let query = supabase
+        .from("properties")
+        .select(`
+          *,
+          property_images (
+            image_url
+          )
+        `);
 
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", session.user.id)
-        .single();
+      if (selectedType) {
+        query = query.eq("type", selectedType);
+      }
 
-      return profile;
+      const { data, error } = await query;
+      
+      if (error) {
+        console.error("Error fetching properties:", error);
+        throw error;
+      }
+
+      console.log("Fetched properties:", data);
+      return data.map(mapDbPropertyToProperty);
     },
   });
+
+  // Fetch lands
+  const { data: lands = [], isLoading: isLoadingLands } = useQuery({
+    queryKey: ["lands"],
+    queryFn: async () => {
+      console.log("Fetching lands");
+      const { data, error } = await supabase
+        .from("lands")
+        .select(`
+          *,
+          land_images (
+            image_url
+          )
+        `);
+
+      if (error) {
+        console.error("Error fetching lands:", error);
+        throw error;
+      }
+
+      console.log("Fetched lands:", data);
+      return data;
+    },
+  });
+
+  const handleItemClick = (item: any) => {
+    console.log("Item clicked:", item);
+    setSelectedItem(item);
+    setIsModalOpen(true);
+  };
 
   const scroll = (direction: 'left' | 'right') => {
     if (categoriesRef.current) {
@@ -54,24 +98,7 @@ const Index = () => {
   };
 
   const handleUserIconClick = () => {
-    if (!userProfile) {
-      navigate("/login");
-      return;
-    }
-
-    switch (userProfile.role) {
-      case "landlord":
-        navigate("/landlord-dashboard");
-        break;
-      case "tenant":
-        navigate("/tenant-dashboard");
-        break;
-      case "broker":
-        navigate("/broker-dashboard");
-        break;
-      default:
-        navigate("/complete-profile");
-    }
+    navigate("/profile");
   };
 
   return (
