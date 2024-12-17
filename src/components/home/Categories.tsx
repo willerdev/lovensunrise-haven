@@ -26,6 +26,12 @@ const categories = [
     href: "/hotels",
   },
   {
+    title: "Land",
+    description: "Explore available land plots",
+    image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&auto=format&fit=crop&q=60",
+    href: "/lands",
+  },
+  {
     title: "Diaspora",
     description: "Special services for our diaspora",
     image: "https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=800&auto=format&fit=crop&q=60",

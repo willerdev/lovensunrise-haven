@@ -23,6 +23,7 @@ import AddLand from "./pages/landlord/AddLand";
 import ProcurationForm from "./pages/procuration/ProcurationForm";
 import { CategoryView } from "./pages/CategoryView";
 import { Hotels } from "./pages/Hotels";
+import Lands from "./pages/Lands";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -45,6 +46,7 @@ const App = () => {
               <Route path="/" element={<Index />} />
               <Route path="/category/:type" element={<CategoryView />} />
               <Route path="/hotels" element={<Hotels />} />
+              <Route path="/lands" element={<Lands />} />
               <Route path="/property/:id" element={<PropertyDetail />} />
               <Route path="/land/:id" element={<LandDetail />} />
               <Route path="/search" element={<Search />} />
