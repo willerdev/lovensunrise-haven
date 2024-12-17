@@ -30,13 +30,15 @@ import { toast } from "sonner";
 import { UserPlus, Database } from "lucide-react";
 import { Label } from "@/components/ui/label";
 
+type AgentRole = "loven_agent" | "independent_agent";
+
 const Agents = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [newAgent, setNewAgent] = useState({
     email: "",
     full_name: "",
-    role: "",
+    role: "" as AgentRole,
   });
 
   const { data: agents, isLoading, refetch } = useQuery({
@@ -59,6 +61,11 @@ const Agents = () => {
 
   const handleAddAgent = async () => {
     try {
+      if (!newAgent.email || !newAgent.full_name || !newAgent.role) {
+        toast.error("Please fill in all fields");
+        return;
+      }
+
       const { error } = await supabase.from("profiles").update({
         role: newAgent.role,
         full_name: newAgent.full_name,
@@ -69,8 +76,9 @@ const Agents = () => {
       toast.success("Agent added successfully");
       setIsOpen(false);
       refetch();
-      setNewAgent({ email: "", full_name: "", role: "" });
+      setNewAgent({ email: "", full_name: "", role: "" as AgentRole });
     } catch (error) {
+      console.error("Error adding agent:", error);
       toast.error("Failed to add agent");
     }
   };
@@ -125,7 +133,7 @@ const Agents = () => {
                 <Label htmlFor="role">Role</Label>
                 <Select
                   value={newAgent.role}
-                  onValueChange={(value) =>
+                  onValueChange={(value: AgentRole) =>
                     setNewAgent({ ...newAgent, role: value })
                   }
                 >

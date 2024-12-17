@@ -11,7 +11,7 @@ import { CheckCircle, XCircle, Eye, Database } from "lucide-react";
 const Complaints = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
-  const { data: complaints, isLoading } = useQuery({
+  const { data: complaints, isLoading, refetch } = useQuery({
     queryKey: ["complaints"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -27,6 +27,38 @@ const Complaints = () => {
       return data;
     },
   });
+
+  const handleResolve = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from("property_reports")
+        .update({ status: "resolved" })
+        .eq("id", id);
+
+      if (error) throw error;
+      toast.success("Complaint marked as resolved");
+      refetch();
+    } catch (error) {
+      console.error("Error resolving complaint:", error);
+      toast.error("Failed to resolve complaint");
+    }
+  };
+
+  const handleDismiss = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from("property_reports")
+        .update({ status: "dismissed" })
+        .eq("id", id);
+
+      if (error) throw error;
+      toast.success("Complaint dismissed");
+      refetch();
+    } catch (error) {
+      console.error("Error dismissing complaint:", error);
+      toast.error("Failed to dismiss complaint");
+    }
+  };
 
   const filteredComplaints = complaints?.filter(
     (complaint) =>

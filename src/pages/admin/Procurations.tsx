@@ -11,7 +11,7 @@ import { CheckCircle, XCircle, Eye, FileText, Database } from "lucide-react";
 const Procurations = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
-  const { data: procurations, isLoading } = useQuery({
+  const { data: procurations, isLoading, refetch } = useQuery({
     queryKey: ["procurations"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -27,6 +27,38 @@ const Procurations = () => {
       return data;
     },
   });
+
+  const handleApprove = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from("procuration_requests")
+        .update({ status: "approved", progress: 100 })
+        .eq("id", id);
+
+      if (error) throw error;
+      toast.success("Procuration request approved");
+      refetch();
+    } catch (error) {
+      console.error("Error approving procuration:", error);
+      toast.error("Failed to approve procuration");
+    }
+  };
+
+  const handleReject = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from("procuration_requests")
+        .update({ status: "rejected" })
+        .eq("id", id);
+
+      if (error) throw error;
+      toast.success("Procuration request rejected");
+      refetch();
+    } catch (error) {
+      console.error("Error rejecting procuration:", error);
+      toast.error("Failed to reject procuration");
+    }
+  };
 
   const filteredProcurations = procurations?.filter(
     (proc) =>
