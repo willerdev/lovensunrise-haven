@@ -9,6 +9,7 @@ import { Home, Building2, MapPin, User, PlusCircle } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { PropertySkeleton } from "@/components/skeletons/PropertySkeleton";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 const propertyTypes: { value: PropertyType; label: string; icon: React.ReactNode }[] = [
   { value: "house_rent", label: "Houses for Rent", icon: <Home className="w-4 h-4" /> },
@@ -19,6 +20,8 @@ const propertyTypes: { value: PropertyType; label: string; icon: React.ReactNode
 
 const Index = () => {
   const [selectedType, setSelectedType] = useState<PropertyType | null>(null);
+  const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
   const isMobile = useIsMobile();
 
@@ -38,7 +41,7 @@ const Index = () => {
     },
   });
 
-  const { data: properties = [], isLoading } = useQuery({
+  const { data: properties = [], isLoading: isLoadingProperties } = useQuery({
     queryKey: ["properties", selectedType],
     queryFn: async () => {
       console.log("Fetching properties with type:", selectedType);
@@ -52,7 +55,7 @@ const Index = () => {
           )
         `);
 
-      if (selectedType) {
+      if (selectedType && selectedType !== "land_sell") {
         query = query.eq("type", selectedType);
       }
 
@@ -63,9 +66,28 @@ const Index = () => {
         return [];
       }
 
-      console.log("Fetched properties:", data);
-
       return data.map(mapDbPropertyToProperty);
+    },
+  });
+
+  const { data: lands = [], isLoading: isLoadingLands } = useQuery({
+    queryKey: ["lands"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("lands")
+        .select(`
+          *,
+          land_images (
+            image_url
+          )
+        `);
+
+      if (error) {
+        console.error("Error fetching lands:", error);
+        return [];
+      }
+
+      return data;
     },
   });
 
@@ -75,7 +97,6 @@ const Index = () => {
       return;
     }
 
-    // Navigate based on user role
     switch (userProfile.role) {
       case "landlord":
         navigate("/landlord-dashboard");
@@ -94,6 +115,14 @@ const Index = () => {
   const handleAddProperty = () => {
     navigate("/landlord-dashboard/properties");
   };
+
+  const handleItemClick = (item: any) => {
+    setSelectedItem(item);
+    setIsModalOpen(true);
+  };
+
+  const displayItems = selectedType === "land_sell" ? lands : properties;
+  const isLoading = selectedType === "land_sell" ? isLoadingLands : isLoadingProperties;
 
   return (
     <div className="min-h-screen pb-20">
@@ -166,12 +195,40 @@ const Index = () => {
               <PropertySkeleton key={index} />
             ))
           ) : (
-            properties.map((property) => (
-              <PropertyCard key={property.id} property={property} />
+            displayItems.map((item) => (
+              <PropertyCard 
+                key={item.id} 
+                property={item} 
+                onImageClick={() => handleItemClick(item)}
+                isLand={selectedType === "land_sell"}
+              />
             ))
           )}
         </div>
       </main>
+
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <div className="grid gap-4">
+            <div className="aspect-video relative overflow-hidden rounded-lg">
+              <img
+                src={selectedItem?.property_images?.[0]?.image_url || selectedItem?.land_images?.[0]?.image_url}
+                alt={selectedItem?.title}
+                className="object-cover w-full h-full"
+              />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold">{selectedItem?.title}</h3>
+              <p className="text-sm text-gray-500 mt-1">{selectedItem?.address}</p>
+              <p className="mt-2">{selectedItem?.description}</p>
+              <p className="mt-2 font-semibold">
+                ${selectedItem?.price.toLocaleString()}
+                {selectedItem?.type?.includes('rent') && '/month'}
+              </p>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <MobileNav />
     </div>

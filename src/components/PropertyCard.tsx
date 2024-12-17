@@ -7,10 +7,12 @@ import { useToast } from "@/components/ui/use-toast";
 import { Badge } from "@/components/ui/badge";
 
 interface PropertyCardProps {
-  property: Property;
+  property: Property | any;
+  onImageClick?: () => void;
+  isLand?: boolean;
 }
 
-export const PropertyCard = ({ property }: PropertyCardProps) => {
+export const PropertyCard = ({ property, onImageClick, isLand }: PropertyCardProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const { toast } = useToast();
@@ -105,7 +107,9 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
   };
 
   // Get the first image URL from either property_images or images array
-  const imageUrl = property.property_images?.[0]?.image_url || property.images?.[0];
+  const imageUrl = isLand 
+    ? property.land_images?.[0]?.image_url 
+    : (property.property_images?.[0]?.image_url || property.images?.[0]);
 
   // Construct location string from address components
   const locationString = `${property.address}, ${property.city}, ${property.state}`;
@@ -121,10 +125,11 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
         <img
           src={imageUrl}
           alt={property.title}
-          className={`w-full h-48 object-cover rounded-t-xl transition-opacity duration-300 ${
+          className={`w-full h-48 object-cover rounded-t-xl transition-opacity duration-300 cursor-pointer ${
             imageLoaded ? "opacity-100" : "opacity-0"
           }`}
           onLoad={() => setImageLoaded(true)}
+          onClick={onImageClick}
         />
         <button
           onClick={handleLikeToggle}
@@ -138,28 +143,30 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
         </button>
         <Badge 
           className={`absolute top-3 left-3 ${
-            isRental ? 'bg-blue-500' : 'bg-green-500'
+            isLand ? 'bg-green-500' : isRental ? 'bg-blue-500' : 'bg-green-500'
           }`}
         >
-          {property.type && typeLabel[property.type]}
+          {isLand ? "Land for Sale" : property.type && typeLabel[property.type]}
         </Badge>
       </div>
-      <Link to={`/property/${property.id}`} className="block p-4">
+      <Link to={isLand ? `/land/${property.id}` : `/property/${property.id}`} className="block p-4">
         <h3 className="mt-2 text-lg font-semibold text-gray-900 line-clamp-1">
           {property.title}
         </h3>
         <p className="mt-1 text-gray-500 text-sm line-clamp-1">
           {locationString}
         </p>
-        <div className="mt-2 flex items-center gap-4 text-sm text-gray-600">
-          {property.bedrooms && (
-            <span>{property.bedrooms} {property.bedrooms === 1 ? 'bed' : 'beds'}</span>
-          )}
-          {property.bathrooms && (
-            <span>{property.bathrooms} {property.bathrooms === 1 ? 'bath' : 'baths'}</span>
-          )}
-          <span>{property.area} sqft</span>
-        </div>
+        {!isLand && (
+          <div className="mt-2 flex items-center gap-4 text-sm text-gray-600">
+            {property.bedrooms && (
+              <span>{property.bedrooms} {property.bedrooms === 1 ? 'bed' : 'beds'}</span>
+            )}
+            {property.bathrooms && (
+              <span>{property.bathrooms} {property.bathrooms === 1 ? 'bath' : 'baths'}</span>
+            )}
+            <span>{property.area || property.area_sqm} sqft</span>
+          </div>
+        )}
         <p className="mt-2 text-lg font-semibold text-gray-900">
           {formatPrice(property.price)}
           {isRental && '/month'}
