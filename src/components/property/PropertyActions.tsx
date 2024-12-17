@@ -6,17 +6,27 @@ import { useIsMobile } from "@/hooks/use-mobile";
 interface PropertyActionsProps {
   propertyId: string;
   onChatClick: () => void;
+  onBookClick: () => void;
+  isOwner: boolean;
 }
 
-export const PropertyActions = ({ propertyId, onChatClick }: PropertyActionsProps) => {
+export const PropertyActions = ({ 
+  propertyId, 
+  onChatClick, 
+  onBookClick,
+  isOwner 
+}: PropertyActionsProps) => {
   const isMobile = useIsMobile();
+  
   const actionButtons = (
     <>
-      <Button className="flex-1" asChild>
-        <Link to={`/booking/${propertyId}`}>
-          <Calendar className="w-4 h-4 mr-2" />
-          Book Now
-        </Link>
+      <Button 
+        className="flex-1" 
+        onClick={onBookClick}
+        disabled={isOwner}
+      >
+        <Calendar className="w-4 h-4 mr-2" />
+        Book Now
       </Button>
       <Button variant="outline" className="flex-1" onClick={onChatClick}>
         <MessageSquare className="w-4 h-4 mr-2" />

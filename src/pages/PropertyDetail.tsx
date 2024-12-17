@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Flag } from "lucide-react";
+import { Flag, Home, Bed, Bath, Ruler, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -16,6 +16,7 @@ import { PropertyImages } from "@/components/property/PropertyImages";
 import { PropertyActions } from "@/components/property/PropertyActions";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export const PropertyDetail = () => {
   const { id } = useParams();
@@ -24,8 +25,24 @@ export const PropertyDetail = () => {
   const [reportType, setReportType] = useState<"report" | "claim" | null>(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [message, setMessage] = useState("I would like to know more about this property");
+  const [currentUser, setCurrentUser] = useState<any>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+        setCurrentUser({ ...user, ...profile });
+      }
+    };
+    fetchUser();
+  }, []);
 
   const { data: property } = useQuery({
     queryKey: ["property", id],
@@ -57,17 +74,33 @@ export const PropertyDetail = () => {
     return <div>Property not found</div>;
   }
 
-  // Construct location string from address components
+  const isOwner = currentUser?.id === property.owner_id;
   const locationString = `${property.address}, ${property.city}, ${property.state}`;
 
   const handleChat = () => {
-    // For demo purposes, assuming user is not logged in
-    const isLoggedIn = false;
-    if (!isLoggedIn) {
+    if (!currentUser) {
       navigate("/login");
       return;
     }
     setIsChatOpen(true);
+  };
+
+  const handleBooking = () => {
+    if (!currentUser) {
+      navigate("/login");
+      return;
+    }
+
+    if (isOwner) {
+      toast({
+        variant: "destructive",
+        title: "Cannot book own property",
+        description: "You cannot book a property that you own.",
+      });
+      return;
+    }
+
+    navigate(`/booking/${property.id}`);
   };
 
   const handleSendMessage = () => {
@@ -104,17 +137,47 @@ export const PropertyDetail = () => {
 
         <div className="p-4 space-y-4">
           <h1 className="text-2xl font-semibold">{property.title}</h1>
-          <p className="text-gray-600">{locationString}</p>
+          <p className="text-gray-600 flex items-center gap-2">
+            <Home className="w-4 h-4" />
+            {locationString}
+          </p>
 
-          <div className="flex gap-4 text-sm">
-            {property.bedrooms && <span>{property.bedrooms} beds</span>}
-            {property.bathrooms && <span>{property.bathrooms} baths</span>}
-            <span>{property.area} sqft</span>
+          <div className="flex gap-6 text-sm">
+            {property.bedrooms && (
+              <span className="flex items-center gap-2">
+                <Bed className="w-4 h-4" />
+                {property.bedrooms} {property.bedrooms === 1 ? 'bed' : 'beds'}
+              </span>
+            )}
+            {property.bathrooms && (
+              <span className="flex items-center gap-2">
+                <Bath className="w-4 h-4" />
+                {property.bathrooms} {property.bathrooms === 1 ? 'bath' : 'baths'}
+              </span>
+            )}
+            <span className="flex items-center gap-2">
+              <Ruler className="w-4 h-4" />
+              {property.area} sqft
+            </span>
           </div>
+
+          {isOwner && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                You cannot book your own property
+              </AlertDescription>
+            </Alert>
+          )}
 
           <p className="text-gray-700">{property.description}</p>
 
-          <PropertyActions propertyId={property.id} onChatClick={handleChat} />
+          <PropertyActions 
+            propertyId={property.id} 
+            onChatClick={handleChat}
+            onBookClick={handleBooking}
+            isOwner={isOwner}
+          />
 
           <Dialog open={isChatOpen} onOpenChange={setIsChatOpen}>
             <DialogContent>
