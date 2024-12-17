@@ -1,56 +1,19 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Footer } from "./components/Footer";
-import Index from "./pages/Index";
-import { PropertyDetail } from "./pages/PropertyDetail";
-import LandDetail from "./pages/LandDetail";
-import Search from "./pages/Search";
-import Saved from "./pages/Saved";
-import Profile from "./pages/Profile";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
-import CompleteProfile from "./pages/CompleteProfile";
-import Booking from "./pages/Booking";
-import BookingSuccess from "./pages/BookingSuccess";
-import TenantDashboard from "./pages/TenantDashboard";
-import LandlordDashboard from "./pages/LandlordDashboard";
-import BrokerDashboard from "./pages/BrokerDashboard";
-import AddLand from "./pages/landlord/AddLand";
+import ProcurationIndex from "@/pages/procuration/Index";
+import ProcurationForm from "@/pages/procuration/Form";
 
-const queryClient = new QueryClient();
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <div className="min-h-screen flex flex-col">
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/property/:id" element={<PropertyDetail />} />
-            <Route path="/land/:id" element={<LandDetail />} />
-            <Route path="/search" element={<Search />} />
-            <Route path="/saved" element={<Saved />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/complete-profile" element={<CompleteProfile />} />
-            <Route path="/booking/:id" element={<Booking />} />
-            <Route path="/booking-success" element={<BookingSuccess />} />
-            <Route path="/tenant-dashboard/*" element={<TenantDashboard />} />
-            <Route path="/landlord-dashboard/*" element={<LandlordDashboard />} />
-            <Route path="/broker-dashboard/*" element={<BrokerDashboard />} />
-            <Route path="/landlord-dashboard/add-land" element={<AddLand />} />
-          </Routes>
-          <Footer />
-        </BrowserRouter>
-      </div>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/procuration" element={<ProcurationIndex />} />
+        <Route path="/procuration/form" element={<ProcurationForm />} />
+      </Routes>
+    </BrowserRouter>
+  );
+};
 
 export default App;

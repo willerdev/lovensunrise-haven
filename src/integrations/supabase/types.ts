@@ -203,6 +203,104 @@ export type Database = {
           },
         ]
       }
+      procuration_requests: {
+        Row: {
+          additional_docs_url: string[] | null
+          contract_scope: Database["public"]["Enums"]["procuration_contract_type"][]
+          created_at: string | null
+          current_country: string
+          expiry_date: string
+          first_name: string
+          id: string
+          last_name: string
+          legal_names: string
+          limitations: string | null
+          middle_name: string | null
+          national_id: string
+          national_id_url: string | null
+          passport_url: string | null
+          permissions: string
+          phone_call: string
+          phone_whatsapp: string
+          progress: number | null
+          residence_proof_url: string | null
+          start_date: string
+          state: string
+          status: string | null
+          street_address: string
+          tasks_description: string
+          updated_at: string | null
+          user_id: string
+          zip_code: string
+        }
+        Insert: {
+          additional_docs_url?: string[] | null
+          contract_scope: Database["public"]["Enums"]["procuration_contract_type"][]
+          created_at?: string | null
+          current_country: string
+          expiry_date: string
+          first_name: string
+          id?: string
+          last_name: string
+          legal_names: string
+          limitations?: string | null
+          middle_name?: string | null
+          national_id: string
+          national_id_url?: string | null
+          passport_url?: string | null
+          permissions: string
+          phone_call: string
+          phone_whatsapp: string
+          progress?: number | null
+          residence_proof_url?: string | null
+          start_date: string
+          state: string
+          status?: string | null
+          street_address: string
+          tasks_description: string
+          updated_at?: string | null
+          user_id: string
+          zip_code: string
+        }
+        Update: {
+          additional_docs_url?: string[] | null
+          contract_scope?: Database["public"]["Enums"]["procuration_contract_type"][]
+          created_at?: string | null
+          current_country?: string
+          expiry_date?: string
+          first_name?: string
+          id?: string
+          last_name?: string
+          legal_names?: string
+          limitations?: string | null
+          middle_name?: string | null
+          national_id?: string
+          national_id_url?: string | null
+          passport_url?: string | null
+          permissions?: string
+          phone_call?: string
+          phone_whatsapp?: string
+          progress?: number | null
+          residence_proof_url?: string | null
+          start_date?: string
+          state?: string
+          status?: string | null
+          street_address?: string
+          tasks_description?: string
+          updated_at?: string | null
+          user_id?: string
+          zip_code?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "procuration_requests_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -417,6 +515,7 @@ export type Database = {
     }
     Enums: {
       land_status: "building" | "agriculture"
+      procuration_contract_type: "sell" | "buy" | "rent" | "donate"
       user_role: "landlord" | "tenant" | "broker"
     }
     CompositeTypes: {
