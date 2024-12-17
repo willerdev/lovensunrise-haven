@@ -21,8 +21,9 @@ import LandlordDashboard from "./pages/LandlordDashboard";
 import BrokerDashboard from "./pages/BrokerDashboard";
 import AddLand from "./pages/landlord/AddLand";
 import ProcurationForm from "./pages/procuration/ProcurationForm";
+import { CategoryView } from "./pages/CategoryView";
+import { Hotels } from "./pages/Hotels";
 
-// Create a new QueryClient instance outside of the component
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -42,6 +43,8 @@ const App = () => {
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/category/:type" element={<CategoryView />} />
+              <Route path="/hotels" element={<Hotels />} />
               <Route path="/property/:id" element={<PropertyDetail />} />
               <Route path="/land/:id" element={<LandDetail />} />
               <Route path="/search" element={<Search />} />
