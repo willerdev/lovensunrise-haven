@@ -18,17 +18,21 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Plus } from "lucide-react";
+import { Plus, Building } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { PropertyForm } from "@/components/landlord/PropertyForm";
 import { PropertyCard } from "@/components/landlord/PropertyCard";
 import { mapDbPropertyToProperty } from "@/types/property";
+import { useNavigate } from "react-router-dom";
 
 const Properties = () => {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
   const [propertyToDelete, setPropertyToDelete] = useState<string | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const { data: properties } = useQuery({
     queryKey: ["landlord-properties"],
@@ -54,24 +58,6 @@ const Properties = () => {
     if (!propertyToDelete) return;
 
     try {
-      // Delete images from storage first
-      const { data: propertyImages } = await supabase
-        .from('property_images')
-        .select('image_url')
-        .eq('property_id', propertyToDelete);
-
-      if (propertyImages) {
-        for (const { image_url } of propertyImages) {
-          const path = image_url.split('/').pop();
-          if (path) {
-            await supabase.storage
-              .from('properties_images')
-              .remove([`${propertyToDelete}/${path}`]);
-          }
-        }
-      }
-
-      // Delete property (this will cascade delete property_images records)
       const { error } = await supabase
         .from("properties")
         .delete()
@@ -97,32 +83,28 @@ const Properties = () => {
   };
 
   const handleEdit = (id: string) => {
-    // Implement edit functionality
-    console.log("Edit property:", id);
+    setSelectedPropertyId(id);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleAddLand = () => {
+    navigate("/landlord-dashboard/add-land");
   };
 
   return (
     <div className="container mx-auto p-4">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">My Properties</h1>
-        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+        <div className="flex gap-4">
           <Button onClick={() => setIsAddDialogOpen(true)}>
             <Plus className="mr-2 h-4 w-4" />
             Add Property
           </Button>
-          <DialogContent className="sm:max-w-[600px]">
-            <DialogHeader>
-              <DialogTitle>Add New Property</DialogTitle>
-            </DialogHeader>
-            <PropertyForm
-              onSuccess={() => {
-                setIsAddDialogOpen(false);
-                queryClient.invalidateQueries({ queryKey: ["landlord-properties"] });
-              }}
-              onCancel={() => setIsAddDialogOpen(false)}
-            />
-          </DialogContent>
-        </Dialog>
+          <Button onClick={handleAddLand} variant="outline">
+            <Building className="mr-2 h-4 w-4" />
+            Add Land
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -140,6 +122,37 @@ const Properties = () => {
           </p>
         )}
       </div>
+
+      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Add New Property</DialogTitle>
+          </DialogHeader>
+          <PropertyForm
+            onSuccess={() => {
+              setIsAddDialogOpen(false);
+              queryClient.invalidateQueries({ queryKey: ["landlord-properties"] });
+            }}
+            onCancel={() => setIsAddDialogOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Edit Property</DialogTitle>
+          </DialogHeader>
+          <PropertyForm
+            propertyId={selectedPropertyId}
+            onSuccess={() => {
+              setIsEditDialogOpen(false);
+              queryClient.invalidateQueries({ queryKey: ["landlord-properties"] });
+            }}
+            onCancel={() => setIsEditDialogOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
 
       <AlertDialog open={!!propertyToDelete} onOpenChange={() => setPropertyToDelete(null)}>
         <AlertDialogContent>

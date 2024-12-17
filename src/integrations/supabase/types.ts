@@ -60,6 +60,97 @@ export type Database = {
           },
         ]
       }
+      land_images: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string
+          land_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url: string
+          land_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string
+          land_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "land_images_land_id_fkey"
+            columns: ["land_id"]
+            isOneToOne: false
+            referencedRelation: "lands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lands: {
+        Row: {
+          address: string
+          area_sqm: number
+          city: string
+          created_at: string
+          description: string | null
+          id: string
+          latitude: number | null
+          longitude: number | null
+          owner_id: string | null
+          price: number
+          state: string
+          status: Database["public"]["Enums"]["land_status"]
+          title: string
+          updated_at: string
+          zip_code: string
+        }
+        Insert: {
+          address: string
+          area_sqm: number
+          city: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          owner_id?: string | null
+          price: number
+          state: string
+          status: Database["public"]["Enums"]["land_status"]
+          title: string
+          updated_at?: string
+          zip_code: string
+        }
+        Update: {
+          address?: string
+          area_sqm?: number
+          city?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          owner_id?: string | null
+          price?: number
+          state?: string
+          status?: Database["public"]["Enums"]["land_status"]
+          title?: string
+          updated_at?: string
+          zip_code?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lands_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       messages: {
         Row: {
           content: string
@@ -289,6 +380,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      land_status: "building" | "agriculture"
       user_role: "landlord" | "tenant" | "broker"
     }
     CompositeTypes: {
