@@ -1,4 +1,4 @@
-import { Home, Calendar, DollarSign, User } from "lucide-react";
+import { Home, Building, Calendar, DollarSign, User } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 export const LandlordMobileNav = () => {
@@ -15,6 +15,15 @@ export const LandlordMobileNav = () => {
       >
         <Home size={20} />
         <span className="text-xs">Home</span>
+      </Link>
+      <Link
+        to="/landlord-dashboard/properties"
+        className={`flex flex-col items-center ${
+          isActive("/properties") ? "text-blue-600" : "text-gray-500"
+        }`}
+      >
+        <Building size={20} />
+        <span className="text-xs">Properties</span>
       </Link>
       <Link
         to="/landlord-dashboard/bookings"

@@ -9,6 +9,7 @@ import { LandlordMobileNav } from "@/components/landlord/MobileNav";
 import LandlordBookings from "./landlord/Bookings";
 import LandlordPayments from "./landlord/Payments";
 import LandlordProfile from "./landlord/Profile";
+import Properties from "./landlord/Properties";
 
 const LandlordDashboard = () => {
   const navigate = useNavigate();
@@ -68,6 +69,7 @@ const LandlordDashboard = () => {
               </Tabs>
             }
           />
+          <Route path="/properties" element={<Properties />} />
           <Route path="/bookings" element={<LandlordBookings />} />
           <Route path="/payments" element={<LandlordPayments />} />
           <Route path="/profile" element={<LandlordProfile />} />
