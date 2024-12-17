@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { PropertyType } from "../types/property";
 import { MobileNav } from "../components/MobileNav";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Home, Building2, MapPin, User, PlusCircle } from "lucide-react";
+import { Home, Building2, MapPin, User, PlusCircle, ChevronLeft, ChevronRight, FileText } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -23,6 +23,7 @@ const Index = () => {
   const [selectedType, setSelectedType] = useState<PropertyType | null>(null);
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const categoriesRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const isMobile = useIsMobile();
 
@@ -42,53 +43,15 @@ const Index = () => {
     },
   });
 
-  const { data: properties = [], isLoading: isLoadingProperties } = useQuery({
-    queryKey: ["properties", selectedType],
-    queryFn: async () => {
-      let query = supabase
-        .from("properties")
-        .select(`
-          *,
-          property_images (
-            image_url
-          )
-        `);
-
-      if (selectedType && selectedType !== "land_sell") {
-        query = query.eq("type", selectedType);
-      }
-
-      const { data, error } = await query;
-
-      if (error) {
-        console.error("Error fetching properties:", error);
-        return [];
-      }
-
-      return data.map(mapDbPropertyToProperty);
-    },
-  });
-
-  const { data: lands = [], isLoading: isLoadingLands } = useQuery({
-    queryKey: ["lands"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("lands")
-        .select(`
-          *,
-          land_images (
-            image_url
-          )
-        `);
-
-      if (error) {
-        console.error("Error fetching lands:", error);
-        return [];
-      }
-
-      return data;
-    },
-  });
+  const scroll = (direction: 'left' | 'right') => {
+    if (categoriesRef.current) {
+      const scrollAmount = 200;
+      categoriesRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
 
   const handleUserIconClick = () => {
     if (!userProfile) {
@@ -111,15 +74,6 @@ const Index = () => {
     }
   };
 
-  const handleAddProperty = () => {
-    navigate("/landlord-dashboard/properties");
-  };
-
-  const handleItemClick = (item: any) => {
-    setSelectedItem(item);
-    setIsModalOpen(true);
-  };
-
   return (
     <div className="min-h-screen pb-20">
       <header className="p-4 bg-white/80 backdrop-blur-md sticky top-0 z-40">
@@ -135,19 +89,23 @@ const Index = () => {
                 <User className="w-5 h-5" />
               </Button>
               {userProfile?.role === "landlord" && (
-                <Button variant="ghost" size="icon" onClick={handleAddProperty}>
+                <Button variant="ghost" size="icon" onClick={() => navigate("/landlord-dashboard/add-land")}>
                   <PlusCircle className="w-5 h-5" />
                 </Button>
               )}
             </div>
           ) : (
-            <div className="flex gap-2">
+            <div className="flex gap-4 items-center">
               {userProfile?.role === "landlord" && (
-                <Button onClick={handleAddProperty}>
+                <Button onClick={() => navigate("/landlord-dashboard/add-land")}>
                   <PlusCircle className="w-4 h-4 mr-2" />
                   Add Property
                 </Button>
               )}
+              <Button variant="ghost" onClick={() => navigate("/procuration")}>
+                <FileText className="w-4 h-4 mr-2" />
+                Procuration
+              </Button>
               {!userProfile ? (
                 <>
                   <Button variant="ghost" onClick={() => navigate("/login")}>
@@ -164,27 +122,46 @@ const Index = () => {
             </div>
           )}
         </div>
-        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-          {propertyTypes.map((type) => (
-            <button
-              key={type.value}
-              onClick={() =>
-                setSelectedType(selectedType === type.value ? null : type.value)
-              }
-              className={`px-4 py-2 rounded-full text-sm whitespace-nowrap transition-colors flex items-center gap-2 ${
-                selectedType === type.value
-                  ? "bg-gray-900 text-white"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-              }`}
-            >
-              {type.icon}
-              {type.label}
-            </button>
-          ))}
+        <div className="container mx-auto relative">
+          {isMobile && (
+            <>
+              <button 
+                onClick={() => scroll('left')} 
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 rounded-full p-1"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <button 
+                onClick={() => scroll('right')} 
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 rounded-full p-1"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </>
+          )}
+          <div 
+            ref={categoriesRef}
+            className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide px-8 md:px-0 md:justify-center"
+          >
+            {propertyTypes.map((type) => (
+              <button
+                key={type.value}
+                onClick={() => setSelectedType(selectedType === type.value ? null : type.value)}
+                className={`px-4 py-2 rounded-full text-sm whitespace-nowrap transition-colors flex items-center gap-2 ${
+                  selectedType === type.value
+                    ? "bg-gray-900 text-white"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                }`}
+              >
+                {type.icon}
+                {type.label}
+              </button>
+            ))}
+          </div>
         </div>
       </header>
 
-      <main className="container mx-auto p-4">
+      <main className="container mx-auto px-4 max-w-7xl">
         <PropertySection 
           properties={properties}
           isLoading={isLoadingProperties}
