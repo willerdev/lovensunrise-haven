@@ -3,14 +3,14 @@ import { Link, useLocation } from "react-router-dom";
 
 export const LandlordMobileNav = () => {
   const location = useLocation();
-  const isActive = (path: string) => location.pathname === path;
+  const isActive = (path: string) => location.pathname === `/landlord-dashboard${path}`;
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-2 px-4 flex justify-around items-center md:hidden">
       <Link
         to="/landlord-dashboard"
         className={`flex flex-col items-center ${
-          isActive("/landlord-dashboard") ? "text-blue-600" : "text-gray-500"
+          isActive("") ? "text-blue-600" : "text-gray-500"
         }`}
       >
         <Home size={20} />
@@ -19,7 +19,7 @@ export const LandlordMobileNav = () => {
       <Link
         to="/landlord-dashboard/bookings"
         className={`flex flex-col items-center ${
-          isActive("/landlord-dashboard/bookings") ? "text-blue-600" : "text-gray-500"
+          isActive("/bookings") ? "text-blue-600" : "text-gray-500"
         }`}
       >
         <Calendar size={20} />
@@ -28,7 +28,7 @@ export const LandlordMobileNav = () => {
       <Link
         to="/landlord-dashboard/payments"
         className={`flex flex-col items-center ${
-          isActive("/landlord-dashboard/payments") ? "text-blue-600" : "text-gray-500"
+          isActive("/payments") ? "text-blue-600" : "text-gray-500"
         }`}
       >
         <DollarSign size={20} />
@@ -37,7 +37,7 @@ export const LandlordMobileNav = () => {
       <Link
         to="/landlord-dashboard/profile"
         className={`flex flex-col items-center ${
-          isActive("/landlord-dashboard/profile") ? "text-blue-600" : "text-gray-500"
+          isActive("/profile") ? "text-blue-600" : "text-gray-500"
         }`}
       >
         <User size={20} />

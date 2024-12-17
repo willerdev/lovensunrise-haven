@@ -1,11 +1,14 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DashboardStats } from "@/components/landlord/DashboardStats";
 import { PropertyList } from "@/components/landlord/PropertyList";
 import { LandlordMobileNav } from "@/components/landlord/MobileNav";
+import LandlordBookings from "./landlord/Bookings";
+import LandlordPayments from "./landlord/Payments";
+import LandlordProfile from "./landlord/Profile";
 
 const LandlordDashboard = () => {
   const navigate = useNavigate();
@@ -45,36 +48,30 @@ const LandlordDashboard = () => {
       </header>
 
       <div className="container mx-auto px-4">
-        <Tabs defaultValue="overview" className="space-y-4">
-          <TabsList className="hidden md:flex">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="properties">Properties</TabsTrigger>
-            <TabsTrigger value="bookings">Bookings</TabsTrigger>
-            <TabsTrigger value="payments">Payments</TabsTrigger>
-          </TabsList>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <Tabs defaultValue="overview" className="space-y-4">
+                <TabsList className="hidden md:flex">
+                  <TabsTrigger value="overview">Overview</TabsTrigger>
+                  <TabsTrigger value="properties">Properties</TabsTrigger>
+                </TabsList>
 
-          <TabsContent value="overview">
-            <DashboardStats />
-          </TabsContent>
+                <TabsContent value="overview">
+                  <DashboardStats />
+                </TabsContent>
 
-          <TabsContent value="properties">
-            <PropertyList />
-          </TabsContent>
-
-          <TabsContent value="bookings">
-            {/* Bookings content will be implemented in a separate PR */}
-            <div className="text-center py-8 text-gray-500">
-              Bookings feature coming soon
-            </div>
-          </TabsContent>
-
-          <TabsContent value="payments">
-            {/* Payments content will be implemented in a separate PR */}
-            <div className="text-center py-8 text-gray-500">
-              Payments feature coming soon
-            </div>
-          </TabsContent>
-        </Tabs>
+                <TabsContent value="properties">
+                  <PropertyList />
+                </TabsContent>
+              </Tabs>
+            }
+          />
+          <Route path="/bookings" element={<LandlordBookings />} />
+          <Route path="/payments" element={<LandlordPayments />} />
+          <Route path="/profile" element={<LandlordProfile />} />
+        </Routes>
       </div>
 
       <LandlordMobileNav />
