@@ -8,6 +8,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Plus } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { PropertyForm } from "@/components/landlord/PropertyForm";
@@ -15,6 +25,7 @@ import { PropertyCard } from "@/components/landlord/PropertyCard";
 
 const Properties = () => {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [propertyToDelete, setPropertyToDelete] = useState<string | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -41,13 +52,15 @@ const Properties = () => {
     },
   });
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async () => {
+    if (!propertyToDelete) return;
+
     try {
       // Delete images from storage first
       const { data: propertyImages } = await supabase
         .from('property_images')
         .select('image_url')
-        .eq('property_id', id);
+        .eq('property_id', propertyToDelete);
 
       if (propertyImages) {
         for (const { image_url } of propertyImages) {
@@ -55,7 +68,7 @@ const Properties = () => {
           if (path) {
             await supabase.storage
               .from('properties_images')
-              .remove([`${id}/${path}`]);
+              .remove([`${propertyToDelete}/${path}`]);
           }
         }
       }
@@ -64,7 +77,7 @@ const Properties = () => {
       const { error } = await supabase
         .from("properties")
         .delete()
-        .eq("id", id);
+        .eq("id", propertyToDelete);
 
       if (error) throw error;
 
@@ -80,6 +93,8 @@ const Properties = () => {
         description: "Failed to delete property",
         variant: "destructive",
       });
+    } finally {
+      setPropertyToDelete(null);
     }
   };
 
@@ -117,7 +132,7 @@ const Properties = () => {
           <PropertyCard
             key={property.id}
             property={property}
-            onDelete={handleDelete}
+            onDelete={(id) => setPropertyToDelete(id)}
             onEdit={handleEdit}
           />
         ))}
@@ -127,6 +142,22 @@ const Properties = () => {
           </p>
         )}
       </div>
+
+      <AlertDialog open={!!propertyToDelete} onOpenChange={() => setPropertyToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the property
+              and all associated data.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

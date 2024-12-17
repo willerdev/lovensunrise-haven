@@ -48,8 +48,12 @@ export const PropertyForm = ({ onSuccess, onCancel }: PropertyFormProps) => {
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    setSelectedFiles(prev => [...prev, ...files]);
+    if (e.target.files) {
+      const newFiles = Array.from(e.target.files);
+      setSelectedFiles(prev => [...prev, ...newFiles]);
+      // Reset the input value to allow selecting the same file again
+      e.target.value = '';
+    }
   };
 
   const handleRemoveFile = (index: number) => {
@@ -58,6 +62,7 @@ export const PropertyForm = ({ onSuccess, onCancel }: PropertyFormProps) => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (isLoading) return; // Prevent multiple submissions
     setIsLoading(true);
 
     try {
@@ -96,32 +101,31 @@ export const PropertyForm = ({ onSuccess, onCancel }: PropertyFormProps) => {
       if (propertyError) throw propertyError;
 
       // Upload images
-      const imagePromises = selectedFiles.map(async (file) => {
-        const fileExt = file.name.split('.').pop();
-        const filePath = `${property.id}/${crypto.randomUUID()}.${fileExt}`;
+      if (selectedFiles.length > 0) {
+        const imagePromises = selectedFiles.map(async (file) => {
+          const fileExt = file.name.split('.').pop();
+          const filePath = `${property.id}/${crypto.randomUUID()}.${fileExt}`;
 
-        const { error: uploadError } = await supabase.storage
-          .from('properties_images')
-          .upload(filePath, file);
+          const { error: uploadError } = await supabase.storage
+            .from('properties_images')
+            .upload(filePath, file);
 
-        if (uploadError) throw uploadError;
+          if (uploadError) throw uploadError;
 
-        const { data: { publicUrl } } = supabase.storage
-          .from('properties_images')
-          .getPublicUrl(filePath);
+          const { data: { publicUrl } } = supabase.storage
+            .from('properties_images')
+            .getPublicUrl(filePath);
 
-        // Save image reference
-        const { error: imageError } = await supabase
-          .from('property_images')
-          .insert({
-            property_id: property.id,
-            image_url: publicUrl,
-          });
+          return supabase
+            .from('property_images')
+            .insert({
+              property_id: property.id,
+              image_url: publicUrl,
+            });
+        });
 
-        if (imageError) throw imageError;
-      });
-
-      await Promise.all(imagePromises);
+        await Promise.all(imagePromises);
+      }
 
       toast({
         title: "Success",
