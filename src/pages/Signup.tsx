@@ -30,26 +30,28 @@ const Signup = () => {
     setIsLoading(true);
 
     try {
-      // Sign up the user
+      console.log("Attempting signup with:", { email, role, name });
+      
+      // Sign up the user with additional metadata
       const { data: authData, error: authError } = await supabase.auth.signUp({
-        email,
+        email: email.trim(),
         password,
+        options: {
+          data: {
+            role: role,
+            full_name: name
+          }
+        }
       });
 
-      if (authError) throw authError;
+      if (authError) {
+        console.error("Signup error:", authError);
+        throw authError;
+      }
 
       if (authData.user) {
-        // Update the user's profile with role and name
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .update({
-            full_name: name,
-            role: role,
-          })
-          .eq('id', authData.user.id);
-
-        if (profileError) throw profileError;
-
+        console.log("Signup successful:", authData.user);
+        
         toast({
           title: "Success!",
           description: "Your account has been created successfully.",
