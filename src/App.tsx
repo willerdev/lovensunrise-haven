@@ -12,6 +12,9 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Booking from "./pages/Booking";
 import BookingSuccess from "./pages/BookingSuccess";
+import TenantDashboard from "./pages/TenantDashboard";
+import LandlordDashboard from "./pages/LandlordDashboard";
+import BrokerDashboard from "./pages/BrokerDashboard";
 
 const queryClient = new QueryClient();
 
@@ -31,9 +34,9 @@ const App = () => (
           <Route path="/signup" element={<Signup />} />
           <Route path="/booking/:id" element={<Booking />} />
           <Route path="/booking-success" element={<BookingSuccess />} />
-          <Route path="/tenant-dashboard" element={<Index />} /> {/* Temporary redirect to Index */}
-          <Route path="/landlord-dashboard" element={<Index />} /> {/* Temporary redirect to Index */}
-          <Route path="/broker-dashboard" element={<Index />} /> {/* Temporary redirect to Index */}
+          <Route path="/tenant-dashboard" element={<TenantDashboard />} />
+          <Route path="/landlord-dashboard" element={<LandlordDashboard />} />
+          <Route path="/broker-dashboard" element={<BrokerDashboard />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
