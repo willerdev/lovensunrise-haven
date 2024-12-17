@@ -1,4 +1,4 @@
-import { ArrowLeft, Heart } from "lucide-react";
+import { ArrowLeft, Heart, Flag } from "lucide-react";
 import { Link } from "react-router-dom";
 
 interface PropertyHeaderProps {
