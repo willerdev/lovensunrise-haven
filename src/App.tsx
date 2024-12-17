@@ -19,6 +19,7 @@ import TenantDashboard from "./pages/TenantDashboard";
 import LandlordDashboard from "./pages/LandlordDashboard";
 import BrokerDashboard from "./pages/BrokerDashboard";
 import AddLand from "./pages/landlord/AddLand";
+import ProcurationForm from "./pages/procuration/ProcurationForm";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +46,7 @@ const App = () => (
             <Route path="/landlord-dashboard/*" element={<LandlordDashboard />} />
             <Route path="/broker-dashboard/*" element={<BrokerDashboard />} />
             <Route path="/landlord-dashboard/add-land" element={<AddLand />} />
+            <Route path="/procuration" element={<ProcurationForm />} />
           </Routes>
           <Footer />
         </BrowserRouter>
