@@ -5,6 +5,7 @@ import { Search as SearchIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { mapDbPropertyToProperty } from "@/types/property";
 
 const Search = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -22,7 +23,7 @@ const Search = () => {
         `);
 
       if (error) throw error;
-      return data || [];
+      return (data || []).map(mapDbPropertyToProperty);
     },
   });
 

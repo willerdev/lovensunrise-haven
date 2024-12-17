@@ -4,11 +4,11 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { mapDbPropertyToProperty } from "@/types/property";
 
 const Saved = () => {
   const navigate = useNavigate();
 
-  // Check if user is logged in
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -46,10 +46,7 @@ const Saved = () => {
 
       console.log("Fetched saved properties:", data);
 
-      return data?.map(item => ({
-        ...item.property,
-        images: item.property.property_images?.map((img: { image_url: string }) => img.image_url) || []
-      })) || [];
+      return data?.map(item => mapDbPropertyToProperty(item.property)) || [];
     },
   });
 

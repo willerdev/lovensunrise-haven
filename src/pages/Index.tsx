@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { PropertyCard } from "../components/PropertyCard";
-import { PropertyType } from "../types/property";
+import { PropertyType, mapDbPropertyToProperty } from "../types/property";
 import { MobileNav } from "../components/MobileNav";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -41,7 +41,7 @@ const Index = () => {
   const { data: properties = [], isLoading } = useQuery({
     queryKey: ["properties", selectedType],
     queryFn: async () => {
-      console.log("Fetching properties with type:", selectedType); // Debug log
+      console.log("Fetching properties with type:", selectedType);
       
       let query = supabase
         .from("properties")
@@ -59,16 +59,13 @@ const Index = () => {
       const { data, error } = await query;
 
       if (error) {
-        console.error("Error fetching properties:", error); // Debug log
+        console.error("Error fetching properties:", error);
         return [];
       }
 
-      console.log("Fetched properties:", data); // Debug log
+      console.log("Fetched properties:", data);
 
-      return data.map(property => ({
-        ...property,
-        images: property.property_images?.map((img: { image_url: string }) => img.image_url) || []
-      }));
+      return data.map(mapDbPropertyToProperty);
     },
   });
 

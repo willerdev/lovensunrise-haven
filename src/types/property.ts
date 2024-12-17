@@ -1,5 +1,8 @@
 export type PropertyType = 'house_rent' | 'house_sell' | 'apartment_rent' | 'land_sell';
 
+export type PropertyStatus = 'rent' | 'sale';
+export type FurnishingStatus = 'furnished' | 'unfurnished';
+
 export interface Property {
   id: string;
   title: string;
@@ -23,3 +26,9 @@ export interface Property {
   images?: string[];
   property_images?: { image_url: string }[];
 }
+
+export const mapDbPropertyToProperty = (dbProperty: any): Property => ({
+  ...dbProperty,
+  type: dbProperty.type as PropertyType, // Ensure type is cast to PropertyType
+  images: dbProperty.property_images?.map((img: { image_url: string }) => img.image_url) || []
+});
