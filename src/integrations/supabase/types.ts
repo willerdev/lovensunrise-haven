@@ -517,7 +517,12 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      land_status: "building" | "agriculture"
+      land_status:
+        | "residential"
+        | "eco_tourism"
+        | "industrial"
+        | "commercial"
+        | "agriculture"
       procuration_contract_type: "sell" | "buy" | "rent" | "donate"
       user_role: "landlord" | "tenant" | "broker"
     }

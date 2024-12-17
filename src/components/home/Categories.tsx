@@ -2,20 +2,20 @@ import { CategoryCard } from "./CategoryCard";
 
 const categories = [
   {
-    title: "Renting",
-    description: "Find your perfect rental property",
+    title: "House for Rent",
+    description: "Find your perfect rental home",
     image: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&auto=format&fit=crop&q=60",
-    href: "/category/rent",
+    href: "/category/house_rent",
   },
   {
-    title: "Sale",
+    title: "House for Sale",
     description: "Properties available for purchase",
     image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&auto=format&fit=crop&q=60",
-    href: "/category/sale",
+    href: "/category/house_sell",
   },
   {
-    title: "Buy",
-    description: "Explore properties to buy",
+    title: "House to Buy",
+    description: "Explore houses to buy",
     image: "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800&auto=format&fit=crop&q=60",
     href: "/category/buy",
   },
