@@ -57,6 +57,9 @@ export const PropertyDetail = () => {
     return <div>Property not found</div>;
   }
 
+  // Construct location string from address components
+  const locationString = `${property.address}, ${property.city}, ${property.state}`;
+
   const handleChat = () => {
     // For demo purposes, assuming user is not logged in
     const isLoggedIn = false;
@@ -101,7 +104,7 @@ export const PropertyDetail = () => {
 
         <div className="p-4 space-y-4">
           <h1 className="text-2xl font-semibold">{property.title}</h1>
-          <p className="text-gray-600">{property.location}</p>
+          <p className="text-gray-600">{locationString}</p>
 
           <div className="flex gap-4 text-sm">
             {property.bedrooms && <span>{property.bedrooms} beds</span>}
