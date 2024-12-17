@@ -67,6 +67,28 @@ const Index = () => {
     },
   });
 
+  const handleUserIconClick = () => {
+    if (!userProfile) {
+      navigate("/login");
+      return;
+    }
+
+    // Navigate based on user role
+    switch (userProfile.role) {
+      case "landlord":
+        navigate("/landlord-dashboard");
+        break;
+      case "tenant":
+        navigate("/tenant-dashboard");
+        break;
+      case "broker":
+        navigate("/broker-dashboard");
+        break;
+      default:
+        navigate("/complete-profile");
+    }
+  };
+
   const handleAddProperty = () => {
     navigate("/landlord-dashboard/properties");
   };
@@ -78,7 +100,11 @@ const Index = () => {
           <h1 className="text-2xl font-semibold text-maroon">Lovensunrise</h1>
           {isMobile ? (
             <div className="flex gap-2">
-              <Button variant="ghost" size="icon" onClick={() => navigate("/login")}>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={handleUserIconClick}
+              >
                 <User className="w-5 h-5" />
               </Button>
               {userProfile?.role === "landlord" && (
@@ -95,10 +121,19 @@ const Index = () => {
                   Add Property
                 </Button>
               )}
-              <Button variant="ghost" onClick={() => navigate("/login")}>
-                Log In
-              </Button>
-              <Button onClick={() => navigate("/signup")}>Sign Up</Button>
+              {!userProfile ? (
+                <>
+                  <Button variant="ghost" onClick={() => navigate("/login")}>
+                    Log In
+                  </Button>
+                  <Button onClick={() => navigate("/signup")}>Sign Up</Button>
+                </>
+              ) : (
+                <Button onClick={handleUserIconClick}>
+                  <User className="w-4 h-4 mr-2" />
+                  Dashboard
+                </Button>
+              )}
             </div>
           )}
         </div>
