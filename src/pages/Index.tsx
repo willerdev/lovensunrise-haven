@@ -6,12 +6,13 @@ import { MobileNav } from "../components/MobileNav";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Home, Building2, MapPin, User, PlusCircle } from "lucide-react";
 
-const propertyTypes: { value: PropertyType; label: string }[] = [
-  { value: "house_rent", label: "Houses for Rent" },
-  { value: "house_sell", label: "Houses for Sale" },
-  { value: "apartment_rent", label: "Apartments" },
-  { value: "land_sell", label: "Land" },
+const propertyTypes: { value: PropertyType; label: string; icon: React.ReactNode }[] = [
+  { value: "house_rent", label: "Houses for Rent", icon: <Home className="w-4 h-4" /> },
+  { value: "house_sell", label: "Houses for Sale", icon: <Home className="w-4 h-4" /> },
+  { value: "apartment_rent", label: "Apartments", icon: <Building2 className="w-4 h-4" /> },
+  { value: "land_sell", label: "Land", icon: <MapPin className="w-4 h-4" /> },
 ];
 
 const Index = () => {
@@ -28,7 +29,16 @@ const Index = () => {
       <header className="p-4 bg-white/80 backdrop-blur-md sticky top-0 z-40">
         <div className="container mx-auto flex justify-between items-center mb-4">
           <h1 className="text-2xl font-semibold text-maroon">Lovensunrise</h1>
-          {!isMobile && (
+          {isMobile ? (
+            <div className="flex gap-2">
+              <Button variant="ghost" size="icon" onClick={() => navigate("/login")}>
+                <User className="w-5 h-5" />
+              </Button>
+              <Button variant="ghost" size="icon">
+                <PlusCircle className="w-5 h-5" />
+              </Button>
+            </div>
+          ) : (
             <div className="flex gap-2">
               <Button variant="ghost" onClick={() => navigate("/login")}>
                 Log In
@@ -44,12 +54,13 @@ const Index = () => {
               onClick={() =>
                 setSelectedType(selectedType === type.value ? null : type.value)
               }
-              className={`px-4 py-2 rounded-full text-sm whitespace-nowrap transition-colors ${
+              className={`px-4 py-2 rounded-full text-sm whitespace-nowrap transition-colors flex items-center gap-2 ${
                 selectedType === type.value
                   ? "bg-gray-900 text-white"
                   : "bg-gray-100 text-gray-600 hover:bg-gray-200"
               }`}
             >
+              {type.icon}
               {type.label}
             </button>
           ))}
@@ -57,7 +68,7 @@ const Index = () => {
       </header>
 
       <main className="container mx-auto p-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'} gap-4`}>
           {filteredProperties.map((property) => (
             <PropertyCard key={property.id} property={property} />
           ))}

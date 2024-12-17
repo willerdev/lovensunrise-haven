@@ -1,4 +1,4 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Heart, Flag, MessageSquare, Calendar } from "lucide-react";
 import { properties } from "../data/properties";
 import { PropertyCard } from "../components/PropertyCard";
@@ -14,26 +14,40 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export const PropertyDetail = () => {
   const { id } = useParams();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
   const [reportType, setReportType] = useState<"report" | "claim" | null>(null);
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [message, setMessage] = useState("I would like to know more about this property");
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
   const property = properties.find((p) => p.id === id);
   const similarProperties = properties
     .filter((p) => p.type === property?.type && p.id !== id)
     .slice(0, 3);
 
-  const handleReport = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleChat = () => {
+    // For demo purposes, assuming user is not logged in
+    const isLoggedIn = false;
+    if (!isLoggedIn) {
+      navigate("/login");
+      return;
+    }
+    setIsChatOpen(true);
+  };
+
+  const handleSendMessage = () => {
     toast({
-      title: "Submitted Successfully",
-      description: `Your ${reportType} has been submitted and will be reviewed.`,
+      title: "Message Sent",
+      description: "Your message has been sent successfully.",
     });
-    setReportType(null);
+    setIsChatOpen(false);
   };
 
   if (!property) {
@@ -147,43 +161,49 @@ export const PropertyDetail = () => {
 
           <p className="text-gray-700">{property.description}</p>
 
-          <div className="flex gap-4">
-            <Button className="flex-1" asChild>
-              <Link to={`/booking/${property.id}`}>
-                <Calendar className="w-4 h-4 mr-2" />
-                Book Now
-              </Link>
-            </Button>
-            <Button variant="outline" className="flex-1">
-              <MessageSquare className="w-4 h-4 mr-2" />
-              Chat
-            </Button>
-          </div>
-
-          <div className="space-y-2">
-            <h2 className="font-semibold">Features</h2>
-            <div className="flex flex-wrap gap-2">
-              {property.features.map((feature) => (
-                <span
-                  key={feature}
-                  className="px-3 py-1 bg-gray-100 rounded-full text-sm"
-                >
-                  {feature}
-                </span>
-              ))}
+          {isMobile ? (
+            <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 flex gap-4">
+              <Button className="flex-1" asChild>
+                <Link to={`/booking/${property.id}`}>
+                  <Calendar className="w-4 h-4 mr-2" />
+                  Book Now
+                </Link>
+              </Button>
+              <Button variant="outline" className="flex-1" onClick={handleChat}>
+                <MessageSquare className="w-4 h-4 mr-2" />
+                Chat
+              </Button>
             </div>
-          </div>
-
-          {similarProperties.length > 0 && (
-            <div className="space-y-4">
-              <h2 className="font-semibold">Similar Properties</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {similarProperties.map((property) => (
-                  <PropertyCard key={property.id} property={property} />
-                ))}
-              </div>
+          ) : (
+            <div className="flex gap-4 mt-4">
+              <Button className="flex-1" asChild>
+                <Link to={`/booking/${property.id}`}>
+                  <Calendar className="w-4 h-4 mr-2" />
+                  Book Now
+                </Link>
+              </Button>
+              <Button variant="outline" className="flex-1" onClick={handleChat}>
+                <MessageSquare className="w-4 h-4 mr-2" />
+                Chat
+              </Button>
             </div>
           )}
+
+          <Dialog open={isChatOpen} onOpenChange={setIsChatOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Send Message</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <Textarea
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  rows={4}
+                />
+                <Button onClick={handleSendMessage}>Send Message</Button>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
     </div>
