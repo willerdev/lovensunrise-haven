@@ -31,6 +31,9 @@ const App = () => (
           <Route path="/signup" element={<Signup />} />
           <Route path="/booking/:id" element={<Booking />} />
           <Route path="/booking-success" element={<BookingSuccess />} />
+          <Route path="/tenant-dashboard" element={<Index />} /> {/* Temporary redirect to Index */}
+          <Route path="/landlord-dashboard" element={<Index />} /> {/* Temporary redirect to Index */}
+          <Route path="/broker-dashboard" element={<Index />} /> {/* Temporary redirect to Index */}
         </Routes>
       </BrowserRouter>
     </TooltipProvider>

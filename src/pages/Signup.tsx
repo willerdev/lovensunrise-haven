@@ -4,6 +4,17 @@ import { Input } from "@/components/ui/input";
 import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
+
+type UserRole = Database["public"]["Enums"]["user_role"];
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -11,15 +22,64 @@ const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [role, setRole] = useState<UserRole>("tenant");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // For demo purposes, show success toast
-    toast({
-      title: "Success!",
-      description: "Your account has been created successfully.",
-    });
-    navigate("/");
+    setIsLoading(true);
+
+    try {
+      // Sign up the user
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+
+      if (authError) throw authError;
+
+      if (authData.user) {
+        // Update the user's profile with role and name
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .update({
+            full_name: name,
+            role: role,
+          })
+          .eq('id', authData.user.id);
+
+        if (profileError) throw profileError;
+
+        toast({
+          title: "Success!",
+          description: "Your account has been created successfully.",
+        });
+
+        // Redirect based on role
+        switch (role) {
+          case "landlord":
+            navigate("/landlord-dashboard");
+            break;
+          case "tenant":
+            navigate("/tenant-dashboard");
+            break;
+          case "broker":
+            navigate("/broker-dashboard");
+            break;
+          default:
+            navigate("/");
+        }
+      }
+    } catch (error) {
+      console.error('Error during signup:', error);
+      toast({
+        title: "Error",
+        description: "There was an error creating your account. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -46,6 +106,7 @@ const Signup = () => {
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
+              disabled={isLoading}
             />
           </div>
           <div className="space-y-2">
@@ -58,6 +119,7 @@ const Signup = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              disabled={isLoading}
             />
           </div>
           <div className="space-y-2">
@@ -70,10 +132,31 @@ const Signup = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              disabled={isLoading}
+              minLength={6}
             />
           </div>
-          <Button type="submit" className="w-full">
-            Sign Up
+          <div className="space-y-2">
+            <label htmlFor="role" className="text-sm font-medium">
+              I am a
+            </label>
+            <Select
+              value={role}
+              onValueChange={(value: UserRole) => setRole(value)}
+              disabled={isLoading}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select your role" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="tenant">Tenant</SelectItem>
+                <SelectItem value="landlord">Landlord</SelectItem>
+                <SelectItem value="broker">Broker</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? "Creating account..." : "Sign Up"}
           </Button>
           <p className="text-center text-sm text-gray-600">
             Already have an account?{" "}
