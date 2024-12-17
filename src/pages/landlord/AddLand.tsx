@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { supabase } from "@/integrations/supabase/client";
 import { PropertyImageUpload } from "@/components/landlord/PropertyImageUpload";
 
@@ -22,7 +23,7 @@ const AddLand = () => {
     city: "",
     state: "",
     zip_code: "",
-    status: "sale",
+    status: "building" as "building" | "agriculture", // Updated to use correct type
   });
 
   const handleInputChange = (
@@ -30,6 +31,10 @@ const AddLand = () => {
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleStatusChange = (value: "building" | "agriculture") => {
+    setFormData((prev) => ({ ...prev, status: value }));
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -144,6 +149,24 @@ const AddLand = () => {
               value={formData.description}
               onChange={handleInputChange}
             />
+          </div>
+
+          <div>
+            <Label>Land Status</Label>
+            <RadioGroup
+              value={formData.status}
+              onValueChange={handleStatusChange}
+              className="flex space-x-4"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="building" id="building" />
+                <Label htmlFor="building">Building</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="agriculture" id="agriculture" />
+                <Label htmlFor="agriculture">Agriculture</Label>
+              </div>
+            </RadioGroup>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
