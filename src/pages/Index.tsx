@@ -21,6 +21,22 @@ const Index = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
 
+  const { data: userProfile } = useQuery({
+    queryKey: ["userProfile"],
+    queryFn: async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return null;
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", session.user.id)
+        .single();
+
+      return profile;
+    },
+  });
+
   const { data: properties = [] } = useQuery({
     queryKey: ["properties", selectedType],
     queryFn: async () => {
@@ -51,6 +67,10 @@ const Index = () => {
     },
   });
 
+  const handleAddProperty = () => {
+    navigate("/landlord-dashboard/properties");
+  };
+
   return (
     <div className="min-h-screen pb-20">
       <header className="p-4 bg-white/80 backdrop-blur-md sticky top-0 z-40">
@@ -61,12 +81,20 @@ const Index = () => {
               <Button variant="ghost" size="icon" onClick={() => navigate("/login")}>
                 <User className="w-5 h-5" />
               </Button>
-              <Button variant="ghost" size="icon">
-                <PlusCircle className="w-5 h-5" />
-              </Button>
+              {userProfile?.role === "landlord" && (
+                <Button variant="ghost" size="icon" onClick={handleAddProperty}>
+                  <PlusCircle className="w-5 h-5" />
+                </Button>
+              )}
             </div>
           ) : (
             <div className="flex gap-2">
+              {userProfile?.role === "landlord" && (
+                <Button onClick={handleAddProperty}>
+                  <PlusCircle className="w-4 h-4 mr-2" />
+                  Add Property
+                </Button>
+              )}
               <Button variant="ghost" onClick={() => navigate("/login")}>
                 Log In
               </Button>
