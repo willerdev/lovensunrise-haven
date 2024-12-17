@@ -2,6 +2,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { User, Phone, MapPin, Mail, Building2, Flag } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface PersonalInfoStepProps {
   formData: any;
@@ -14,6 +15,16 @@ export const PersonalInfoStep = ({ formData, onChange, onNext }: PersonalInfoSte
     e.preventDefault();
     onNext();
   };
+
+  const usStates = [
+    "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware",
+    "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky",
+    "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi",
+    "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico",
+    "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania",
+    "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont",
+    "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"
+  ];
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -99,31 +110,48 @@ export const PersonalInfoStep = ({ formData, onChange, onNext }: PersonalInfoSte
           </div>
         </div>
         <div className="space-y-2">
-          <Label htmlFor="state">State</Label>
-          <div className="relative">
-            <Building2 className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
-            <Input
-              id="state"
-              className="pl-9"
-              value={formData.state}
-              onChange={(e) => onChange("state", e.target.value)}
-              required
-            />
-          </div>
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="current_country">Current Country</Label>
+          <Label htmlFor="country">Country</Label>
           <div className="relative">
             <Flag className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
-            <Input
-              id="current_country"
-              className="pl-9"
-              value={formData.current_country}
-              onChange={(e) => onChange("current_country", e.target.value)}
-              required
-            />
+            <Select
+              value={formData.country}
+              onValueChange={(value) => onChange("country", value)}
+            >
+              <SelectTrigger className="pl-9">
+                <SelectValue placeholder="Select country" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="United States">United States</SelectItem>
+                <SelectItem value="Canada">Canada</SelectItem>
+                <SelectItem value="United Kingdom">United Kingdom</SelectItem>
+                <SelectItem value="Other">Other</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
+        {formData.country === "United States" && (
+          <div className="space-y-2">
+            <Label htmlFor="state">State</Label>
+            <div className="relative">
+              <Building2 className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
+              <Select
+                value={formData.state}
+                onValueChange={(value) => onChange("state", value)}
+              >
+                <SelectTrigger className="pl-9">
+                  <SelectValue placeholder="Select state" />
+                </SelectTrigger>
+                <SelectContent>
+                  {usStates.map((state) => (
+                    <SelectItem key={state} value={state}>
+                      {state}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        )}
       </div>
       <div className="flex justify-end">
         <Button type="submit">Next</Button>

@@ -1,6 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 
 interface DocumentsStepProps {
   formData: any;
@@ -48,7 +49,10 @@ export const DocumentsStep = ({ formData, onChange, onNext, onBack }: DocumentsS
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="national_id_doc">National ID Document</Label>
+          <Label htmlFor="national_id_doc" className="flex items-center gap-2">
+            National ID Document
+            <span className="text-sm text-red-500">*Required</span>
+          </Label>
           <Input
             id="national_id_doc"
             type="file"
@@ -62,21 +66,10 @@ export const DocumentsStep = ({ formData, onChange, onNext, onBack }: DocumentsS
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="residence_proof">Proof of Residence</Label>
-          <Input
-            id="residence_proof"
-            type="file"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) {
-                onChange("residence_proof_url", file);
-              }
-            }}
-            required
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="passport">Passport</Label>
+          <Label htmlFor="passport" className="flex items-center gap-2">
+            Passport
+            <span className="text-sm text-red-500">*Required</span>
+          </Label>
           <Input
             id="passport"
             type="file"
@@ -88,6 +81,42 @@ export const DocumentsStep = ({ formData, onChange, onNext, onBack }: DocumentsS
             }}
             required
           />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="diaspora_card">
+            Diaspora Card (Optional)
+          </Label>
+          <Input
+            id="diaspora_card"
+            type="file"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                onChange("diaspora_card_url", file);
+              }
+            }}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="residence_proof">Proof of Residence</Label>
+          <Input
+            id="residence_proof"
+            type="file"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                onChange("residence_proof_url", file);
+              }
+            }}
+          />
+        </div>
+        <div className="flex items-center space-x-2">
+          <Switch
+            id="use_escrow"
+            checked={formData.use_escrow}
+            onCheckedChange={(checked) => onChange("use_escrow", checked)}
+          />
+          <Label htmlFor="use_escrow">Use Escrow Account</Label>
         </div>
       </div>
       <div className="flex justify-between">

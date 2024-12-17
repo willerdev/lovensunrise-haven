@@ -207,8 +207,10 @@ export type Database = {
         Row: {
           additional_docs_url: string[] | null
           contract_scope: Database["public"]["Enums"]["procuration_contract_type"][]
+          country: string
           created_at: string | null
           current_country: string
+          diaspora_card_url: string | null
           expiry_date: string
           first_name: string
           id: string
@@ -217,8 +219,8 @@ export type Database = {
           limitations: string | null
           middle_name: string | null
           national_id: string
-          national_id_url: string | null
-          passport_url: string | null
+          national_id_url: string
+          passport_url: string
           permissions: string
           phone_call: string
           phone_whatsapp: string
@@ -230,14 +232,17 @@ export type Database = {
           street_address: string
           tasks_description: string
           updated_at: string | null
+          use_escrow: boolean | null
           user_id: string
           zip_code: string
         }
         Insert: {
           additional_docs_url?: string[] | null
           contract_scope: Database["public"]["Enums"]["procuration_contract_type"][]
+          country?: string
           created_at?: string | null
           current_country: string
+          diaspora_card_url?: string | null
           expiry_date: string
           first_name: string
           id?: string
@@ -246,8 +251,8 @@ export type Database = {
           limitations?: string | null
           middle_name?: string | null
           national_id: string
-          national_id_url?: string | null
-          passport_url?: string | null
+          national_id_url: string
+          passport_url: string
           permissions: string
           phone_call: string
           phone_whatsapp: string
@@ -259,14 +264,17 @@ export type Database = {
           street_address: string
           tasks_description: string
           updated_at?: string | null
+          use_escrow?: boolean | null
           user_id: string
           zip_code: string
         }
         Update: {
           additional_docs_url?: string[] | null
           contract_scope?: Database["public"]["Enums"]["procuration_contract_type"][]
+          country?: string
           created_at?: string | null
           current_country?: string
+          diaspora_card_url?: string | null
           expiry_date?: string
           first_name?: string
           id?: string
@@ -275,8 +283,8 @@ export type Database = {
           limitations?: string | null
           middle_name?: string | null
           national_id?: string
-          national_id_url?: string | null
-          passport_url?: string | null
+          national_id_url?: string
+          passport_url?: string
           permissions?: string
           phone_call?: string
           phone_whatsapp?: string
@@ -288,6 +296,7 @@ export type Database = {
           street_address?: string
           tasks_description?: string
           updated_at?: string | null
+          use_escrow?: boolean | null
           user_id?: string
           zip_code?: string
         }

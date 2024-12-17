@@ -17,6 +17,7 @@ const ProcurationForm = () => {
     national_id: "",
     street_address: "",
     state: "",
+    country: "United States",
     phone_call: "",
     phone_whatsapp: "",
     current_country: "",
@@ -28,6 +29,11 @@ const ProcurationForm = () => {
     legal_names: "",
     start_date: "",
     expiry_date: "",
+    use_escrow: false,
+    national_id_url: null,
+    passport_url: null,
+    diaspora_card_url: null,
+    residence_proof_url: null,
   });
   const navigate = useNavigate();
 
