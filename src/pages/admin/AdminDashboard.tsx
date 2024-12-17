@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { Building2, Users, Map, Category, Users2, MessageSquare, FileText, UserCog, LogOut } from "lucide-react";
+import { Building2, Users, Map, Grid2X2, Users2, MessageSquare, FileText, UserCog, LogOut } from "lucide-react";
 import { Outlet } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -34,7 +34,7 @@ const AdminDashboard = () => {
     {
       title: "Categories",
       url: "/admin-dashboard/categories",
-      icon: Category,
+      icon: Grid2X2, // Replaced Category with Grid2X2
     },
     {
       title: "Users",
