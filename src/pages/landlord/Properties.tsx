@@ -18,7 +18,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Plus, Building } from "lucide-react";
+import { Plus, Building2, Trash2, PenSquare } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { PropertyForm } from "@/components/landlord/PropertyForm";
 import { PropertyCard } from "@/components/landlord/PropertyCard";
@@ -101,7 +101,7 @@ const Properties = () => {
             Add Property
           </Button>
           <Button onClick={handleAddLand} variant="outline">
-            <Building className="mr-2 h-4 w-4" />
+            <Building2 className="mr-2 h-4 w-4" />
             Add Land
           </Button>
         </div>
@@ -113,7 +113,10 @@ const Properties = () => {
             key={property.id}
             property={property}
             onDelete={(id) => setPropertyToDelete(id)}
-            onEdit={handleEdit}
+            onEdit={(id) => {
+              setSelectedPropertyId(id);
+              setIsEditDialogOpen(true);
+            }}
           />
         ))}
         {!properties?.length && (

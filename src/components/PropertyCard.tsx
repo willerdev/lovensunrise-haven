@@ -4,6 +4,7 @@ import { Heart } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { Badge } from "@/components/ui/badge";
 
 interface PropertyCardProps {
   property: Property;
@@ -109,6 +110,8 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
   // Construct location string from address components
   const locationString = `${property.address}, ${property.city}, ${property.state}`;
 
+  const isRental = property.type?.includes('rent');
+
   return (
     <div className="property-card">
       <div className="relative">
@@ -133,11 +136,15 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
             }`}
           />
         </button>
+        <Badge 
+          className={`absolute top-3 left-3 ${
+            isRental ? 'bg-blue-500' : 'bg-green-500'
+          }`}
+        >
+          {property.type && typeLabel[property.type]}
+        </Badge>
       </div>
       <Link to={`/property/${property.id}`} className="block p-4">
-        <span className="text-xs font-medium px-2 py-1 bg-gray-100 rounded-full">
-          {property.type && typeLabel[property.type]}
-        </span>
         <h3 className="mt-2 text-lg font-semibold text-gray-900 line-clamp-1">
           {property.title}
         </h3>
@@ -155,7 +162,7 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
         </div>
         <p className="mt-2 text-lg font-semibold text-gray-900">
           {formatPrice(property.price)}
-          {property.type?.includes('rent') && '/month'}
+          {isRental && '/month'}
         </p>
       </Link>
     </div>
