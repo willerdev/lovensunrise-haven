@@ -160,6 +160,7 @@ export type Database = {
           state: string
           status: string | null
           title: string
+          type: string
           updated_at: string
           zip_code: string
         }
@@ -180,6 +181,7 @@ export type Database = {
           state: string
           status?: string | null
           title: string
+          type: string
           updated_at?: string
           zip_code: string
         }
@@ -200,6 +202,7 @@ export type Database = {
           state?: string
           status?: string | null
           title?: string
+          type?: string
           updated_at?: string
           zip_code?: string
         }

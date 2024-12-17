@@ -41,6 +41,8 @@ const Index = () => {
   const { data: properties = [], isLoading } = useQuery({
     queryKey: ["properties", selectedType],
     queryFn: async () => {
+      console.log("Fetching properties with type:", selectedType); // Debug log
+      
       let query = supabase
         .from("properties")
         .select(`
@@ -57,9 +59,11 @@ const Index = () => {
       const { data, error } = await query;
 
       if (error) {
-        console.error("Error fetching properties:", error);
+        console.error("Error fetching properties:", error); // Debug log
         return [];
       }
+
+      console.log("Fetched properties:", data); // Debug log
 
       return data.map(property => ({
         ...property,
