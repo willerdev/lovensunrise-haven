@@ -4,19 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { AdminTableSkeleton } from "@/components/skeletons/AdminTableSkeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "sonner";
-import { UserCheck, UserX, Mail } from "lucide-react";
-import { Database } from "@/integrations/supabase/types";
-
-type Profile = Database['public']['Tables']['profiles']['Row'];
+import { UserCheck, UserX, Mail, Database } from "lucide-react";
+import { DbProfile } from "@/types/database";
 
 const Partners = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -35,7 +26,7 @@ const Partners = () => {
         throw error;
       }
 
-      return data as Profile[];
+      return data as DbProfile[];
     },
   });
 
@@ -44,34 +35,6 @@ const Partners = () => {
       partner.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       partner.phone?.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  const handleApprove = async (partnerId: string) => {
-    try {
-      const { error } = await supabase
-        .from("profiles")
-        .update({ role: "broker" })
-        .eq("id", partnerId);
-
-      if (error) throw error;
-      toast.success("Partner approved successfully");
-    } catch (error) {
-      toast.error("Failed to approve partner");
-    }
-  };
-
-  const handleSuspend = async (partnerId: string) => {
-    try {
-      const { error } = await supabase
-        .from("profiles")
-        .update({ role: null })
-        .eq("id", partnerId);
-
-      if (error) throw error;
-      toast.success("Partner suspended successfully");
-    } catch (error) {
-      toast.error("Failed to suspend partner");
-    }
-  };
 
   if (isLoading) return <AdminTableSkeleton />;
 
@@ -88,50 +51,50 @@ const Partners = () => {
         className="max-w-sm"
       />
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Phone</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Joined</TableHead>
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {filteredPartners?.map((partner) => (
-            <TableRow key={partner.id}>
-              <TableCell className="font-medium">{partner.full_name}</TableCell>
-              <TableCell>{partner.phone || "N/A"}</TableCell>
-              <TableCell>
-                <span className="capitalize">{partner.role || "Pending"}</span>
-              </TableCell>
-              <TableCell>
-                {new Date(partner.created_at).toLocaleDateString()}
-              </TableCell>
-              <TableCell className="space-x-2">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleApprove(partner.id)}
-                >
-                  <UserCheck className="h-4 w-4 text-green-500" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleSuspend(partner.id)}
-                >
-                  <UserX className="h-4 w-4 text-red-500" />
-                </Button>
-                <Button variant="ghost" size="icon">
-                  <Mail className="h-4 w-4 text-blue-500" />
-                </Button>
-              </TableCell>
+      {!partners || partners.length === 0 ? (
+        <div className="text-center py-8 space-y-3">
+          <Database className="h-12 w-12 mx-auto text-gray-400" />
+          <h3 className="text-lg font-medium text-gray-900">No Partners Found</h3>
+          <p className="text-gray-500">No partners have been added to the system yet.</p>
+        </div>
+      ) : (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Name</TableHead>
+              <TableHead>Phone</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Joined</TableHead>
+              <TableHead>Actions</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {filteredPartners?.map((partner) => (
+              <TableRow key={partner.id}>
+                <TableCell className="font-medium">{partner.full_name}</TableCell>
+                <TableCell>{partner.phone || "N/A"}</TableCell>
+                <TableCell>
+                  <span className="capitalize">{partner.role || "Pending"}</span>
+                </TableCell>
+                <TableCell>
+                  {new Date(partner.created_at).toLocaleDateString()}
+                </TableCell>
+                <TableCell className="space-x-2">
+                  <Button variant="ghost" size="icon">
+                    <UserCheck className="h-4 w-4 text-green-500" />
+                  </Button>
+                  <Button variant="ghost" size="icon">
+                    <UserX className="h-4 w-4 text-red-500" />
+                  </Button>
+                  <Button variant="ghost" size="icon">
+                    <Mail className="h-4 w-4 text-blue-500" />
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      )}
     </div>
   );
 };

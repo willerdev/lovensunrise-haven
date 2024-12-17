@@ -29,6 +29,10 @@ import Properties from "./pages/admin/Properties";
 import AdminLands from "./pages/admin/Lands";
 import Categories from "./pages/admin/Categories";
 import Users from "./pages/admin/Users";
+import Partners from "./pages/admin/Partners";
+import Complaints from "./pages/admin/Complaints";
+import Procurations from "./pages/admin/Procurations";
+import Agents from "./pages/admin/Agents";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -72,10 +76,10 @@ const App = () => {
                 <Route path="lands" element={<AdminLands />} />
                 <Route path="categories" element={<Categories />} />
                 <Route path="users" element={<Users />} />
-                <Route path="partners" element={<div>Manage Partners</div>} />
-                <Route path="complaints" element={<div>Manage Complaints</div>} />
-                <Route path="procurations" element={<div>Manage Procurations</div>} />
-                <Route path="brokers" element={<div>Manage Brokers</div>} />
+                <Route path="partners" element={<Partners />} />
+                <Route path="complaints" element={<Complaints />} />
+                <Route path="procurations" element={<Procurations />} />
+                <Route path="agents" element={<Agents />} />
               </Route>
             </Routes>
             <Footer />
