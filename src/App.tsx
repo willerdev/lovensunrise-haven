@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Footer } from "./components/Footer";
 import Index from "./pages/Index";
 import { PropertyDetail } from "./pages/PropertyDetail";
+import LandDetail from "./pages/LandDetail";
 import Search from "./pages/Search";
 import Saved from "./pages/Saved";
 import Profile from "./pages/Profile";
@@ -31,17 +32,17 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/property/:id" element={<PropertyDetail />} />
             <Route path="/land/:id" element={<LandDetail />} />
-          <Route path="/search" element={<Search />} />
-          <Route path="/saved" element={<Saved />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/complete-profile" element={<CompleteProfile />} />
-          <Route path="/booking/:id" element={<Booking />} />
-          <Route path="/booking-success" element={<BookingSuccess />} />
-          <Route path="/tenant-dashboard/*" element={<TenantDashboard />} />
-          <Route path="/landlord-dashboard/*" element={<LandlordDashboard />} />
-          <Route path="/broker-dashboard/*" element={<BrokerDashboard />} />
+            <Route path="/search" element={<Search />} />
+            <Route path="/saved" element={<Saved />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/complete-profile" element={<CompleteProfile />} />
+            <Route path="/booking/:id" element={<Booking />} />
+            <Route path="/booking-success" element={<BookingSuccess />} />
+            <Route path="/tenant-dashboard/*" element={<TenantDashboard />} />
+            <Route path="/landlord-dashboard/*" element={<LandlordDashboard />} />
+            <Route path="/broker-dashboard/*" element={<BrokerDashboard />} />
           </Routes>
           <Footer />
         </BrowserRouter>

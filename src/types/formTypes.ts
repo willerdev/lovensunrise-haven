@@ -1,5 +1,11 @@
 import { PropertyType } from "./property";
 
+export interface PropertyFormProps {
+  propertyId?: string;
+  onSuccess: () => void;
+  onCancel: () => void;
+}
+
 export interface PropertyFormData {
   title: string;
   price: string;
@@ -14,9 +20,4 @@ export interface PropertyFormData {
   status: "rent" | "sale";
   furnishing: "furnished" | "unfurnished";
   type: PropertyType;
-}
-
-export interface PropertyFormProps {
-  onSuccess: () => void;
-  onCancel: () => void;
 }
