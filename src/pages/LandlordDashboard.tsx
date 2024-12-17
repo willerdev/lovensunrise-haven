@@ -10,6 +10,7 @@ import LandlordBookings from "./landlord/Bookings";
 import LandlordPayments from "./landlord/Payments";
 import LandlordProfile from "./landlord/Profile";
 import Properties from "./landlord/Properties";
+import ProcurationView from "./landlord/ProcurationView";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -69,6 +70,7 @@ const LandlordDashboard = () => {
                 <TabsList className="hidden md:flex">
                   <TabsTrigger value="overview">Overview</TabsTrigger>
                   <TabsTrigger value="properties">Properties</TabsTrigger>
+                  <TabsTrigger value="procuration">Procuration</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="overview">
@@ -77,6 +79,10 @@ const LandlordDashboard = () => {
 
                 <TabsContent value="properties">
                   <PropertyList />
+                </TabsContent>
+
+                <TabsContent value="procuration">
+                  <ProcurationView />
                 </TabsContent>
               </Tabs>
             }

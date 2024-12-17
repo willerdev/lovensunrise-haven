@@ -116,7 +116,21 @@ const Index = () => {
   };
 
   const handleUserIconClick = () => {
-    navigate("/profile");
+    if (!userProfile) {
+      navigate("/profile");
+      return;
+    }
+
+    switch (userProfile.role) {
+      case "landlord":
+        navigate("/landlord-dashboard");
+        break;
+      case "tenant":
+        navigate("/tenant-dashboard");
+        break;
+      default:
+        navigate("/profile");
+    }
   };
 
   return (

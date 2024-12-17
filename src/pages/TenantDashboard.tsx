@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Home, Calendar, CreditCard, MessageCircle, AlertTriangle, User, ArrowLeft } from "lucide-react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
+import ProcurationView from "./tenant/ProcurationView";
 
 const TenantDashboard = () => {
   const navigate = useNavigate();
@@ -129,6 +130,9 @@ const TenantDashboard = () => {
             <TabsTrigger value="profile">
               <User className="mr-2 h-4 w-4" />
               Profile
+            </TabsTrigger>
+            <TabsTrigger value="procuration">
+              Procuration
             </TabsTrigger>
           </TabsList>
 
@@ -268,6 +272,10 @@ const TenantDashboard = () => {
                 )}
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="procuration">
+            <ProcurationView />
           </TabsContent>
         </Tabs>
       </div>
