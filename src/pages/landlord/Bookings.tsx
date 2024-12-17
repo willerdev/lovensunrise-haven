@@ -48,14 +48,30 @@ const LandlordBookings = () => {
             end_date,
             total_price,
             status,
-            property:properties(title),
-            tenant:profiles(full_name)
+            property:properties!inner(title),
+            tenant:profiles!inner(full_name)
           `)
           .in("property_id", propertyIds)
           .order("start_date", { ascending: false });
 
         if (error) throw error;
-        setBookings(data || []);
+        
+        // Transform the data to match the Booking interface
+        const transformedData: Booking[] = data?.map(booking => ({
+          id: booking.id,
+          start_date: booking.start_date,
+          end_date: booking.end_date,
+          total_price: booking.total_price,
+          status: booking.status,
+          property: {
+            title: booking.property.title
+          },
+          tenant: {
+            full_name: booking.tenant.full_name
+          }
+        })) || [];
+
+        setBookings(transformedData);
       } catch (error) {
         console.error("Error fetching bookings:", error);
         toast({

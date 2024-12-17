@@ -44,15 +44,29 @@ const LandlordPayments = () => {
             id,
             created_at,
             total_price,
-            property:properties(title),
-            tenant:profiles(full_name)
+            property:properties!inner(title),
+            tenant:profiles!inner(full_name)
           `)
           .in("property_id", propertyIds)
           .eq("status", "confirmed")
           .order("created_at", { ascending: false });
 
         if (error) throw error;
-        setPayments(data || []);
+
+        // Transform the data to match the Payment interface
+        const transformedData: Payment[] = data?.map(payment => ({
+          id: payment.id,
+          created_at: payment.created_at,
+          total_price: payment.total_price,
+          property: {
+            title: payment.property.title
+          },
+          tenant: {
+            full_name: payment.tenant.full_name
+          }
+        })) || [];
+
+        setPayments(transformedData);
       } catch (error) {
         console.error("Error fetching payments:", error);
         toast({
