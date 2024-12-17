@@ -3,14 +3,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { PropertyFormData } from "@/types/propertyTypes";
+import { PropertyFormData } from "@/types/formTypes";
+import { PropertyType } from "@/types/property";
 
 interface PropertyBasicDetailsProps {
   formData: PropertyFormData;
   onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   onStatusChange: (value: string) => void;
   onFurnishingChange: (value: string) => void;
-  onTypeChange: (value: string) => void;
+  onTypeChange: (value: PropertyType) => void;
 }
 
 export const PropertyBasicDetails = ({

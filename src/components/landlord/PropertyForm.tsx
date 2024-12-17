@@ -1,18 +1,13 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowRight, ArrowLeft, MapPin, Building2, Mail } from "lucide-react";
+import { ArrowRight, ArrowLeft } from "lucide-react";
 import { PropertyBasicDetails } from "./PropertyBasicDetails";
-import { PropertyImagePreview } from "./PropertyImagePreview";
-import { PropertyFormData } from "@/types/propertyTypes";
-
-interface PropertyFormProps {
-  onSuccess: () => void;
-  onCancel: () => void;
-}
+import { PropertyLocationDetails } from "./PropertyLocationDetails";
+import { PropertyImageUpload } from "./PropertyImageUpload";
+import { PropertyFormData, PropertyFormProps } from "@/types/formTypes";
+import { PropertyType } from "@/types/property";
 
 export const PropertyForm = ({ onSuccess, onCancel }: PropertyFormProps) => {
   const [step, setStep] = useState(1);
@@ -31,38 +26,47 @@ export const PropertyForm = ({ onSuccess, onCancel }: PropertyFormProps) => {
     zip_code: "",
     status: "rent",
     furnishing: "unfurnished",
+    type: "house_rent",
   });
   const { toast } = useToast();
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleStatusChange = (value: string) => {
-    setFormData(prev => ({ ...prev, status: value as "rent" | "sale" }));
+    setFormData((prev) => ({ ...prev, status: value as "rent" | "sale" }));
   };
 
   const handleFurnishingChange = (value: string) => {
-    setFormData(prev => ({ ...prev, furnishing: value as "furnished" | "unfurnished" }));
+    setFormData((prev) => ({
+      ...prev,
+      furnishing: value as "furnished" | "unfurnished",
+    }));
+  };
+
+  const handleTypeChange = (value: PropertyType) => {
+    setFormData((prev) => ({ ...prev, type: value }));
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const newFiles = Array.from(e.target.files);
-      setSelectedFiles(prev => [...prev, ...newFiles]);
-      // Reset the input value to allow selecting the same file again
-      e.target.value = '';
+      setSelectedFiles((prev) => [...prev, ...newFiles]);
+      e.target.value = "";
     }
   };
 
   const handleRemoveFile = (index: number) => {
-    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (isLoading) return; // Prevent multiple submissions
+    if (isLoading) return;
     setIsLoading(true);
 
     try {
@@ -77,10 +81,9 @@ export const PropertyForm = ({ onSuccess, onCancel }: PropertyFormProps) => {
         return;
       }
 
-      // Insert property
       const { data: property, error: propertyError } = await supabase
         .from("properties")
-        .insert([{
+        .insert({
           title: formData.title,
           description: formData.description,
           price: Number(formData.price),
@@ -94,34 +97,32 @@ export const PropertyForm = ({ onSuccess, onCancel }: PropertyFormProps) => {
           owner_id: session.user.id,
           status: formData.status,
           furnishing_status: formData.furnishing,
-        }])
+          type: formData.type,
+        })
         .select()
         .single();
 
       if (propertyError) throw propertyError;
 
-      // Upload images
       if (selectedFiles.length > 0) {
         const imagePromises = selectedFiles.map(async (file) => {
-          const fileExt = file.name.split('.').pop();
+          const fileExt = file.name.split(".").pop();
           const filePath = `${property.id}/${crypto.randomUUID()}.${fileExt}`;
 
           const { error: uploadError } = await supabase.storage
-            .from('properties_images')
+            .from("properties_images")
             .upload(filePath, file);
 
           if (uploadError) throw uploadError;
 
           const { data: { publicUrl } } = supabase.storage
-            .from('properties_images')
+            .from("properties_images")
             .getPublicUrl(filePath);
 
-          return supabase
-            .from('property_images')
-            .insert({
-              property_id: property.id,
-              image_url: publicUrl,
-            });
+          return supabase.from("property_images").insert({
+            property_id: property.id,
+            image_url: publicUrl,
+          });
         });
 
         await Promise.all(imagePromises);
@@ -133,7 +134,7 @@ export const PropertyForm = ({ onSuccess, onCancel }: PropertyFormProps) => {
       });
       onSuccess();
     } catch (error) {
-      console.error('Error adding property:', error);
+      console.error("Error adding property:", error);
       toast({
         title: "Error",
         description: "Failed to add property",
@@ -153,6 +154,7 @@ export const PropertyForm = ({ onSuccess, onCancel }: PropertyFormProps) => {
             onChange={handleInputChange}
             onStatusChange={handleStatusChange}
             onFurnishingChange={handleFurnishingChange}
+            onTypeChange={handleTypeChange}
           />
           <div className="flex justify-between">
             <Button type="button" variant="outline" onClick={onCancel}>
@@ -165,82 +167,15 @@ export const PropertyForm = ({ onSuccess, onCancel }: PropertyFormProps) => {
         </div>
       ) : (
         <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="address">Address</Label>
-            <div className="relative">
-              <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
-              <Input
-                id="address"
-                name="address"
-                value={formData.address}
-                onChange={handleInputChange}
-                className="pl-9"
-                required
-              />
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="city">City</Label>
-              <div className="relative">
-                <Building2 className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
-                <Input
-                  id="city"
-                  name="city"
-                  value={formData.city}
-                  onChange={handleInputChange}
-                  className="pl-9"
-                  required
-                />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="state">State</Label>
-              <div className="relative">
-                <Building2 className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
-                <Input
-                  id="state"
-                  name="state"
-                  value={formData.state}
-                  onChange={handleInputChange}
-                  className="pl-9"
-                  required
-                />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="zip_code">ZIP Code</Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
-                <Input
-                  id="zip_code"
-                  name="zip_code"
-                  value={formData.zip_code}
-                  onChange={handleInputChange}
-                  className="pl-9"
-                  required
-                />
-              </div>
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="images">Property Images</Label>
-            <Input
-              id="images"
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={handleFileChange}
-              className="cursor-pointer"
-            />
-            <p className="text-sm text-muted-foreground">
-              You can select multiple images
-            </p>
-            <PropertyImagePreview
-              files={selectedFiles}
-              onRemove={handleRemoveFile}
-            />
-          </div>
+          <PropertyLocationDetails
+            formData={formData}
+            onChange={handleInputChange}
+          />
+          <PropertyImageUpload
+            selectedFiles={selectedFiles}
+            onFileChange={handleFileChange}
+            onRemoveFile={handleRemoveFile}
+          />
           <div className="flex justify-between">
             <Button type="button" onClick={() => setStep(1)}>
               <ArrowLeft className="mr-2 h-4 w-4" />
