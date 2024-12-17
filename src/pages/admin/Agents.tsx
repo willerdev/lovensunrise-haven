@@ -29,8 +29,9 @@ import {
 import { toast } from "sonner";
 import { UserPlus, Database } from "lucide-react";
 import { Label } from "@/components/ui/label";
+import { UserRole } from "@/integrations/supabase/enumTypes";
 
-type AgentRole = "loven_agent" | "independent_agent";
+type AgentRole = Extract<UserRole, "loven_agent" | "independent_agent">;
 
 const Agents = () => {
   const [searchTerm, setSearchTerm] = useState("");

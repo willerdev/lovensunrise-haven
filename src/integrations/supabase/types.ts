@@ -605,7 +605,13 @@ export type Database = {
         | "commercial"
         | "agriculture"
       procuration_contract_type: "sell" | "buy" | "rent" | "donate"
-      user_role: "landlord" | "tenant" | "broker" | "admin"
+      user_role:
+        | "landlord"
+        | "tenant"
+        | "broker"
+        | "admin"
+        | "loven_agent"
+        | "independent_agent"
     }
     CompositeTypes: {
       [_ in never]: never
