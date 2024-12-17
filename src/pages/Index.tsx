@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { PropertyCard } from "../components/PropertyCard";
-import { properties } from "../data/properties";
 import { PropertyType } from "../types/property";
 import { MobileNav } from "../components/MobileNav";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Home, Building2, MapPin, User, PlusCircle } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const propertyTypes: { value: PropertyType; label: string; icon: React.ReactNode }[] = [
   { value: "house_rent", label: "Houses for Rent", icon: <Home className="w-4 h-4" /> },
@@ -20,9 +21,35 @@ const Index = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
 
-  const filteredProperties = selectedType
-    ? properties.filter((p) => p.type === selectedType)
-    : properties;
+  const { data: properties = [] } = useQuery({
+    queryKey: ["properties", selectedType],
+    queryFn: async () => {
+      let query = supabase
+        .from("properties")
+        .select(`
+          *,
+          property_images (
+            image_url
+          )
+        `);
+
+      if (selectedType) {
+        query = query.eq("type", selectedType);
+      }
+
+      const { data, error } = await query;
+
+      if (error) {
+        console.error("Error fetching properties:", error);
+        return [];
+      }
+
+      return data.map(property => ({
+        ...property,
+        images: property.property_images?.map((img: { image_url: string }) => img.image_url) || []
+      }));
+    },
+  });
 
   return (
     <div className="min-h-screen pb-20">
@@ -69,7 +96,7 @@ const Index = () => {
 
       <main className="container mx-auto p-4">
         <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'} gap-4`}>
-          {filteredProperties.map((property) => (
+          {properties.map((property) => (
             <PropertyCard key={property.id} property={property} />
           ))}
         </div>

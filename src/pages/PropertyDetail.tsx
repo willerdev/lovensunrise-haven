@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Flag } from "lucide-react";
-import { properties } from "../data/properties";
-import { PropertyCard } from "../components/PropertyCard";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -16,6 +14,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { PropertyHeader } from "@/components/property/PropertyHeader";
 import { PropertyImages } from "@/components/property/PropertyImages";
 import { PropertyActions } from "@/components/property/PropertyActions";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 export const PropertyDetail = () => {
   const { id } = useParams();
@@ -27,7 +27,31 @@ export const PropertyDetail = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const property = properties.find((p) => p.id === id);
+  const { data: property } = useQuery({
+    queryKey: ["property", id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("properties")
+        .select(`
+          *,
+          property_images (
+            image_url
+          )
+        `)
+        .eq("id", id)
+        .single();
+
+      if (error) {
+        console.error("Error fetching property:", error);
+        return null;
+      }
+
+      return {
+        ...data,
+        images: data.property_images?.map((img: { image_url: string }) => img.image_url) || []
+      };
+    },
+  });
 
   if (!property) {
     return <div>Property not found</div>;
