@@ -20,14 +20,23 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
 
-      const { data } = await supabase
+      console.log("Checking if property is liked:", {
+        property_id: property.id,
+        user_id: session.user.id
+      });
+
+      const { data, error } = await supabase
         .from("saved_properties")
         .select()
         .eq("property_id", property.id)
-        .eq("user_id", session.user.id)
-        .single();
+        .eq("user_id", session.user.id);
 
-      setIsLiked(!!data);
+      if (error) {
+        console.error("Error checking if property is liked:", error);
+        return;
+      }
+
+      setIsLiked(data && data.length > 0);
     };
 
     checkIfLiked();
@@ -46,46 +55,39 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
       return;
     }
 
-    if (isLiked) {
-      const { error } = await supabase
-        .from("saved_properties")
-        .delete()
-        .eq("property_id", property.id)
-        .eq("user_id", session.user.id);
+    try {
+      if (isLiked) {
+        const { error } = await supabase
+          .from("saved_properties")
+          .delete()
+          .eq("property_id", property.id)
+          .eq("user_id", session.user.id);
 
-      if (error) {
-        console.error("Error removing property from favorites:", error);
-        toast({
-          title: "Error",
-          description: "Could not remove property from favorites",
-          variant: "destructive",
-        });
-        return;
-      }
-    } else {
-      const { error } = await supabase
-        .from("saved_properties")
-        .insert({
-          property_id: property.id,
-          user_id: session.user.id,
-        });
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from("saved_properties")
+          .insert({
+            property_id: property.id,
+            user_id: session.user.id,
+          });
 
-      if (error) {
-        console.error("Error saving property to favorites:", error);
-        toast({
-          title: "Error",
-          description: "Could not save property to favorites",
-          variant: "destructive",
-        });
-        return;
+        if (error) throw error;
       }
+
+      setIsLiked(!isLiked);
+      toast({
+        title: isLiked ? "Removed from favorites" : "Added to favorites",
+        description: isLiked ? "Property removed from your favorites" : "Property saved to your favorites",
+      });
+    } catch (error) {
+      console.error('Error toggling property favorite:', error);
+      toast({
+        title: "Error",
+        description: isLiked ? "Could not remove property from favorites" : "Could not save property to favorites",
+        variant: "destructive",
+      });
     }
-
-    setIsLiked(!isLiked);
-    toast({
-      title: isLiked ? "Removed from favorites" : "Added to favorites",
-      description: isLiked ? "Property removed from your favorites" : "Property saved to your favorites",
-    });
   };
 
   const formatPrice = (price: number) => {

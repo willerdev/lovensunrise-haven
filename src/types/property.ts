@@ -3,18 +3,23 @@ export type PropertyType = 'house_rent' | 'house_sell' | 'apartment_rent' | 'lan
 export interface Property {
   id: string;
   title: string;
-  type?: PropertyType;
+  type: PropertyType;
   price: number;
-  bedrooms?: number;
-  bathrooms?: number;
-  area: number;
-  description: string;
+  bedrooms?: number | null;
+  bathrooms?: number | null;
+  area: number | null;
+  description: string | null;
   address: string;
   city: string;
   state: string;
   zip_code: string;
-  location?: string; // Adding this for backward compatibility
+  latitude?: number | null;
+  longitude?: number | null;
+  status?: string | null;
+  owner_id?: string | null;
+  created_at: string;
+  updated_at?: string;
+  furnishing_status?: string | null;
   images?: string[];
-  features?: string[];
   property_images?: { image_url: string }[];
 }

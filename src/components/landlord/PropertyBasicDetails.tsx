@@ -10,6 +10,7 @@ interface PropertyBasicDetailsProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   onStatusChange: (value: string) => void;
   onFurnishingChange: (value: string) => void;
+  onTypeChange: (value: string) => void;
 }
 
 export const PropertyBasicDetails = ({
@@ -17,6 +18,7 @@ export const PropertyBasicDetails = ({
   onChange,
   onStatusChange,
   onFurnishingChange,
+  onTypeChange,
 }: PropertyBasicDetailsProps) => {
   return (
     <div className="space-y-4">
@@ -33,6 +35,32 @@ export const PropertyBasicDetails = ({
             required
           />
         </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label>Property Type</Label>
+        <RadioGroup
+          value={formData.type}
+          onValueChange={onTypeChange}
+          className="flex flex-wrap gap-4"
+        >
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="house_rent" id="house_rent" />
+            <Label htmlFor="house_rent">House for Rent</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="house_sell" id="house_sell" />
+            <Label htmlFor="house_sell">House for Sale</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="apartment_rent" id="apartment_rent" />
+            <Label htmlFor="apartment_rent">Apartment for Rent</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="land_sell" id="land_sell" />
+            <Label htmlFor="land_sell">Land for Sale</Label>
+          </div>
+        </RadioGroup>
       </div>
 
       <div className="space-y-2">

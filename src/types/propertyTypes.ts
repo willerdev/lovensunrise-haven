@@ -11,4 +11,5 @@ export interface PropertyFormData {
   zip_code: string;
   status: "rent" | "sale";
   furnishing: "furnished" | "unfurnished";
+  type: "house_rent" | "house_sell" | "apartment_rent" | "land_sell";
 }
