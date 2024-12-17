@@ -21,6 +21,7 @@ export const CategoryView = () => {
   const { data: properties = [], isLoading } = useQuery({
     queryKey: ["properties", type, selectedCategory],
     queryFn: async () => {
+      console.log("Fetching properties for type:", type);
       let query = supabase
         .from("properties")
         .select(`
@@ -28,9 +29,16 @@ export const CategoryView = () => {
           property_images (
             image_url
           )
-        `)
-        .eq("type", type);
+        `);
 
+      // Filter based on sale/rent type
+      if (type === 'sale') {
+        query = query.ilike('type', '%sell%');
+      } else if (type === 'rent') {
+        query = query.ilike('type', '%rent%');
+      }
+
+      // Apply category filter if selected
       if (selectedCategory) {
         query = query.eq("category", selectedCategory);
       }
@@ -42,11 +50,12 @@ export const CategoryView = () => {
         throw error;
       }
 
+      console.log("Fetched properties:", data);
       return data;
     },
   });
 
-  const categoryTitle = type?.charAt(0).toUpperCase() + type?.slice(1);
+  const categoryTitle = type === 'sale' ? 'Properties for Sale' : 'Properties for Rent';
 
   return (
     <div className="min-h-screen pb-20">
@@ -58,7 +67,7 @@ export const CategoryView = () => {
                 <ArrowLeft className="h-5 w-5" />
               </Link>
             </Button>
-            <h1 className="text-2xl font-semibold">{categoryTitle} Properties</h1>
+            <h1 className="text-2xl font-semibold">{categoryTitle}</h1>
           </div>
         </div>
       </header>
