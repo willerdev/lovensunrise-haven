@@ -27,7 +27,7 @@ const Index = () => {
     <div className="min-h-screen pb-20">
       <header className="p-4 bg-white/80 backdrop-blur-md sticky top-0 z-40">
         <div className="container mx-auto flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-semibold">Lovensunrise</h1>
+          <h1 className="text-2xl font-semibold text-maroon">Lovensunrise</h1>
           {!isMobile && (
             <div className="flex gap-2">
               <Button variant="ghost" onClick={() => navigate("/login")}>
