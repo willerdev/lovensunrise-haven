@@ -20,21 +20,36 @@ const SiteSettings = () => {
   // Check if user is admin
   useEffect(() => {
     const checkAdminAccess = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        toast.error("Please login to access this page");
-        navigate("/login");
-        return;
-      }
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          console.log("No session found");
+          toast.error("Please login to access this page");
+          navigate("/login");
+          return;
+        }
 
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", session.user.id)
-        .single();
+        const { data: profile, error: profileError } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", session.user.id)
+          .single();
 
-      if (profile?.role !== "admin") {
-        toast.error("You don't have permission to access this page");
+        if (profileError) {
+          console.error("Error fetching profile:", profileError);
+          toast.error("Error verifying permissions");
+          navigate("/");
+          return;
+        }
+
+        if (profile?.role !== "admin") {
+          console.log("User is not admin:", profile?.role);
+          toast.error("You don't have permission to access this page");
+          navigate("/");
+        }
+      } catch (error) {
+        console.error("Error in checkAdminAccess:", error);
+        toast.error("Error checking permissions");
         navigate("/");
       }
     };
@@ -89,16 +104,21 @@ const SiteSettings = () => {
         return;
       }
 
-      // Insert settings one by one to avoid the body stream already read error
+      // Update settings one by one
       for (const [key, value] of Object.entries(settings)) {
+        console.log(`Updating setting: ${key} = ${value}`);
         const { error } = await supabase
           .from("site_settings")
-          .upsert({
-            key,
-            value: value || "",
-          }, {
-            onConflict: "key"
-          });
+          .upsert(
+            {
+              key,
+              value: value || "",
+              updated_at: new Date().toISOString(),
+            },
+            {
+              onConflict: 'key',
+            }
+          );
 
         if (error) {
           console.error(`Error updating setting ${key}:`, error);
