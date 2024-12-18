@@ -1,6 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminTableSkeleton } from "@/components/skeletons/AdminTableSkeleton";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { AdminPropertyForm } from "@/components/admin/PropertyForm";
 import {
   Table,
   TableBody,
@@ -9,19 +12,25 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Plus, Eye, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { Property } from "@/types/property";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const Properties = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const navigate = useNavigate();
 
   const { data: properties, isLoading } = useQuery({
     queryKey: ["admin-properties"],
     queryFn: async () => {
-      console.log("Fetching properties for admin...");
       const { data, error } = await supabase
         .from("properties")
         .select(`
@@ -36,15 +45,9 @@ const Properties = () => {
         throw error;
       }
       
-      console.log("Properties fetched:", data);
       return data;
     },
   });
-
-  const filteredProperties = properties?.filter((property) =>
-    property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    property.address.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   const handleDelete = async (id: string) => {
     try {
@@ -61,7 +64,17 @@ const Properties = () => {
     }
   };
 
+  const handleView = (id: string) => {
+    navigate(`/property/${id}`);
+  };
+
   if (isLoading) return <AdminTableSkeleton />;
+
+  const filteredProperties = properties?.filter(
+    (property) =>
+      property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      property.address.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="space-y-4">
@@ -74,6 +87,10 @@ const Properties = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-[300px]"
           />
+          <Button onClick={() => setIsAddDialogOpen(true)}>
+            <Plus className="mr-2 h-4 w-4" />
+            Add Property
+          </Button>
         </div>
       </div>
 
@@ -100,20 +117,17 @@ const Properties = () => {
                 <div className="flex gap-2">
                   <Button
                     variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      // View details functionality
-                      console.log("View property:", property.id);
-                    }}
+                    size="icon"
+                    onClick={() => handleView(property.id)}
                   >
-                    View
+                    <Eye className="h-4 w-4" />
                   </Button>
                   <Button
-                    variant="destructive"
-                    size="sm"
+                    variant="outline"
+                    size="icon"
                     onClick={() => handleDelete(property.id)}
                   >
-                    Delete
+                    <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
               </TableCell>
@@ -121,6 +135,18 @@ const Properties = () => {
           ))}
         </TableBody>
       </Table>
+
+      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Add New Property</DialogTitle>
+          </DialogHeader>
+          <AdminPropertyForm
+            onSuccess={() => setIsAddDialogOpen(false)}
+            onCancel={() => setIsAddDialogOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

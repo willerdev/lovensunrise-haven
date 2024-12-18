@@ -1,6 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminTableSkeleton } from "@/components/skeletons/AdminTableSkeleton";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -9,13 +11,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Plus, Eye, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 const Lands = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate();
 
   const { data: lands, isLoading } = useQuery({
     queryKey: ["admin-lands"],
@@ -35,15 +38,9 @@ const Lands = () => {
         throw error;
       }
       
-      console.log("Lands fetched:", data);
       return data;
     },
   });
-
-  const filteredLands = lands?.filter((land) =>
-    land.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    land.address.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   const handleDelete = async (id: string) => {
     try {
@@ -60,7 +57,20 @@ const Lands = () => {
     }
   };
 
+  const handleView = (id: string) => {
+    navigate(`/land/${id}`);
+  };
+
+  const handleAddLand = () => {
+    navigate("/landlord-dashboard/add-land");
+  };
+
   if (isLoading) return <AdminTableSkeleton />;
+
+  const filteredLands = lands?.filter((land) =>
+    land.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    land.address.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="space-y-4">
@@ -73,6 +83,10 @@ const Lands = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-[300px]"
           />
+          <Button onClick={handleAddLand}>
+            <Plus className="mr-2 h-4 w-4" />
+            Add Land
+          </Button>
         </div>
       </div>
 
@@ -101,20 +115,17 @@ const Lands = () => {
                 <div className="flex gap-2">
                   <Button
                     variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      // View details functionality
-                      console.log("View land:", land.id);
-                    }}
+                    size="icon"
+                    onClick={() => handleView(land.id)}
                   >
-                    View
+                    <Eye className="h-4 w-4" />
                   </Button>
                   <Button
-                    variant="destructive"
-                    size="sm"
+                    variant="outline"
+                    size="icon"
                     onClick={() => handleDelete(land.id)}
                   >
-                    Delete
+                    <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
               </TableCell>
