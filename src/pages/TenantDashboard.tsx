@@ -47,21 +47,21 @@ const TenantDashboard = () => {
       setProfile(profileData);
 
       // Fetch bookings with properties data
-      const { data: bookingsData } = await supabase
+      const { data: bookingsData, error: bookingsError } = await supabase
         .from("bookings")
         .select(`
           *,
-          properties (
-            title,
-            address,
-            owner_id,
-            price
-          )
+          properties (*)
         `)
         .eq("tenant_id", session.user.id);
 
+      if (bookingsError) {
+        console.error("Error fetching bookings:", bookingsError);
+        return;
+      }
+
       console.log("Fetched bookings:", bookingsData);
-      setBookings(bookingsData || []);
+      setBookings(bookingsData as DbBooking[]);
     };
 
     checkUser();
