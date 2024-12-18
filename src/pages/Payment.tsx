@@ -3,6 +3,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { PaymentMethodSelector } from "@/components/payment/PaymentMethodSelector";
 import { PaymentSummary } from "@/components/payment/PaymentSummary";
+import { MobileMoneyForm } from "@/components/payment/MobileMoneyForm";
+import { BankTransferForm } from "@/components/payment/BankTransferForm";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { ArrowLeft } from "lucide-react";
@@ -20,7 +22,7 @@ export const Payment = () => {
     return <div>No payment information found</div>;
   }
 
-  const handlePayment = async () => {
+  const handleStripePayment = async () => {
     setIsLoading(true);
     
     try {
@@ -35,27 +37,18 @@ export const Payment = () => {
         return;
       }
 
-      if (paymentMethod === "stripe") {
-        const { data, error } = await supabase.functions.invoke('create-checkout-session', {
-          body: {
-            itemId: item.id,
-            itemType: item.type,
-            price: item.price,
-          },
-        });
+      const { data, error } = await supabase.functions.invoke('create-checkout-session', {
+        body: {
+          itemId: item.id,
+          itemType: item.type,
+          price: item.price,
+        },
+      });
 
-        if (error) throw error;
+      if (error) throw error;
 
-        if (data?.url) {
-          window.location.href = data.url;
-        }
-      } else {
-        // Handle other payment methods
-        toast({
-          title: "Payment method not available",
-          description: "This payment method is not available yet",
-          variant: "destructive",
-        });
+      if (data?.url) {
+        window.location.href = data.url;
       }
     } catch (error) {
       console.error('Payment error:', error);
@@ -66,6 +59,39 @@ export const Payment = () => {
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const renderPaymentForm = () => {
+    switch (paymentMethod) {
+      case "stripe":
+        return (
+          <Button
+            className="w-full mt-4"
+            onClick={handleStripePayment}
+            disabled={isLoading}
+          >
+            {isLoading ? "Processing..." : "Pay with Stripe"}
+          </Button>
+        );
+      case "mobile_money":
+        return (
+          <MobileMoneyForm
+            itemId={item.id}
+            itemType={item.type}
+            price={item.price}
+          />
+        );
+      case "bank_transfer":
+        return (
+          <BankTransferForm
+            itemId={item.id}
+            itemType={item.type}
+            price={item.price}
+          />
+        );
+      default:
+        return null;
     }
   };
 
@@ -93,15 +119,10 @@ export const Payment = () => {
               selectedMethod={paymentMethod}
               onMethodChange={setPaymentMethod}
             />
+            <div className="mt-6">
+              {renderPaymentForm()}
+            </div>
           </div>
-
-          <Button
-            className="w-full"
-            onClick={handlePayment}
-            disabled={isLoading}
-          >
-            {isLoading ? "Processing..." : "Pay Now"}
-          </Button>
         </div>
       </main>
     </div>
