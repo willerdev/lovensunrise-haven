@@ -42,7 +42,11 @@ export const PropertyActions = ({
         <Calendar className="w-4 h-4 mr-2" />
         Pay Now
       </Button>
-      <Button variant="outline" className="flex-1" onClick={onChatClick}>
+      <Button 
+        variant="outline" 
+        className="flex-1" 
+        onClick={onChatClick}
+      >
         <MessageSquare className="w-4 h-4 mr-2" />
         Chat
       </Button>

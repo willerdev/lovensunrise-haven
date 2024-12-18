@@ -73,17 +73,24 @@ export const useBooking = (id: string, isLandBooking: boolean) => {
 
       console.log("Found item:", item);
 
+      const bookingData = {
+        tenant_id: session.user.id,
+        total_price: item.price,
+        status: "pending",
+        start_date: format(startDate, 'yyyy-MM-dd'),
+        end_date: format(endDate, 'yyyy-MM-dd'),
+      };
+
+      // Add either property_id or land_id based on the booking type
+      if (isLandBooking) {
+        bookingData['land_id'] = id;
+      } else {
+        bookingData['property_id'] = id;
+      }
+
       const { error: bookingError } = await supabase
         .from("bookings")
-        .insert({
-          property_id: isLandBooking ? null : id,
-          land_id: isLandBooking ? id : null,
-          tenant_id: session.user.id,
-          total_price: item.price,
-          status: "pending",
-          start_date: format(startDate, 'yyyy-MM-dd'),
-          end_date: format(endDate, 'yyyy-MM-dd'),
-        });
+        .insert(bookingData);
 
       if (bookingError) throw bookingError;
 
