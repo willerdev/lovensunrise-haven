@@ -3,19 +3,21 @@ import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Home, Calendar, CreditCard, MessageCircle, AlertTriangle, User, ArrowLeft } from "lucide-react";
-import { format } from "date-fns";
+import { Home, Calendar, CreditCard, User, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { DashboardStats } from "@/components/tenant/DashboardStats";
+import { BookingsList } from "@/components/tenant/BookingsList";
+import { PaymentMethods } from "@/components/tenant/PaymentMethods";
+import { ProfileInfo } from "@/components/tenant/ProfileInfo";
 import ProcurationView from "./tenant/ProcurationView";
+import { DbBooking, DbProfile } from "@/types/database";
 
 const TenantDashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("home");
-  const [profile, setProfile] = useState<any>(null);
-  const [bookings, setBookings] = useState<any[]>([]);
-  const [payments, setPayments] = useState<any[]>([]);
+  const [profile, setProfile] = useState<DbProfile | null>(null);
+  const [bookings, setBookings] = useState<DbBooking[]>([]);
 
   useEffect(() => {
     const checkUser = async () => {
@@ -44,7 +46,7 @@ const TenantDashboard = () => {
 
       setProfile(profileData);
 
-      // Fetch bookings
+      // Fetch bookings with properties data
       const { data: bookingsData } = await supabase
         .from("bookings")
         .select(`
@@ -58,6 +60,7 @@ const TenantDashboard = () => {
         `)
         .eq("tenant_id", session.user.id);
 
+      console.log("Fetched bookings:", bookingsData);
       setBookings(bookingsData || []);
     };
 
@@ -137,141 +140,19 @@ const TenantDashboard = () => {
           </TabsList>
 
           <TabsContent value="home">
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Current Residence</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {bookings.length > 0 ? (
-                    <div>
-                      <p className="font-medium">{bookings[0].properties.title}</p>
-                      <p className="text-sm text-gray-500">{bookings[0].properties.address}</p>
-                      <p className="mt-2">
-                        Time spent: {format(new Date(bookings[0].start_date), 'PP')} - Present
-                      </p>
-                    </div>
-                  ) : (
-                    <p className="text-gray-500">No active residence</p>
-                  )}
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Next Payment</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {bookings.length > 0 ? (
-                    <div>
-                      <p className="text-2xl font-bold">${bookings[0].properties.price}</p>
-                      <p className="text-sm text-gray-500">Due on {format(new Date(), 'PP')}</p>
-                    </div>
-                  ) : (
-                    <p className="text-gray-500">No pending payments</p>
-                  )}
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Quick Actions</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <button className="flex items-center text-blue-600 hover:text-blue-700">
-                    <MessageCircle className="mr-2 h-4 w-4" />
-                    Message Landlord
-                  </button>
-                  <button className="flex items-center text-blue-600 hover:text-blue-700">
-                    <AlertTriangle className="mr-2 h-4 w-4" />
-                    Submit Complaint
-                  </button>
-                </CardContent>
-              </Card>
-            </div>
+            <DashboardStats bookings={bookings} />
           </TabsContent>
 
           <TabsContent value="bookings">
-            <Card>
-              <CardHeader>
-                <CardTitle>Your Bookings</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {bookings.length > 0 ? (
-                  <div className="space-y-4">
-                    {bookings.map((booking) => (
-                      <div key={booking.id} className="border-b pb-4">
-                        <h3 className="font-medium">{booking.properties.title}</h3>
-                        <p className="text-sm text-gray-500">{booking.properties.address}</p>
-                        <p className="text-sm">
-                          {format(new Date(booking.start_date), 'PP')} - {format(new Date(booking.end_date), 'PP')}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-gray-500">No bookings yet</p>
-                )}
-              </CardContent>
-            </Card>
+            <BookingsList bookings={bookings} />
           </TabsContent>
 
           <TabsContent value="payments">
-            <Card>
-              <CardHeader>
-                <CardTitle>Payment Methods</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid gap-4 md:grid-cols-3">
-                  <button className="p-4 border rounded-lg text-center hover:bg-gray-50">
-                    <CreditCard className="mx-auto mb-2" />
-                    Bank Transfer
-                  </button>
-                  <button className="p-4 border rounded-lg text-center hover:bg-gray-50">
-                    <CreditCard className="mx-auto mb-2" />
-                    Mobile Money
-                  </button>
-                  <button className="p-4 border rounded-lg text-center hover:bg-gray-50">
-                    <CreditCard className="mx-auto mb-2" />
-                    Cash Payment
-                  </button>
-                </div>
-              </CardContent>
-            </Card>
+            <PaymentMethods />
           </TabsContent>
 
           <TabsContent value="profile">
-            <Card>
-              <CardHeader>
-                <CardTitle>Profile Information</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {profile && (
-                  <>
-                    <div>
-                      <label className="text-sm font-medium">Full Name</label>
-                      <p>{profile.full_name}</p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium">Phone</label>
-                      <p>{profile.phone}</p>
-                    </div>
-                    <button
-                      onClick={() => navigate("/profile")}
-                      className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
-                    >
-                      Edit Profile
-                    </button>
-                    <button
-                      onClick={() => supabase.auth.signOut()}
-                      className="w-full border border-red-600 text-red-600 py-2 rounded-lg hover:bg-red-50"
-                    >
-                      Logout
-                    </button>
-                  </>
-                )}
-              </CardContent>
-            </Card>
+            <ProfileInfo profile={profile} />
           </TabsContent>
 
           <TabsContent value="procuration">
