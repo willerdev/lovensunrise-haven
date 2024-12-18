@@ -74,7 +74,7 @@ const AdminBookings = () => {
               <TableCell>${booking.total_price}</TableCell>
               <TableCell>
                 <Badge
-                  variant={booking.status === 'confirmed' ? 'success' : 'secondary'}
+                  variant={booking.status === 'confirmed' ? 'default' : 'secondary'}
                 >
                   {booking.status}
                 </Badge>
