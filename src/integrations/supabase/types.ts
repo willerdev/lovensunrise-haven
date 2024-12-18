@@ -14,6 +14,7 @@ export type Database = {
           created_at: string
           end_date: string
           id: string
+          land_id: string | null
           property_id: string | null
           start_date: string
           status: string | null
@@ -25,6 +26,7 @@ export type Database = {
           created_at?: string
           end_date: string
           id?: string
+          land_id?: string | null
           property_id?: string | null
           start_date: string
           status?: string | null
@@ -36,6 +38,7 @@ export type Database = {
           created_at?: string
           end_date?: string
           id?: string
+          land_id?: string | null
           property_id?: string | null
           start_date?: string
           status?: string | null
@@ -44,6 +47,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "bookings_land_id_fkey"
+            columns: ["land_id"]
+            isOneToOne: false
+            referencedRelation: "lands"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "bookings_property_id_fkey"
             columns: ["property_id"]
