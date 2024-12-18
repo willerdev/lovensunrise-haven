@@ -17,8 +17,8 @@ export const BookingsList = ({ bookings }: BookingsListProps) => {
           <div className="space-y-4">
             {bookings.map((booking) => (
               <div key={booking.id} className="border-b pb-4">
-                <h3 className="font-medium">{booking.properties?.title}</h3>
-                <p className="text-sm text-gray-500">{booking.properties?.address}</p>
+                <h3 className="font-medium">{booking.properties?.title || 'Property Unavailable'}</h3>
+                <p className="text-sm text-gray-500">{booking.properties?.address || 'Address Unavailable'}</p>
                 <p className="text-sm">
                   {format(new Date(booking.start_date), 'PP')} - {format(new Date(booking.end_date), 'PP')}
                 </p>
