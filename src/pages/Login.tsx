@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -12,46 +13,40 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
 
     try {
       console.log("Attempting login with email:", email);
       
-      const { data: { session }, error } = await supabase.auth.signInWithPassword({
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
         email: email.trim(),
         password,
       });
 
-      if (error) {
-        console.error("Login error:", error.message);
+      if (authError) {
+        console.error("Login error:", authError.message);
         
-        if (error.message.includes("Invalid login credentials")) {
-          toast({
-            variant: "destructive",
-            title: "Login Failed",
-            description: "Invalid email or password. Please check your credentials and try again.",
-          });
+        if (authError.message.includes("Invalid login credentials")) {
+          setError("Invalid email or password. Please check your credentials and try again.");
         } else {
-          toast({
-            variant: "destructive",
-            title: "Login Failed",
-            description: "An error occurred during login. Please try again.",
-          });
+          setError("An error occurred during login. Please try again.");
         }
         return;
       }
 
-      if (session) {
-        console.log("Login successful:", session.user);
+      if (data.session) {
+        console.log("Login successful:", data.session.user);
         
         // Fetch user profile to check role
         const { data: profile } = await supabase
           .from("profiles")
           .select("role")
-          .eq("id", session.user.id)
+          .eq("id", data.session.user.id)
           .single();
 
         toast({
@@ -68,11 +63,7 @@ const Login = () => {
       }
     } catch (error) {
       console.error("Unexpected error during login:", error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "An unexpected error occurred. Please try again.",
-      });
+      setError("An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -92,6 +83,11 @@ const Login = () => {
 
       <main className="container mx-auto p-4 max-w-md">
         <form onSubmit={handleSubmit} className="space-y-4">
+          {error && (
+            <Alert variant="destructive">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
           <div className="space-y-2">
             <label htmlFor="email" className="text-sm font-medium">
               Email
