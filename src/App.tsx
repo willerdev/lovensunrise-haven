@@ -20,7 +20,6 @@ import TenantDashboard from "./pages/TenantDashboard";
 import LandlordDashboard from "./pages/LandlordDashboard";
 import BrokerDashboard from "./pages/BrokerDashboard";
 import AddLand from "./pages/landlord/AddLand";
-import ProcurationForm from "./pages/procuration/ProcurationForm";
 import { CategoryView } from "./pages/CategoryView";
 import { Hotels } from "./pages/Hotels";
 import Lands from "./pages/Lands";
@@ -33,6 +32,7 @@ import Partners from "./pages/admin/Partners";
 import Complaints from "./pages/admin/Complaints";
 import Procurations from "./pages/admin/Procurations";
 import Agents from "./pages/admin/Agents";
+import SiteSettings from "./pages/admin/SiteSettings";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -70,7 +70,6 @@ const App = () => {
               <Route path="/landlord-dashboard/*" element={<LandlordDashboard />} />
               <Route path="/broker-dashboard/*" element={<BrokerDashboard />} />
               <Route path="/landlord-dashboard/add-land" element={<AddLand />} />
-              <Route path="/procuration" element={<ProcurationForm />} />
               <Route path="/admin-dashboard" element={<AdminDashboard />}>
                 <Route path="properties" element={<Properties />} />
                 <Route path="lands" element={<AdminLands />} />
@@ -80,6 +79,7 @@ const App = () => {
                 <Route path="complaints" element={<Complaints />} />
                 <Route path="procurations" element={<Procurations />} />
                 <Route path="agents" element={<Agents />} />
+                <Route path="settings" element={<SiteSettings />} />
               </Route>
             </Routes>
             <Footer />

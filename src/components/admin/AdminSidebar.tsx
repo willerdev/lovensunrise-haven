@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { 
   Building2, Users, Map, Grid2X2, Users2, 
   MessageSquare, FileText, UserCog, LogOut,
-  ChevronLeft, ChevronRight, Loader
+  ChevronLeft, ChevronRight, Loader, Settings
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,7 @@ export const AdminSidebar = () => {
     try {
       await supabase.auth.signOut();
       toast.success("Logged out successfully");
-      navigate("/login");
+      navigate("/");
     } catch (error) {
       console.error("Logout error:", error);
       toast.error("Error logging out");
@@ -65,8 +65,13 @@ export const AdminSidebar = () => {
     },
     {
       title: "Broker Agents",
-      url: "/admin-dashboard/brokers",
+      url: "/admin-dashboard/agents",
       icon: UserCog,
+    },
+    {
+      title: "Site Settings",
+      url: "/admin-dashboard/settings",
+      icon: Settings,
     },
   ];
 

@@ -89,6 +89,42 @@ export type Database = {
           },
         ]
       }
+      land_visits: {
+        Row: {
+          id: string
+          land_id: string | null
+          user_id: string | null
+          visited_at: string
+        }
+        Insert: {
+          id?: string
+          land_id?: string | null
+          user_id?: string | null
+          visited_at?: string
+        }
+        Update: {
+          id?: string
+          land_id?: string | null
+          user_id?: string | null
+          visited_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "land_visits_land_id_fkey"
+            columns: ["land_id"]
+            isOneToOne: false
+            referencedRelation: "lands"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "land_visits_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lands: {
         Row: {
           address: string
@@ -202,6 +238,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      partners: {
+        Row: {
+          created_at: string
+          id: string
+          logo_url: string | null
+          name: string
+          updated_at: string
+          website_url: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          logo_url?: string | null
+          name: string
+          updated_at?: string
+          website_url?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          logo_url?: string | null
+          name?: string
+          updated_at?: string
+          website_url?: string | null
+        }
+        Relationships: []
       }
       procuration_requests: {
         Row: {
@@ -518,6 +581,42 @@ export type Database = {
           },
         ]
       }
+      property_visits: {
+        Row: {
+          id: string
+          property_id: string | null
+          user_id: string | null
+          visited_at: string
+        }
+        Insert: {
+          id?: string
+          property_id?: string | null
+          user_id?: string | null
+          visited_at?: string
+        }
+        Update: {
+          id?: string
+          property_id?: string | null
+          user_id?: string | null
+          visited_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_visits_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "property_visits_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       saved_lands: {
         Row: {
           created_at: string
@@ -589,6 +688,59 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      saved_searches: {
+        Row: {
+          created_at: string
+          id: string
+          search_query: Json
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          search_query: Json
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          search_query?: Json
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_searches_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      site_settings: {
+        Row: {
+          created_at: string
+          id: string
+          key: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          key: string
+          updated_at?: string
+          value: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          key?: string
+          updated_at?: string
+          value?: string
+        }
+        Relationships: []
       }
     }
     Views: {
