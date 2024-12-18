@@ -16,6 +16,7 @@ import Signup from "./pages/Signup";
 import CompleteProfile from "./pages/CompleteProfile";
 import Booking from "./pages/Booking";
 import BookingSuccess from "./pages/BookingSuccess";
+import Payment from "./pages/Payment";
 import TenantDashboard from "./pages/TenantDashboard";
 import LandlordDashboard from "./pages/LandlordDashboard";
 import BrokerDashboard from "./pages/BrokerDashboard";
@@ -68,6 +69,7 @@ const App = () => {
               <Route path="/complete-profile" element={<CompleteProfile />} />
               <Route path="/booking/:id" element={<Booking />} />
               <Route path="/booking-success" element={<BookingSuccess />} />
+              <Route path="/payment" element={<Payment />} />
               <Route path="/tenant-dashboard/*" element={<TenantDashboard />} />
               <Route path="/landlord-dashboard/*" element={<LandlordDashboard />} />
               <Route path="/broker-dashboard/*" element={<BrokerDashboard />} />

@@ -1,32 +1,46 @@
 import { Calendar, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 interface PropertyActionsProps {
   propertyId: string;
+  property: any;
   onChatClick: () => void;
-  onBookClick: () => void;
   isOwner: boolean;
 }
 
 export const PropertyActions = ({ 
   propertyId, 
-  onChatClick, 
-  onBookClick,
+  property,
+  onChatClick,
   isOwner 
 }: PropertyActionsProps) => {
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
+  
+  const handlePayment = () => {
+    navigate('/payment', {
+      state: {
+        item: {
+          id: propertyId,
+          title: property.title,
+          price: property.price,
+          type: property.type,
+        }
+      }
+    });
+  };
   
   const actionButtons = (
     <>
       <Button 
         className="flex-1" 
-        onClick={onBookClick}
+        onClick={handlePayment}
         disabled={isOwner}
       >
         <Calendar className="w-4 h-4 mr-2" />
-        Book Now
+        Pay Now
       </Button>
       <Button variant="outline" className="flex-1" onClick={onChatClick}>
         <MessageSquare className="w-4 h-4 mr-2" />
