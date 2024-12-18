@@ -3,7 +3,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { 
   Building2, Users, Map, Grid2X2, Users2, 
   MessageSquare, FileText, UserCog, LogOut,
-  ChevronLeft, ChevronRight, Loader, Settings
+  ChevronLeft, ChevronRight, Loader, Settings,
+  CreditCard, CalendarRange
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -67,6 +68,16 @@ export const AdminSidebar = () => {
       title: "Broker Agents",
       url: "/admin-dashboard/agents",
       icon: UserCog,
+    },
+    {
+      title: "Bookings",
+      url: "/admin-dashboard/bookings",
+      icon: CalendarRange,
+    },
+    {
+      title: "Payment Settings",
+      url: "/admin-dashboard/payment-settings",
+      icon: CreditCard,
     },
     {
       title: "Site Settings",

@@ -33,6 +33,8 @@ import Complaints from "./pages/admin/Complaints";
 import Procurations from "./pages/admin/Procurations";
 import Agents from "./pages/admin/Agents";
 import SiteSettings from "./pages/admin/SiteSettings";
+import AdminBookings from "./pages/admin/Bookings";
+import PaymentSettings from "./pages/admin/PaymentSettings";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -80,6 +82,8 @@ const App = () => {
                 <Route path="procurations" element={<Procurations />} />
                 <Route path="agents" element={<Agents />} />
                 <Route path="settings" element={<SiteSettings />} />
+                <Route path="bookings" element={<AdminBookings />} />
+                <Route path="payment-settings" element={<PaymentSettings />} />
               </Route>
             </Routes>
             <Footer />
