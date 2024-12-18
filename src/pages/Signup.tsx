@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Grid3X3 } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -59,7 +59,12 @@ const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen pb-20">
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 opacity-5">
+        <Grid3X3 className="w-full h-full text-black" />
+      </div>
+
       <header className="p-4 bg-white/80 backdrop-blur-md sticky top-0 z-40 flex items-center">
         <button
           onClick={() => navigate(-1)}
@@ -70,45 +75,49 @@ const Signup = () => {
         <h1 className="text-2xl font-semibold text-center flex-1 mr-8">Sign Up</h1>
       </header>
 
-      <main className="container mx-auto p-4 max-w-md">
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <label htmlFor="email" className="text-sm font-medium">
-              Email
-            </label>
-            <Input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              disabled={isLoading}
-            />
-          </div>
-          <div className="space-y-2">
-            <label htmlFor="password" className="text-sm font-medium">
-              Password
-            </label>
-            <Input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              disabled={isLoading}
-              minLength={6}
-            />
-          </div>
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Creating account..." : "Sign Up"}
-          </Button>
-          <p className="text-center text-sm text-gray-600">
-            Already have an account?{" "}
-            <Link to="/login" className="text-maroon-600 hover:underline">
-              Login
-            </Link>
-          </p>
-        </form>
+      <main className="container mx-auto p-4 max-w-md relative z-10">
+        <div className="bg-white/80 backdrop-blur-md p-6 rounded-lg shadow-lg">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <label htmlFor="email" className="text-sm font-medium">
+                Email
+              </label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                disabled={isLoading}
+                placeholder="Enter your email"
+              />
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="password" className="text-sm font-medium">
+                Password
+              </label>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                disabled={isLoading}
+                minLength={6}
+                placeholder="Choose a password"
+              />
+            </div>
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "Creating account..." : "Sign Up"}
+            </Button>
+            <p className="text-center text-sm text-gray-600">
+              Already have an account?{" "}
+              <Link to="/login" className="text-maroon-600 hover:underline">
+                Login
+              </Link>
+            </p>
+          </form>
+        </div>
       </main>
     </div>
   );

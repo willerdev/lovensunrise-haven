@@ -8,6 +8,8 @@ interface LogoProps {
 export const Logo = ({ className }: LogoProps) => {
   const { country, isLoading } = useCountryDetection();
 
+  console.log("Country detection:", { country, isLoading }); // Debug log
+
   return (
     <div className="flex items-center gap-4">
       <div className={cn("text-2xl font-bold flex items-center gap-1", className)}>

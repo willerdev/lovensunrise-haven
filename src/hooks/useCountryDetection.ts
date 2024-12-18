@@ -30,9 +30,11 @@ export const useCountryDetection = () => {
 
         // Fetch new data if cache is expired or doesn't exist
         const response = await fetch(
-          `http://api.ipapi.com/api/check?access_key=4a2544372186988a8966b34dd0ee0746`
+          `https://api.ipapi.com/api/check?access_key=4a2544372186988a8966b34dd0ee0746`
         );
         const data = await response.json();
+
+        console.log("Country API response:", data); // Debug log
 
         if (data.country_name) {
           const newData: CachedData = {
