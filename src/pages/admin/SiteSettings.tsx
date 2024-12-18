@@ -1,12 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { Loader } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const SiteSettings = () => {
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [settings, setSettings] = useState({
     site_email: "",
@@ -14,6 +16,31 @@ const SiteSettings = () => {
     site_address: "",
     site_website: "",
   });
+
+  // Check if user is admin
+  useEffect(() => {
+    const checkAdminAccess = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error("Please login to access this page");
+        navigate("/login");
+        return;
+      }
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", session.user.id)
+        .single();
+
+      if (profile?.role !== "admin") {
+        toast.error("You don't have permission to access this page");
+        navigate("/");
+      }
+    };
+
+    checkAdminAccess();
+  }, [navigate]);
 
   const { data: siteSettings, isLoading: isLoadingSettings } = useQuery({
     queryKey: ["site-settings"],
@@ -23,6 +50,7 @@ const SiteSettings = () => {
         .select("*");
 
       if (error) {
+        console.error("Error fetching site settings:", error);
         toast.error("Failed to fetch site settings");
         throw error;
       }
@@ -40,16 +68,43 @@ const SiteSettings = () => {
   const handleSave = async () => {
     setIsLoading(true);
     try {
+      // First check if user is still admin
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error("Please login to continue");
+        navigate("/login");
+        return;
+      }
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", session.user.id)
+        .single();
+
+      if (profile?.role !== "admin") {
+        toast.error("You don't have permission to perform this action");
+        navigate("/");
+        return;
+      }
+
       const updates = Object.entries(settings).map(([key, value]) => ({
         key,
-        value,
+        value: value || "", // Ensure value is never null
       }));
 
       const { error } = await supabase
         .from("site_settings")
-        .upsert(updates, { onConflict: "key" });
+        .upsert(updates, { 
+          onConflict: "key",
+          ignoreDuplicates: false 
+        });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error updating settings:", error);
+        throw error;
+      }
+      
       toast.success("Settings updated successfully");
     } catch (error) {
       console.error("Error updating settings:", error);
