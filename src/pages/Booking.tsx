@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -14,6 +14,8 @@ import { cn } from "@/lib/utils";
 const Booking = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const location = useLocation();
+  const isLandBooking = location.search.includes('type=land');
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [startDate, setStartDate] = useState<Date>();
@@ -53,24 +55,29 @@ const Booking = () => {
         return;
       }
 
-      // Get property details to calculate total price
-      const { data: property } = await supabase
-        .from("properties")
-        .select("price")
-        .eq("id", id)
+      console.log("Fetching details for:", { id, isLandBooking });
+
+      // Get property/land details to calculate total price
+      const { data: item } = await supabase
+        .from(isLandBooking ? 'lands' : 'properties')
+        .select('price')
+        .eq('id', id)
         .single();
 
-      if (!property) {
-        throw new Error("Property not found");
+      if (!item) {
+        throw new Error(isLandBooking ? "Land not found" : "Property not found");
       }
 
-      // Create booking record with start_date and end_date
+      console.log("Found item:", item);
+
+      // Create booking record
       const { error: bookingError } = await supabase
         .from("bookings")
         .insert({
-          property_id: id,
+          property_id: isLandBooking ? null : id,
+          land_id: isLandBooking ? id : null,
           tenant_id: session.user.id,
-          total_price: property.price,
+          total_price: item.price,
           status: "pending",
           start_date: format(startDate, 'yyyy-MM-dd'),
           end_date: format(endDate, 'yyyy-MM-dd'),
@@ -111,7 +118,9 @@ const Booking = () => {
         >
           <ArrowLeft className="w-6 h-6" />
         </button>
-        <h1 className="text-2xl font-semibold text-center flex-1 mr-8">Book Property</h1>
+        <h1 className="text-2xl font-semibold text-center flex-1 mr-8">
+          Book {isLandBooking ? 'Land' : 'Property'}
+        </h1>
       </header>
 
       <main className="container mx-auto p-4 max-w-md">
