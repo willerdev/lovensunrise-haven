@@ -179,8 +179,8 @@ export const PropertyDetail = () => {
 
           <PropertyActions 
             propertyId={property.id} 
+            property={property}
             onChatClick={() => {}}
-            onBookClick={() => {}}
             isOwner={false}
           />
         </div>
