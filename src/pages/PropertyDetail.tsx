@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Flag, Home, Bed, Bath, Ruler, AlertCircle, Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
@@ -15,12 +15,16 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { PropertySkeleton } from "@/components/skeletons/PropertySkeleton";
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 
 export const PropertyDetail = () => {
   const { id } = useParams();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
   const [reportType, setReportType] = useState<"report" | "claim" | null>(null);
+  const [reportReason, setReportReason] = useState("");
+  const [reportDescription, setReportDescription] = useState("");
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -49,6 +53,58 @@ export const PropertyDetail = () => {
       };
     },
   });
+
+  const handleReport = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        toast({
+          title: "Please login",
+          description: "You need to be logged in to report properties",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      console.log("Submitting report:", {
+        property_id: id,
+        reporter_id: session.user.id,
+        report_type: reportType,
+        description: reportDescription,
+      });
+
+      const { error } = await supabase
+        .from('property_reports')
+        .insert({
+          property_id: id,
+          reporter_id: session.user.id,
+          report_type: reportReason,
+          description: reportDescription,
+        });
+
+      if (error) {
+        console.error("Error submitting report:", error);
+        throw error;
+      }
+
+      toast({
+        title: "Report submitted",
+        description: "Thank you for your report. We will review it shortly.",
+      });
+      
+      setReportType(null);
+      setReportReason("");
+      setReportDescription("");
+    } catch (error) {
+      console.error("Error submitting report:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to submit report. Please try again.",
+      });
+    }
+  };
 
   if (isLoading) {
     return (
@@ -133,21 +189,65 @@ export const PropertyDetail = () => {
       <Dialog open={!!reportType} onOpenChange={() => setReportType(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>What would you like to do?</DialogTitle>
+            <DialogTitle>
+              {reportType === "report" ? "Report Property" : "Claim Property"}
+            </DialogTitle>
+            <DialogDescription>
+              {reportType === "report" 
+                ? "Please provide details about why you're reporting this property."
+                : "Please provide details to verify your ownership of this property."}
+            </DialogDescription>
           </DialogHeader>
-          <div className="flex flex-col gap-4 mt-4">
-            <Button
-              variant="outline"
-              onClick={() => setReportType("claim")}
-            >
-              Claim this property
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => setReportType("report")}
-            >
-              Report this property
-            </Button>
+
+          <div className="space-y-4">
+            {reportType === "report" && (
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Reason for reporting</Label>
+                  <RadioGroup value={reportReason} onValueChange={setReportReason}>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="inappropriate" id="inappropriate" />
+                      <Label htmlFor="inappropriate">Inappropriate content</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="fake" id="fake" />
+                      <Label htmlFor="fake">Fake listing</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="spam" id="spam" />
+                      <Label htmlFor="spam">Spam</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="other" id="other" />
+                      <Label htmlFor="other">Other</Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <Label>Description</Label>
+              <Textarea
+                value={reportDescription}
+                onChange={(e) => setReportDescription(e.target.value)}
+                placeholder={
+                  reportType === "report"
+                    ? "Please provide more details about the issue..."
+                    : "Please provide details to verify your ownership..."
+                }
+                className="min-h-[100px]"
+              />
+            </div>
+
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setReportType(null)}>
+                Cancel
+              </Button>
+              <Button onClick={handleReport}>
+                Submit
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>

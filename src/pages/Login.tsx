@@ -1,11 +1,12 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Grid3X3 } from "lucide-react";
+import { ArrowLeft, Grid3X3, Github } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Separator } from "@/components/ui/separator";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -69,13 +70,53 @@ const Login = () => {
     }
   };
 
+  const handleGoogleLogin = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/complete-profile`,
+        },
+      });
+
+      if (error) throw error;
+    } catch (error) {
+      console.error("Error with Google login:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to login with Google. Please try again.",
+      });
+    }
+  };
+
+  const handleGithubLogin = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'github',
+        options: {
+          redirectTo: `${window.location.origin}/complete-profile`,
+        },
+      });
+
+      if (error) throw error;
+    } catch (error) {
+      console.error("Error with Github login:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to login with Github. Please try again.",
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5">
         <Grid3X3 className="w-full h-full text-black" />
       </div>
-      
+
       <header className="p-4 bg-white/80 backdrop-blur-md sticky top-0 z-40 flex items-center">
         <button
           onClick={() => navigate(-1)}
@@ -88,7 +129,38 @@ const Login = () => {
 
       <main className="container mx-auto p-4 max-w-md relative z-10">
         <div className="bg-white/80 backdrop-blur-md p-6 rounded-lg shadow-lg">
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-4">
+            <Button 
+              variant="outline" 
+              className="w-full" 
+              onClick={handleGoogleLogin}
+            >
+              <img src="/google.svg" alt="Google" className="w-5 h-5 mr-2" />
+              Continue with Google
+            </Button>
+            
+            <Button 
+              variant="outline" 
+              className="w-full" 
+              onClick={handleGithubLogin}
+            >
+              <Github className="w-5 h-5 mr-2" />
+              Continue with GitHub
+            </Button>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-white px-2 text-muted-foreground">
+                  Or continue with
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4 mt-4">
             {error && (
               <Alert variant="destructive">
                 <AlertDescription>{error}</AlertDescription>
