@@ -45,6 +45,7 @@ const SiteSettings = () => {
   const { data: siteSettings, isLoading: isLoadingSettings } = useQuery({
     queryKey: ["site-settings"],
     queryFn: async () => {
+      console.log("Fetching site settings...");
       const { data, error } = await supabase
         .from("site_settings")
         .select("*");
@@ -88,21 +89,21 @@ const SiteSettings = () => {
         return;
       }
 
-      const updates = Object.entries(settings).map(([key, value]) => ({
-        key,
-        value: value || "", // Ensure value is never null
-      }));
+      // Insert settings one by one to avoid the body stream already read error
+      for (const [key, value] of Object.entries(settings)) {
+        const { error } = await supabase
+          .from("site_settings")
+          .upsert({
+            key,
+            value: value || "",
+          }, {
+            onConflict: "key"
+          });
 
-      const { error } = await supabase
-        .from("site_settings")
-        .upsert(updates, { 
-          onConflict: "key",
-          ignoreDuplicates: false 
-        });
-
-      if (error) {
-        console.error("Error updating settings:", error);
-        throw error;
+        if (error) {
+          console.error(`Error updating setting ${key}:`, error);
+          throw error;
+        }
       }
       
       toast.success("Settings updated successfully");
