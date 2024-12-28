@@ -29,20 +29,28 @@ export const EmailLoginForm = ({ onSuccess }: EmailLoginFormProps) => {
       });
 
       if (signInError) {
-        console.error("Login error:", signInError.message);
-        if (signInError.message === "Invalid login credentials") {
-          setError("Invalid email or password. Please check your credentials and try again.");
-        } else if (signInError.message.includes("Email not confirmed")) {
-          setError("Please verify your email address before logging in.");
-        } else {
-          setError(signInError.message);
+        console.error("Login error:", signInError);
+        
+        // Handle specific error cases
+        switch (signInError.message) {
+          case "Invalid login credentials":
+            setError("The email or password you entered is incorrect. Please try again.");
+            break;
+          case "Email not confirmed":
+            setError("Please verify your email address before logging in.");
+            break;
+          default:
+            setError(signInError.message);
         }
         return;
       }
 
-      if (data.session) {
-        console.log("Login successful:", data.session.user);
+      if (data?.session) {
+        console.log("Login successful, session:", data.session);
         onSuccess();
+      } else {
+        console.error("No session data received");
+        setError("An unexpected error occurred. Please try again.");
       }
     } catch (error) {
       console.error("Unexpected error during login:", error);
