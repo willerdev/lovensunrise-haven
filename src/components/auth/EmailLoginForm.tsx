@@ -23,14 +23,20 @@ export const EmailLoginForm = ({ onSuccess }: EmailLoginFormProps) => {
     try {
       console.log("Attempting login with email:", email);
       
-      const { data, error: authError } = await supabase.auth.signInWithPassword({
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email: email.trim(),
         password,
       });
 
-      if (authError) {
-        console.error("Login error:", authError.message);
-        setError("Invalid email or password. Please check your credentials and try again.");
+      if (signInError) {
+        console.error("Login error:", signInError.message);
+        if (signInError.message === "Invalid login credentials") {
+          setError("Invalid email or password. Please check your credentials and try again.");
+        } else if (signInError.message.includes("Email not confirmed")) {
+          setError("Please verify your email address before logging in.");
+        } else {
+          setError(signInError.message);
+        }
         return;
       }
 
