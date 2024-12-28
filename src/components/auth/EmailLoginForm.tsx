@@ -21,37 +21,37 @@ export const EmailLoginForm = ({ onSuccess }: EmailLoginFormProps) => {
     setError(null);
 
     try {
-      console.log("Attempting login with email:", email);
+      console.log("Starting login attempt for email:", email);
       
+      const { data: existingUser } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', email)
+        .single();
+
+      console.log("Profile check result:", existingUser);
+
       const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email: email.trim(),
         password,
       });
 
       if (signInError) {
-        console.error("Login error:", signInError);
+        console.error("Login error details:", signInError);
         
-        // Handle specific error cases
-        switch (signInError.message) {
-          case "Invalid login credentials":
-            setError("The email or password you entered is incorrect. Please try again.");
-            break;
-          case "Email not confirmed":
-            setError("Please verify your email address before logging in.");
-            break;
-          default:
-            setError(signInError.message);
+        if (signInError.message.includes("Invalid login credentials")) {
+          setError("The email or password you entered is incorrect. Please try again, or sign up if you don't have an account.");
+        } else if (signInError.message.includes("Email not confirmed")) {
+          setError("Please verify your email address before logging in. Check your inbox for the verification link.");
+        } else {
+          setError(signInError.message);
         }
         return;
       }
 
-      if (data?.session) {
-        console.log("Login successful, session:", data.session);
-        onSuccess();
-      } else {
-        console.error("No session data received");
-        setError("An unexpected error occurred. Please try again.");
-      }
+      console.log("Login successful, session:", data.session);
+      onSuccess();
+      
     } catch (error) {
       console.error("Unexpected error during login:", error);
       setError("An unexpected error occurred. Please try again.");
