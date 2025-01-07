@@ -27,14 +27,30 @@ const TenantDashboard = () => {
         return;
       }
 
-      // Check if user is a tenant
-      const { data: profileData, error } = await supabase
+      console.log("Checking user session:", session.user.id);
+
+      // Check if user is a tenant - using maybeSingle() to handle the case properly
+      const { data: profileData, error: profileError } = await supabase
         .from("profiles")
         .select("*")
         .eq("id", session.user.id)
-        .single();
+        .maybeSingle();
 
-      if (error || profileData?.role !== "tenant") {
+      console.log("Profile data:", profileData);
+      console.log("Profile error:", profileError);
+
+      if (profileError) {
+        console.error("Error fetching profile:", profileError);
+        toast({
+          title: "Error",
+          description: "Failed to fetch user profile",
+          variant: "destructive",
+        });
+        navigate("/");
+        return;
+      }
+
+      if (!profileData || profileData.role !== "tenant") {
         toast({
           title: "Access Denied",
           description: "You don't have permission to view this page.",
