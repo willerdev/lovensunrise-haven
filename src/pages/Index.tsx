@@ -29,6 +29,24 @@ const Index = () => {
     },
   });
 
+  const { data: welcomeMessage } = useQuery({
+    queryKey: ["welcomeMessage"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("site_settings")
+        .select("value")
+        .eq("key", "welcome_message")
+        .single();
+
+      if (error) {
+        console.error("Error fetching welcome message:", error);
+        return null;
+      }
+
+      return data?.value;
+    },
+  });
+
   const handleUserIconClick = () => {
     if (!userProfile) {
       navigate("/profile");
@@ -98,6 +116,11 @@ const Index = () => {
       </header>
 
       <main className="container mx-auto px-4 max-w-7xl py-8">
+        {welcomeMessage && (
+          <div className="text-center mb-8 max-w-3xl mx-auto">
+            <p className="text-lg text-gray-700">{welcomeMessage}</p>
+          </div>
+        )}
         <Categories />
       </main>
 

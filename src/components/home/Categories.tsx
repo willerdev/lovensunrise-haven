@@ -20,13 +20,13 @@ const categories = [
     href: "/category/apartment_rent",
   },
   {
-    title: "Hotel",
+    title: "Hotels and Resorts",
     description: "Discover comfortable stays",
     image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&auto=format&fit=crop&q=60",
     href: "/hotels",
   },
   {
-    title: "Land",
+    title: "Land and Plots",
     description: "Explore available land plots",
     image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&auto=format&fit=crop&q=60",
     href: "/lands",
