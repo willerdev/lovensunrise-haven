@@ -10,14 +10,22 @@ const ProcurationView = () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return null;
 
-      const { data } = await supabase
+      console.log("Fetching procuration data for user:", session.user.id);
+
+      const { data, error } = await supabase
         .from("procuration_requests")
         .select("*")
         .eq("user_id", session.user.id)
         .order("created_at", { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
+      if (error) {
+        console.error("Error fetching procuration data:", error);
+        throw error;
+      }
+
+      console.log("Procuration data fetched:", data);
       return data;
     },
   });
