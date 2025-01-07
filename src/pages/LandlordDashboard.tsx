@@ -27,13 +27,28 @@ const LandlordDashboard = () => {
         return;
       }
 
+      console.log("Checking user role for:", session.user.id);
+
       const { data: profile, error } = await supabase
         .from("profiles")
         .select("role")
         .eq("id", session.user.id)
-        .single();
+        .maybeSingle();
 
-      if (error || profile?.role !== "landlord") {
+      console.log("Profile query result:", { profile, error });
+
+      if (error) {
+        console.error("Error fetching profile:", error);
+        toast({
+          title: "Error",
+          description: "Failed to verify user permissions.",
+          variant: "destructive",
+        });
+        navigate("/");
+        return;
+      }
+
+      if (!profile || profile.role !== "landlord") {
         toast({
           title: "Access Denied",
           description: "You don't have permission to view this page.",
