@@ -3,12 +3,6 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -28,14 +22,10 @@ import {
 } from "@/components/ui/table";
 import { Plus, Building2, Trash2, PenSquare } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { PropertyForm } from "@/components/landlord/PropertyForm";
 import { mapDbPropertyToProperty } from "@/types/property";
 import { useNavigate } from "react-router-dom";
 
 const Properties = () => {
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
   const [propertyToDelete, setPropertyToDelete] = useState<string | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -89,20 +79,24 @@ const Properties = () => {
     }
   };
 
-  const handleAddLand = () => {
-    navigate("/landlord-dashboard/add-land");
+  const handleAddProperty = () => {
+    navigate("/landlord-dashboard/add-property");
+  };
+
+  const handleEditProperty = (propertyId: string) => {
+    navigate(`/landlord-dashboard/properties/${propertyId}/edit`);
   };
 
   return (
     <div className="container mx-auto p-4">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">My Account</h1>
+        <h1 className="text-2xl font-bold">My Properties</h1>
         <div className="flex gap-4">
-          <Button onClick={() => setIsAddDialogOpen(true)}>
+          <Button onClick={handleAddProperty}>
             <Plus className="mr-2 h-4 w-4" />
             Add Property
           </Button>
-          <Button onClick={handleAddLand} variant="outline">
+          <Button onClick={() => navigate("/landlord-dashboard/add-land")} variant="outline">
             <Building2 className="mr-2 h-4 w-4" />
             Add Land
           </Button>
@@ -134,10 +128,7 @@ const Properties = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => {
-                    setSelectedPropertyId(property.id);
-                    setIsEditDialogOpen(true);
-                  }}
+                  onClick={() => handleEditProperty(property.id)}
                 >
                   <PenSquare className="h-4 w-4" />
                 </Button>
@@ -153,37 +144,6 @@ const Properties = () => {
           ))}
         </TableBody>
       </Table>
-
-      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-        <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle>Add New Property</DialogTitle>
-          </DialogHeader>
-          <PropertyForm
-            onSuccess={() => {
-              setIsAddDialogOpen(false);
-              queryClient.invalidateQueries({ queryKey: ["landlord-properties"] });
-            }}
-            onCancel={() => setIsAddDialogOpen(false)}
-          />
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle>Edit Property</DialogTitle>
-          </DialogHeader>
-          <PropertyForm
-            propertyId={selectedPropertyId}
-            onSuccess={() => {
-              setIsEditDialogOpen(false);
-              queryClient.invalidateQueries({ queryKey: ["landlord-properties"] });
-            }}
-            onCancel={() => setIsEditDialogOpen(false)}
-          />
-        </DialogContent>
-      </Dialog>
 
       <AlertDialog open={!!propertyToDelete} onOpenChange={() => setPropertyToDelete(null)}>
         <AlertDialogContent>
