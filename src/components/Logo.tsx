@@ -12,10 +12,11 @@ export const Logo = ({ className }: LogoProps) => {
 
   return (
     <div className={cn("flex items-center justify-center md:justify-start gap-4", className)}>
-      <div className="text-2xl font-bold flex items-center gap-1">
-        <span className="text-[#1A1F2C]">loven</span>
-        <span className="text-maroon-600">sunrise</span>
-      </div>
+      <img 
+        src="https://i.imgur.com/zvSYg45.png" 
+        alt="Lovensunrise Logo" 
+        className="h-8 w-auto"
+      />
       {!isLoading && country && (
         <span className="text-sm text-gray-600">({country})</span>
       )}
