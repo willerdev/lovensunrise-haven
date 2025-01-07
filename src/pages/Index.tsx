@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Categories } from "@/components/home/Categories";
 import { TrustedPartners } from "@/components/home/TrustedPartners";
+import { Logo } from "@/components/Logo";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -69,7 +70,7 @@ const Index = () => {
     <div className="min-h-screen pb-20">
       <header className="p-4 bg-white/80 backdrop-blur-md sticky top-0 z-40">
         <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-semibold text-maroon">Lovensunrise</h1>
+          <Logo />
           {isMobile ? (
             <div className="flex gap-2">
               <Button 
