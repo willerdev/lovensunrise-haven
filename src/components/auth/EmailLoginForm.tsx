@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { AuthError } from "@supabase/supabase-js";
 
 interface EmailLoginFormProps {
   onSuccess: () => void;
@@ -16,6 +17,17 @@ export const EmailLoginForm = ({ onSuccess }: EmailLoginFormProps) => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+
+  const getErrorMessage = (error: AuthError) => {
+    switch (error.message) {
+      case "Invalid login credentials":
+        return "Invalid email or password. Please check your credentials and try again.";
+      case "Email not confirmed":
+        return "Please verify your email address before signing in.";
+      default:
+        return error.message;
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,7 +44,7 @@ export const EmailLoginForm = ({ onSuccess }: EmailLoginFormProps) => {
 
       if (signInError) {
         console.error("Login error details:", signInError);
-        setError(signInError.message);
+        setError(getErrorMessage(signInError));
         return;
       }
 
