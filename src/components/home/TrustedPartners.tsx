@@ -1,5 +1,6 @@
 import React from "react";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const partners = [
   { name: "RDB", id: 1 },
@@ -9,6 +10,12 @@ const partners = [
 ];
 
 export const TrustedPartners = () => {
+  const isMobile = useIsMobile();
+
+  if (isMobile) {
+    return null;
+  }
+
   return (
     <div className="py-12 bg-gray-50">
       <div className="container mx-auto px-4">

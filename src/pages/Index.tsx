@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { MobileNav } from "../components/MobileNav";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { User, PlusCircle, FileText } from "lucide-react";
+import { User, PlusCircle, FileText, X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Categories } from "@/components/home/Categories";
@@ -13,6 +13,19 @@ import { Logo } from "@/components/Logo";
 const Index = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const [isWelcomeVisible, setIsWelcomeVisible] = React.useState(true);
+
+  useEffect(() => {
+    const dismissed = localStorage.getItem('welcomeDismissed');
+    if (dismissed === 'true') {
+      setIsWelcomeVisible(false);
+    }
+  }, []);
+
+  const handleDismissWelcome = () => {
+    localStorage.setItem('welcomeDismissed', 'true');
+    setIsWelcomeVisible(false);
+  };
 
   const { data: userProfile } = useQuery({
     queryKey: ["userProfile"],
@@ -96,7 +109,7 @@ const Index = () => {
               )}
               <Button variant="ghost" onClick={() => navigate("/procuration")}>
                 <FileText className="w-4 h-4 mr-2" />
-                Procuration
+                Power of Attorney
               </Button>
               {!userProfile ? (
                 <>
@@ -117,8 +130,16 @@ const Index = () => {
       </header>
 
       <main className="container mx-auto px-4 max-w-7xl py-8">
-        {welcomeMessage && (
-          <div className="text-center mb-8 max-w-3xl mx-auto">
+        {welcomeMessage && isWelcomeVisible && (
+          <div className="text-center mb-8 max-w-3xl mx-auto relative bg-white p-4 rounded-lg shadow">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute right-2 top-2"
+              onClick={handleDismissWelcome}
+            >
+              <X className="h-4 w-4" />
+            </Button>
             <p className="text-lg text-gray-700">{welcomeMessage}</p>
           </div>
         )}

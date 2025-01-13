@@ -9,7 +9,7 @@ export const ProfileMenu = () => {
         className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-lg transition-colors"
       >
         <FileText className="w-5 h-5" />
-        <span>Procuration Request</span>
+        <span>Power of Attorney</span>
       </Link>
     </div>
   );

@@ -40,7 +40,7 @@ export const TenantMobileNav = () => {
         }`}
       >
         <FileText size={20} />
-        <span className="text-xs">Procuration</span>
+        <span className="text-xs">Power of Attorney</span>
       </Link>
       <Link
         to="/tenant-dashboard/profile"
