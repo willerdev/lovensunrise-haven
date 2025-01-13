@@ -2,10 +2,9 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { AuthError } from "@supabase/supabase-js";
+import { Link } from "react-router-dom";
 
 interface EmailLoginFormProps {
   onSuccess: () => void;
@@ -16,7 +15,6 @@ export const EmailLoginForm = ({ onSuccess }: EmailLoginFormProps) => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
 
   const getErrorMessage = (error: AuthError) => {
     switch (error.message) {
@@ -61,16 +59,6 @@ export const EmailLoginForm = ({ onSuccess }: EmailLoginFormProps) => {
 
   return (
     <div className="space-y-6 w-full max-w-sm">
-      <div className="flex items-center mb-4">
-        <Button
-          variant="ghost"
-          className="p-0 hover:bg-transparent"
-          onClick={() => navigate(-1)}
-        >
-          <ArrowLeft className="h-6 w-6" />
-        </Button>
-      </div>
-
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
@@ -109,6 +97,13 @@ export const EmailLoginForm = ({ onSuccess }: EmailLoginFormProps) => {
         >
           {isLoading ? "Logging in..." : "Login"}
         </Button>
+
+        <div className="text-center text-sm text-gray-600">
+          By continuing, you agree to our{" "}
+          <Link to="/terms" className="text-blue-600 hover:underline">Terms of Service</Link>
+          {" "}and{" "}
+          <Link to="/privacy" className="text-blue-600 hover:underline">Privacy Policy</Link>
+        </div>
       </form>
     </div>
   );
