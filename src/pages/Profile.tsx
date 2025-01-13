@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { MobileNav } from "../components/MobileNav";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { ProfileMenu } from "@/components/ProfileMenu";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -24,6 +25,17 @@ const Profile = () => {
       return profile;
     },
   });
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      toast.success("Logged out successfully");
+      navigate("/");
+    } catch (error) {
+      console.error("Error signing out:", error);
+      toast.error("Failed to sign out");
+    }
+  };
 
   return (
     <div className="min-h-screen pb-20">
@@ -50,7 +62,15 @@ const Profile = () => {
                 Sign Up
               </Button>
             </div>
-          ) : null}
+          ) : (
+            <Button 
+              variant="destructive" 
+              className="w-full"
+              onClick={handleLogout}
+            >
+              Logout
+            </Button>
+          )}
         </div>
       </main>
 

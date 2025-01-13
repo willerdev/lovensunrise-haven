@@ -36,6 +36,7 @@ import Agents from "./pages/admin/Agents";
 import SiteSettings from "./pages/admin/SiteSettings";
 import AdminBookings from "./pages/admin/Bookings";
 import PaymentSettings from "./pages/admin/PaymentSettings";
+import ProcurationForm from "./pages/procuration/ProcurationForm";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -70,6 +71,7 @@ const App = () => {
               <Route path="/booking/:id" element={<Booking />} />
               <Route path="/booking-success" element={<BookingSuccess />} />
               <Route path="/payment" element={<Payment />} />
+              <Route path="/procuration" element={<ProcurationForm />} />
               <Route path="/tenant-dashboard/*" element={<TenantDashboard />} />
               <Route path="/landlord-dashboard/*" element={<LandlordDashboard />} />
               <Route path="/broker-dashboard/*" element={<BrokerDashboard />} />

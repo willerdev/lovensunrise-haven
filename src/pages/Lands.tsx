@@ -5,10 +5,11 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { PropertyCard } from "@/components/PropertyCard";
+import { MobileNav } from "@/components/MobileNav";
 
 type LandStatus = "residential" | "eco_tourism" | "industrial" | "commercial" | "agriculture" | null;
 
-export const Lands = () => {
+const Lands = () => {
   const [selectedStatus, setSelectedStatus] = useState<LandStatus>(null);
 
   const { data: lands = [], isLoading } = useQuery({
@@ -94,6 +95,8 @@ export const Lands = () => {
           </div>
         )}
       </main>
+
+      <MobileNav />
     </div>
   );
 };
