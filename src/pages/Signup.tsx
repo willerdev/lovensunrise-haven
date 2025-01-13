@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Grid3X3, Github } from "lucide-react";
+import { ArrowLeft, Grid3X3 } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -78,26 +78,6 @@ const Signup = () => {
     }
   };
 
-  const handleGithubSignup = async () => {
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'github',
-        options: {
-          redirectTo: `${window.location.origin}/complete-profile`,
-        },
-      });
-
-      if (error) throw error;
-    } catch (error) {
-      console.error("Error with Github signup:", error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to sign up with Github. Please try again.",
-      });
-    }
-  };
-
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* Background Pattern */}
@@ -123,17 +103,8 @@ const Signup = () => {
               className="w-full" 
               onClick={handleGoogleSignup}
             >
-              <img src="/google.svg" alt="Google" className="w-5 h-5 mr-2" />
+              <img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5 mr-2" />
               Continue with Google
-            </Button>
-            
-            <Button 
-              variant="outline" 
-              className="w-full" 
-              onClick={handleGithubSignup}
-            >
-              <Github className="w-5 h-5 mr-2" />
-              Continue with GitHub
             </Button>
 
             <div className="relative">

@@ -7,6 +7,7 @@ export const SocialLoginButtons = () => {
 
   const handleGoogleLogin = async () => {
     try {
+      console.log("Starting Google login process...");
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {

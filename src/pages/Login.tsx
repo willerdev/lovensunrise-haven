@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { EmailLoginForm } from "@/components/auth/EmailLoginForm";
+import { SocialLoginButtons } from "@/components/auth/SocialLoginButtons";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -35,19 +35,10 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      <header className="p-4 bg-white sticky top-0 z-40 flex items-center border-b">
-        <button
-          onClick={() => navigate(-1)}
-          className="p-2 rounded-full hover:bg-gray-100 transition-colors"
-          aria-label="Go back"
-        >
-          <ArrowLeft className="w-6 h-6" />
-        </button>
-        <h1 className="text-2xl font-semibold text-center flex-1 mr-8">Login</h1>
-      </header>
-
       <main className="container mx-auto p-4 max-w-md">
         <div className="p-6">
+          <h1 className="text-2xl font-semibold text-center mb-6">Login</h1>
+          <SocialLoginButtons />
           <EmailLoginForm onSuccess={handleLoginSuccess} />
         </div>
       </main>
