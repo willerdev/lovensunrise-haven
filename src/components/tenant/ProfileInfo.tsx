@@ -4,6 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { DbProfile } from "@/types/database";
 import { User, Phone, Mail, LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
 
 interface ProfileInfoProps {
   profile: DbProfile | null;
@@ -11,6 +13,7 @@ interface ProfileInfoProps {
 
 export const ProfileInfo = ({ profile }: ProfileInfoProps) => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [email, setEmail] = useState<string | null>(null);
 
   useEffect(() => {
@@ -23,6 +26,21 @@ export const ProfileInfo = ({ profile }: ProfileInfoProps) => {
 
     getEmail();
   }, []);
+
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      navigate("/login");
+    } catch (error) {
+      console.error("Error logging out:", error);
+      toast({
+        title: "Error",
+        description: "Failed to log out. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <Card>
@@ -61,20 +79,24 @@ export const ProfileInfo = ({ profile }: ProfileInfoProps) => {
               </div>
             </div>
 
-            <div className="space-y-3">
-              <button
+            <div className="flex gap-3">
+              <Button
                 onClick={() => navigate("/profile")}
-                className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                variant="outline"
+                size="sm"
+                className="flex-1"
               >
                 Edit Profile
-              </button>
-              <button
-                onClick={() => supabase.auth.signOut()}
-                className="w-full flex items-center justify-center space-x-2 border border-red-600 text-red-600 py-2 rounded-lg hover:bg-red-50 transition-colors"
+              </Button>
+              <Button
+                onClick={handleLogout}
+                variant="outline"
+                size="sm"
+                className="flex-1 border-red-600 text-red-600 hover:bg-red-50"
               >
                 <LogOut className="h-4 w-4" />
                 <span>Logout</span>
-              </button>
+              </Button>
             </div>
           </>
         )}
