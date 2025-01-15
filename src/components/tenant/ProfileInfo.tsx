@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { DbProfile } from "@/types/database";
 import { User, Phone, Mail, LogOut } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface ProfileInfoProps {
   profile: DbProfile | null;
@@ -10,6 +11,18 @@ interface ProfileInfoProps {
 
 export const ProfileInfo = ({ profile }: ProfileInfoProps) => {
   const navigate = useNavigate();
+  const [email, setEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    const getEmail = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user?.email) {
+        setEmail(session.user.email);
+      }
+    };
+
+    getEmail();
+  }, []);
 
   return (
     <Card>
@@ -24,7 +37,7 @@ export const ProfileInfo = ({ profile }: ProfileInfoProps) => {
                 <img 
                   src={profile.avatar_url} 
                   alt={profile.full_name || ''} 
-                  className="h-16 w-16 rounded-full"
+                  className="h-16 w-16 rounded-full object-cover"
                 />
               ) : (
                 <div className="h-16 w-16 rounded-full bg-gray-100 flex items-center justify-center">
@@ -44,7 +57,7 @@ export const ProfileInfo = ({ profile }: ProfileInfoProps) => {
               </div>
               <div className="flex items-center space-x-2">
                 <Mail className="h-4 w-4 text-gray-400" />
-                <span className="text-sm text-gray-600">Email address placeholder</span>
+                <span className="text-sm text-gray-600">{email || 'Email not available'}</span>
               </div>
             </div>
 
