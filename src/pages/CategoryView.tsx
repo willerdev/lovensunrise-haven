@@ -6,6 +6,7 @@ import { MobileNav } from "@/components/MobileNav";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
+import { PropertySkeleton } from "@/components/skeletons/PropertySkeleton";
 
 export const CategoryView = () => {
   const { type } = useParams();
@@ -66,7 +67,11 @@ export const CategoryView = () => {
 
       <main className="container mx-auto px-4">
         {isLoading ? (
-          <div>Loading...</div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <PropertySkeleton key={index} />
+            ))}
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {properties.map((property) => (
@@ -83,3 +88,5 @@ export const CategoryView = () => {
     </div>
   );
 };
+
+export default CategoryView;
