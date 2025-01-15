@@ -31,7 +31,7 @@ const Booking = () => {
           <ArrowLeft className="w-6 h-6" />
         </button>
         <h1 className="text-2xl font-semibold text-center flex-1 mr-8">
-          Book {isLandBooking ? 'Land' : 'Property'}
+          Book  {isLandBooking ? 'Land' : 'Property'}
         </h1>
       </header>
 
