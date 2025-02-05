@@ -4,7 +4,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { ArrowLeft, MapPin, Ruler, DollarSign } from "lucide-react";
+import { ArrowLeft, MapPin, Ruler, DollarSign, AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export const LandDetail = () => {
   const { id } = useParams();
@@ -119,8 +120,15 @@ export const LandDetail = () => {
 
             <div className="space-y-2">
               <h2 className="text-xl font-semibold">Owner</h2>
-              <p className="text-gray-600">Lovensunrise</p>
+              <p className="text-gray-600">{land.profiles?.full_name}</p>
             </div>
+
+            <Alert className="my-4">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                Please note: A 40% advance payment is required to initiate the land acquisition procedures.
+              </AlertDescription>
+            </Alert>
 
             <Button onClick={handleBooking} className="w-full">
               Book Viewing

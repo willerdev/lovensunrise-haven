@@ -177,6 +177,15 @@ export const PropertyDetail = () => {
 
           <p className="text-gray-700">{property.description}</p>
 
+          {property.type === 'land_sell' && (
+            <Alert className="my-4">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                Please note: A 40% advance payment is required to initiate the land acquisition procedures.
+              </AlertDescription>
+            </Alert>
+          )}
+
           <PropertyActions 
             propertyId={property.id} 
             property={property}

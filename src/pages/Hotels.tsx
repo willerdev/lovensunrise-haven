@@ -14,6 +14,8 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { PropertyType, mapDbPropertyToProperty } from "@/types/property";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 
 const hotelCategories = {
   "eco_resort": "Eco Resorts",
@@ -138,6 +140,13 @@ export const Hotels = () => {
 
         {isLoading ? (
           <div>Loading...</div>
+        ) : hotels.length === 0 ? (
+          <Alert>
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              No hotels have been added yet. Please check back later.
+            </AlertDescription>
+          </Alert>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {hotels.map((hotel) => (

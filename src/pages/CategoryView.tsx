@@ -1,3 +1,4 @@
+
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,6 +9,8 @@ import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { PropertySkeleton } from "@/components/skeletons/PropertySkeleton";
 import { Property, PropertyType, mapDbPropertyToProperty } from "@/types/property";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 
 export const CategoryView = () => {
   const { type } = useParams<{ type: string }>();
@@ -73,6 +76,15 @@ export const CategoryView = () => {
               <PropertySkeleton key={index} />
             ))}
           </div>
+        ) : properties.length === 0 ? (
+          <Alert>
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              {type === "apartment_rent" 
+                ? "No apartments have been registered yet. Please check back later."
+                : "No properties found in this category."}
+            </AlertDescription>
+          </Alert>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {properties.map((property) => (
