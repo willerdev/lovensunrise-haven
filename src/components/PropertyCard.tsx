@@ -47,7 +47,7 @@ export const PropertyCard = ({ property, onImageClick, isLand }: PropertyCardPro
     checkIfLiked();
   }, [property.id, isLand]);
 
-  const handleLikeToggle = async (e: React.MouseEvent) => {
+  const handleLikeToggle = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     
     const { data: { session } } = await supabase.auth.getSession();
