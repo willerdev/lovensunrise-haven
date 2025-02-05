@@ -17,19 +17,11 @@ export const PropertyCard = ({ property, onImageClick, isLand }: PropertyCardPro
   const [isLiked, setIsLiked] = useState(false);
   const { toast } = useToast();
 
-  // Check if property is liked on component mount
   useEffect(() => {
     const checkIfLiked = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
 
-      console.log("Checking if property is liked:", {
-        property_id: property.id,
-        user_id: session.user.id,
-        isLand
-      });
-
-      // Check in the appropriate table based on whether it's a land or property
       const { data, error } = await supabase
         .from(isLand ? 'saved_lands' : 'saved_properties')
         .select()
@@ -47,7 +39,7 @@ export const PropertyCard = ({ property, onImageClick, isLand }: PropertyCardPro
     checkIfLiked();
   }, [property.id, isLand]);
 
-  const handleLikeToggle = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleLikeToggle = async (e: React.MouseEvent) => {
     e.preventDefault();
     
     const { data: { session } } = await supabase.auth.getSession();
@@ -129,7 +121,9 @@ export const PropertyCard = ({ property, onImageClick, isLand }: PropertyCardPro
           <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-t-xl" />
         )}
         <img
-          src={imageUrl}
+          src={isLand 
+            ? property.land_images?.[0]?.image_url 
+            : (property.property_images?.[0]?.image_url || property.images?.[0])}
           alt={property.title}
           className={`w-full h-48 object-cover rounded-t-xl transition-opacity duration-300 cursor-pointer ${
             imageLoaded ? "opacity-100" : "opacity-0"
@@ -149,7 +143,7 @@ export const PropertyCard = ({ property, onImageClick, isLand }: PropertyCardPro
         </button>
         <Badge 
           className={`absolute top-3 left-3 ${
-            isLand ? 'bg-green-500' : isRental ? 'bg-blue-500' : 'bg-green-500'
+            isLand ? 'bg-green-500' : property.type?.includes('rent') ? 'bg-blue-500' : 'bg-green-500'
           }`}
         >
           {isLand ? "Land for Sale" : property.type && typeLabel[property.type]}
@@ -160,7 +154,7 @@ export const PropertyCard = ({ property, onImageClick, isLand }: PropertyCardPro
           {property.title}
         </h3>
         <p className="mt-1 text-gray-500 text-sm line-clamp-1">
-          {locationString}
+          {`${property.address}, ${property.city}, ${property.state}`}
         </p>
         {!isLand && (
           <div className="mt-2 flex items-center gap-4 text-sm text-gray-600">
@@ -174,8 +168,8 @@ export const PropertyCard = ({ property, onImageClick, isLand }: PropertyCardPro
           </div>
         )}
         <p className="mt-2 text-lg font-semibold text-gray-900">
-          {formatPrice(property.price)}
-          {isRental && '/month'}
+          ${property.price.toLocaleString()}
+          {property.type?.includes('rent') && '/month'}
         </p>
       </Link>
     </div>

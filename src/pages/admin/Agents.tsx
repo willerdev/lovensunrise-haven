@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -39,6 +40,13 @@ interface AgentFormData {
   role: AgentRole | "";
 }
 
+interface Agent {
+  id: string;
+  full_name: string | null;
+  role: AgentRole | null;
+  created_at: string;
+}
+
 const Agents = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -62,7 +70,7 @@ const Agents = () => {
         throw error;
       }
 
-      return data;
+      return (data || []) as Agent[];
     },
   });
 
