@@ -6,6 +6,7 @@ import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { PropertyCard } from "@/components/PropertyCard";
 import { MobileNav } from "@/components/MobileNav";
+import { Property, PropertyType } from "@/types/property";
 
 type LandStatus = "residential" | "eco_tourism" | "industrial" | "commercial" | "agriculture" | null;
 
