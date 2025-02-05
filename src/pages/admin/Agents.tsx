@@ -33,13 +33,19 @@ import { UserRole } from "@/integrations/supabase/enumTypes";
 
 type AgentRole = Extract<UserRole, "loven_agent" | "independent_agent">;
 
+interface AgentFormData {
+  email: string;
+  full_name: string;
+  role: AgentRole | "";
+}
+
 const Agents = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isOpen, setIsOpen] = useState(false);
-  const [newAgent, setNewAgent] = useState({
+  const [newAgent, setNewAgent] = useState<AgentFormData>({
     email: "",
     full_name: "",
-    role: "" as AgentRole,
+    role: "",
   });
 
   const { data: agents, isLoading, refetch } = useQuery({
@@ -77,7 +83,7 @@ const Agents = () => {
       toast.success("Agent added successfully");
       setIsOpen(false);
       refetch();
-      setNewAgent({ email: "", full_name: "", role: "" as AgentRole });
+      setNewAgent({ email: "", full_name: "", role: "" });
     } catch (error) {
       console.error("Error adding agent:", error);
       toast.error("Failed to add agent");

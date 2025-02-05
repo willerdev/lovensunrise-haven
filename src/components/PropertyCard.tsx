@@ -7,7 +7,10 @@ import { useToast } from "@/components/ui/use-toast";
 import { Badge } from "@/components/ui/badge";
 
 interface PropertyCardProps {
-  property: Property | any;
+  property: Omit<Property, 'property_images'> & {
+    property_images?: Array<{ image_url: string }>;
+    land_images?: Array<{ image_url: string }>;
+  };
   onImageClick?: () => void;
   isLand?: boolean;
 }
@@ -104,7 +107,7 @@ export const PropertyCard = ({ property, onImageClick, isLand }: PropertyCardPro
       : `$${price.toLocaleString()}`;
   };
 
-  const typeLabel = {
+  const typeLabel: Record<string, string> = {
     house_rent: "House for Rent",
     house_sell: "House for Sale",
     apartment_rent: "Apartment for Rent",
