@@ -137,6 +137,24 @@ export type Database = {
           },
         ]
       }
+      countries: {
+        Row: {
+          code: string
+          id: number
+          name: string
+        }
+        Insert: {
+          code: string
+          id?: number
+          name: string
+        }
+        Update: {
+          code?: string
+          id?: number
+          name?: string
+        }
+        Relationships: []
+      }
       land_images: {
         Row: {
           created_at: string

@@ -119,7 +119,7 @@ export const LandDetail = () => {
 
             <div className="space-y-2">
               <h2 className="text-xl font-semibold">Owner</h2>
-              <p className="text-gray-600">{land.profiles?.full_name}</p>
+              <p className="text-gray-600">Lovensunrise</p>
             </div>
 
             <Button onClick={handleBooking} className="w-full">
