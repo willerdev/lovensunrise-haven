@@ -1,4 +1,4 @@
-export type PropertyType = 'house_rent' | 'house_sell' | 'apartment_rent' | 'land_sell';
+export type PropertyType = 'house_rent' | 'house_sell' | 'apartment_rent' | 'hotel' | 'land_sell';
 
 export type PropertyStatus = 'rent' | 'sale';
 export type FurnishingStatus = 'furnished' | 'unfurnished';
@@ -10,7 +10,8 @@ export interface Property {
   price: number;
   bedrooms?: number | null;
   bathrooms?: number | null;
-  area: number | null;
+  area?: number | null;
+  area_sqm?: number | null;
   description: string | null;
   address: string;
   city: string;
@@ -24,11 +25,15 @@ export interface Property {
   updated_at?: string;
   furnishing_status?: string | null;
   images?: string[];
-  property_images?: { image_url: string }[];
+  property_images?: Array<{ image_url: string }>;
+  land_images?: Array<{ image_url: string }>;
 }
 
-export const mapDbPropertyToProperty = (dbProperty: any): Property => ({
-  ...dbProperty,
-  type: dbProperty.type as PropertyType, // Ensure type is cast to PropertyType
-  images: dbProperty.property_images?.map((img: { image_url: string }) => img.image_url) || []
-});
+export const mapDbPropertyToProperty = (dbProperty: any): Property => {
+  const property: Property = {
+    ...dbProperty,
+    type: dbProperty.type as PropertyType,
+    images: dbProperty.property_images?.map((img: { image_url: string }) => img.image_url) || []
+  };
+  return property;
+};

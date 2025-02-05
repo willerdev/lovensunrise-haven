@@ -7,9 +7,10 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { PropertySkeleton } from "@/components/skeletons/PropertySkeleton";
+import { Property, PropertyType, mapDbPropertyToProperty } from "@/types/property";
 
 export const CategoryView = () => {
-  const { type } = useParams();
+  const { type } = useParams<{ type: string }>();
 
   const { data: properties = [], isLoading } = useQuery({
     queryKey: ["properties", type],
@@ -33,7 +34,7 @@ export const CategoryView = () => {
         throw error;
       }
 
-      return data || [];
+      return data.map(mapDbPropertyToProperty) || [];
     },
   });
 

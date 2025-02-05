@@ -39,8 +39,11 @@ const Lands = () => {
         throw error;
       }
 
-      console.log("Fetched lands:", data);
-      return data;
+      return data.map(land => ({
+        ...land,
+        type: 'land_sell' as PropertyType,
+        area: land.area_sqm,
+      }));
     },
   });
 

@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { PropertyType, mapDbPropertyToProperty } from "@/types/property";
 
 const hotelCategories = {
   "eco_resort": "Eco Resorts",
@@ -69,7 +70,7 @@ export const Hotels = () => {
         throw error;
       }
 
-      return data;
+      return data.map(mapDbPropertyToProperty);
     },
   });
 

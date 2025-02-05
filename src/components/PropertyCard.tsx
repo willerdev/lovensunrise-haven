@@ -7,10 +7,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Badge } from "@/components/ui/badge";
 
 interface PropertyCardProps {
-  property: Omit<Property, 'property_images'> & {
-    property_images?: Array<{ image_url: string }>;
-    land_images?: Array<{ image_url: string }>;
-  };
+  property: Property;
   onImageClick?: () => void;
   isLand?: boolean;
 }
@@ -112,6 +109,7 @@ export const PropertyCard = ({ property, onImageClick, isLand }: PropertyCardPro
     house_sell: "House for Sale",
     apartment_rent: "Apartment for Rent",
     land_sell: "Land for Sale",
+    hotel: "Hotel"
   };
 
   // Get the first image URL from either property_images or images array
