@@ -41,6 +41,9 @@ import ProcurationForm from "./pages/procuration/ProcurationForm";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import AddProperty from "./pages/AddProperty";
+import About from "./pages/About";
+import Careers from "./pages/Careers";
+import Contact from "./pages/Contact";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -79,6 +82,9 @@ const App = () => {
               <Route path="/terms" element={<Terms />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/add-property" element={<AddProperty />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/careers" element={<Careers />} />
+              <Route path="/contact" element={<Contact />} />
               <Route path="/tenant-dashboard/*" element={<TenantDashboard />} />
               <Route path="/landlord-dashboard/*" element={<LandlordDashboard />} />
               <Route path="/broker-dashboard/*" element={<BrokerDashboard />} />
