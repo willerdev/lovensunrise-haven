@@ -25,8 +25,9 @@ import AddLand from "./pages/landlord/AddLand";
 import { CategoryView } from "./pages/CategoryView";
 import { Hotels } from "./pages/Hotels";
 import Lands from "./pages/Lands";
+import Properties from "./pages/Properties";
 import AdminDashboard from "./pages/admin/AdminDashboard";
-import Properties from "./pages/admin/Properties";
+import AdminProperties from "./pages/admin/Properties";
 import AdminLands from "./pages/admin/Lands";
 import Categories from "./pages/admin/Categories";
 import Users from "./pages/admin/Users";
@@ -67,6 +68,7 @@ const App = () => {
               <Route path="/category/:type" element={<CategoryView />} />
               <Route path="/hotels" element={<Hotels />} />
               <Route path="/lands" element={<Lands />} />
+              <Route path="/properties" element={<Properties />} />
               <Route path="/property/:id" element={<PropertyDetail />} />
               <Route path="/land/:id" element={<LandDetail />} />
               <Route path="/search" element={<Search />} />
@@ -90,7 +92,7 @@ const App = () => {
               <Route path="/broker-dashboard/*" element={<BrokerDashboard />} />
               <Route path="/landlord-dashboard/add-land" element={<AddLand />} />
               <Route path="/admin-dashboard" element={<AdminDashboard />}>
-                <Route path="properties" element={<Properties />} />
+                <Route path="properties" element={<AdminProperties />} />
                 <Route path="lands" element={<AdminLands />} />
                 <Route path="categories" element={<Categories />} />
                 <Route path="users" element={<Users />} />

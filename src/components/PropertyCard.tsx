@@ -22,23 +22,27 @@ export const PropertyCard = ({ property, onImageClick, isLand }: PropertyCardPro
     let isMounted = true;
     
     const checkIfLiked = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session || !isMounted) return;
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session || !isMounted) return;
 
-      const { data, error } = await supabase
-        .from(isLand ? 'saved_lands' : 'saved_properties')
-        .select()
-        .eq(isLand ? 'land_id' : 'property_id', property.id)
-        .eq('user_id', session.user.id)
-        .single();
+        const { data, error } = await supabase
+          .from(isLand ? 'saved_lands' : 'saved_properties')
+          .select()
+          .eq(isLand ? 'land_id' : 'property_id', property.id)
+          .eq('user_id', session.user.id)
+          .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') {
-        console.error("Error checking if item is liked:", error);
-        return;
-      }
+        if (error && error.code !== 'PGRST116') {
+          console.error("Error checking if item is liked:", error);
+          return;
+        }
 
-      if (isMounted) {
-        setIsLiked(!!data);
+        if (isMounted) {
+          setIsLiked(!!data);
+        }
+      } catch (error) {
+        console.error("Error in checkIfLiked:", error);
       }
     };
 
