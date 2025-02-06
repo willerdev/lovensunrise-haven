@@ -11,9 +11,12 @@ import { PropertySkeleton } from "@/components/skeletons/PropertySkeleton";
 import { Property, PropertyType, mapDbPropertyToProperty } from "@/types/property";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
+import { RentalSearchFilter, RentalFilters } from "@/components/RentalSearchFilter";
+import { useState } from "react";
 
 export const CategoryView = () => {
   const { type } = useParams<{ type: string }>();
+  const [filters, setFilters] = useState<RentalFilters>({});
 
   const { data: properties = [], isLoading } = useQuery({
     queryKey: ["properties", type],
@@ -39,6 +42,13 @@ export const CategoryView = () => {
 
       return data.map(mapDbPropertyToProperty) || [];
     },
+  });
+
+  const filteredProperties = properties.filter((property) => {
+    if (filters.minPrice && property.price < filters.minPrice) return false;
+    if (filters.maxPrice && property.price > filters.maxPrice) return false;
+    if (filters.status && property.status !== filters.status) return false;
+    return true;
   });
 
   const getCategoryTitle = () => {
@@ -70,13 +80,19 @@ export const CategoryView = () => {
       </header>
 
       <main className="container mx-auto px-4">
+        {type?.includes('rent') && (
+          <div className="mb-6">
+            <RentalSearchFilter onFilter={setFilters} />
+          </div>
+        )}
+
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {Array.from({ length: 6 }).map((_, index) => (
               <PropertySkeleton key={index} />
             ))}
           </div>
-        ) : properties.length === 0 ? (
+        ) : filteredProperties.length === 0 ? (
           <Alert>
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
@@ -87,7 +103,7 @@ export const CategoryView = () => {
           </Alert>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {properties.map((property) => (
+            {filteredProperties.map((property) => (
               <PropertyCard 
                 key={property.id} 
                 property={property}

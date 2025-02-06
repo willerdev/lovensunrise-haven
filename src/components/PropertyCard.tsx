@@ -1,3 +1,4 @@
+
 import { Property } from "../types/property";
 import { useState, useEffect } from "react";
 import { Heart } from "lucide-react";
@@ -18,28 +19,34 @@ export const PropertyCard = ({ property, onImageClick, isLand }: PropertyCardPro
   const { toast } = useToast();
 
   useEffect(() => {
+    let isMounted = true;
+    
     const checkIfLiked = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
+      if (!session || !isMounted) return;
 
       const { data, error } = await supabase
         .from(isLand ? 'saved_lands' : 'saved_properties')
         .select()
         .eq(isLand ? 'land_id' : 'property_id', property.id)
-        .eq('user_id', session.user.id);
+        .eq('user_id', session.user.id)
+        .single();
 
-      if (error) {
+      if (error && error.code !== 'PGRST116') {
         console.error("Error checking if item is liked:", error);
         return;
       }
 
-      setIsLiked(data && data.length > 0);
+      if (isMounted) {
+        setIsLiked(!!data);
+      }
     };
 
     checkIfLiked();
+    return () => { isMounted = false };
   }, [property.id, isLand]);
 
-  const handleLikeToggle = async (e: React.MouseEvent) => {
+  const handleLikeToggle = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     
     const { data: { session } } = await supabase.auth.getSession();
@@ -52,27 +59,23 @@ export const PropertyCard = ({ property, onImageClick, isLand }: PropertyCardPro
       return;
     }
 
-    try {
-      const tableName = isLand ? 'saved_lands' : 'saved_properties';
-      const idField = isLand ? 'land_id' : 'property_id';
+    const tableName = isLand ? 'saved_lands' : 'saved_properties';
+    const idField = isLand ? 'land_id' : 'property_id';
 
+    try {
       if (isLiked) {
-        const { error } = await supabase
+        await supabase
           .from(tableName)
           .delete()
           .eq(idField, property.id)
           .eq('user_id', session.user.id);
-
-        if (error) throw error;
       } else {
-        const { error } = await supabase
+        await supabase
           .from(tableName)
           .insert({
             [idField]: property.id,
             user_id: session.user.id,
           });
-
-        if (error) throw error;
       }
 
       setIsLiked(!isLiked);
@@ -89,30 +92,6 @@ export const PropertyCard = ({ property, onImageClick, isLand }: PropertyCardPro
       });
     }
   };
-
-  const formatPrice = (price: number) => {
-    return price >= 1000000
-      ? `$${(price / 1000000).toFixed(1)}M`
-      : `$${price.toLocaleString()}`;
-  };
-
-  const typeLabel: Record<string, string> = {
-    house_rent: "House for Rent",
-    house_sell: "House for Sale",
-    apartment_rent: "Apartment for Rent",
-    land_sell: "Land for Sale",
-    hotel: "Hotel"
-  };
-
-  // Get the first image URL from either property_images or images array
-  const imageUrl = isLand 
-    ? property.land_images?.[0]?.image_url 
-    : (property.property_images?.[0]?.image_url || property.images?.[0]);
-
-  // Construct location string from address components
-  const locationString = `${property.address}, ${property.city}, ${property.state}`;
-
-  const isRental = property.type?.includes('rent');
 
   return (
     <div className="property-card">
@@ -146,7 +125,7 @@ export const PropertyCard = ({ property, onImageClick, isLand }: PropertyCardPro
             isLand ? 'bg-green-500' : property.type?.includes('rent') ? 'bg-blue-500' : 'bg-green-500'
           }`}
         >
-          {isLand ? "Land for Sale" : property.type && typeLabel[property.type]}
+          {isLand ? "Land for Sale" : property.type?.includes('rent') ? "For Rent" : "For Sale"}
         </Badge>
       </div>
       <Link to={isLand ? `/land/${property.id}` : `/property/${property.id}`} className="block p-4">
@@ -164,7 +143,9 @@ export const PropertyCard = ({ property, onImageClick, isLand }: PropertyCardPro
             {property.bathrooms && (
               <span>{property.bathrooms} {property.bathrooms === 1 ? 'bath' : 'baths'}</span>
             )}
-            <span>{property.area || property.area_sqm} sqft</span>
+            {(property.area || property.area_sqm) && (
+              <span>{property.area || property.area_sqm} sqft</span>
+            )}
           </div>
         )}
         <p className="mt-2 text-lg font-semibold text-gray-900">
