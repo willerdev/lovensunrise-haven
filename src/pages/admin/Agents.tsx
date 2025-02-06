@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -30,7 +29,6 @@ import {
 import { toast } from "sonner";
 import { UserPlus, Database } from "lucide-react";
 import { Label } from "@/components/ui/label";
-import { UserRole } from "@/integrations/supabase/enumTypes";
 
 type AgentRole = "loven_agent" | "independent_agent";
 
