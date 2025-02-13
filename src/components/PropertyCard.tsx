@@ -13,12 +13,14 @@ interface PropertyCardProps {
   isLand?: boolean;
 }
 
+type ToggleEvent = React.MouseEvent<HTMLButtonElement>;
+
 export const PropertyCard = ({ property, onImageClick, isLand }: PropertyCardProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const { toast } = useToast();
 
-  const handleLikeToggle = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleLikeToggle = async (e: ToggleEvent) => {
     e.preventDefault();
     e.stopPropagation();
     

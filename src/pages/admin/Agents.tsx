@@ -46,14 +46,16 @@ interface Agent {
   created_at: string;
 }
 
+const defaultAgentForm: AgentFormData = {
+  email: "",
+  full_name: "",
+  role: "",
+};
+
 const Agents = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isOpen, setIsOpen] = useState(false);
-  const [newAgent, setNewAgent] = useState<AgentFormData>({
-    email: "",
-    full_name: "",
-    role: "",
-  });
+  const [newAgent, setNewAgent] = useState<AgentFormData>(defaultAgentForm);
 
   const handleAddAgent = async () => {
     try {
@@ -72,11 +74,18 @@ const Agents = () => {
       toast.success("Agent added successfully");
       setIsOpen(false);
       refetch();
-      setNewAgent({ email: "", full_name: "", role: "" });
+      setNewAgent(defaultAgentForm);
     } catch (error) {
       console.error("Error adding agent:", error);
       toast.error("Failed to add agent");
     }
+  };
+
+  const handleRoleChange = (value: string) => {
+    setNewAgent(prev => ({
+      ...prev,
+      role: value as AgentRole,
+    }));
   };
 
   const { data: agents, isLoading, refetch } = useQuery({
@@ -147,9 +156,7 @@ const Agents = () => {
                 <Label htmlFor="role">Role</Label>
                 <Select
                   value={newAgent.role}
-                  onValueChange={(value: AgentRole) =>
-                    setNewAgent({ ...newAgent, role: value })
-                  }
+                  onValueChange={handleRoleChange}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select role" />
