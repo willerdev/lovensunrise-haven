@@ -19,35 +19,30 @@ export const PropertyCard = ({ property, onImageClick, isLand }: PropertyCardPro
   const { toast } = useToast();
 
   useEffect(() => {
-    let isMounted = true;
-    
     const checkIfLiked = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
-        if (!session || !isMounted) return;
+        if (!session) return;
 
         const { data, error } = await supabase
           .from(isLand ? 'saved_lands' : 'saved_properties')
           .select()
           .eq(isLand ? 'land_id' : 'property_id', property.id)
           .eq('user_id', session.user.id)
-          .maybeSingle();
+          .single();
 
         if (error && error.code !== 'PGRST116') {
           console.error("Error checking if item is liked:", error);
           return;
         }
 
-        if (isMounted) {
-          setIsLiked(!!data);
-        }
+        setIsLiked(!!data);
       } catch (error) {
         console.error("Error in checkIfLiked:", error);
       }
     };
 
     checkIfLiked();
-    return () => { isMounted = false };
   }, [property.id, isLand]);
 
   const handleLikeToggle = async (e: React.MouseEvent) => {
@@ -97,6 +92,10 @@ export const PropertyCard = ({ property, onImageClick, isLand }: PropertyCardPro
     }
   };
 
+  const imageUrl = isLand 
+    ? property.land_images?.[0]?.image_url 
+    : (property.property_images?.[0]?.image_url || property.images?.[0]);
+
   return (
     <div className="property-card">
       <div className="relative">
@@ -104,9 +103,7 @@ export const PropertyCard = ({ property, onImageClick, isLand }: PropertyCardPro
           <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-t-xl" />
         )}
         <img
-          src={isLand 
-            ? property.land_images?.[0]?.image_url 
-            : (property.property_images?.[0]?.image_url || property.images?.[0])}
+          src={imageUrl}
           alt={property.title}
           className={`w-full h-48 object-cover rounded-t-xl transition-opacity duration-300 cursor-pointer ${
             imageLoaded ? "opacity-100" : "opacity-0"

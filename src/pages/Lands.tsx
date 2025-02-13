@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -6,7 +7,7 @@ import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { PropertyCard } from "@/components/PropertyCard";
 import { MobileNav } from "@/components/MobileNav";
-import { Property, PropertyType } from "@/types/property";
+import { Property, PropertyType, PropertyCategory } from "@/types/property";
 
 type LandStatus = "residential" | "eco_tourism" | "industrial" | "commercial" | "agriculture" | null;
 
@@ -44,6 +45,7 @@ const Lands = () => {
         ...land,
         type: 'land_sell' as PropertyType,
         area: land.area_sqm,
+        category: 'VVIP' as PropertyCategory, // Default category for lands
       }));
     },
   });

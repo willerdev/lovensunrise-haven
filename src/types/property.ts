@@ -25,7 +25,7 @@ export interface Property {
   owner_id?: string | null;
   created_at: string;
   updated_at?: string;
-  furnishing_status?: string | null;
+  furnishing_status?: FurnishingStatus | null;
   category: PropertyCategory;
   images?: string[];
   property_images?: Array<{ image_url: string }>;
@@ -34,11 +34,11 @@ export interface Property {
 }
 
 export const mapDbPropertyToProperty = (dbProperty: any): Property => {
-  const property: Property = {
+  return {
     ...dbProperty,
     type: dbProperty.type as PropertyType,
-    category: dbProperty.category as PropertyCategory,
+    category: (dbProperty.category || 'Middle Class') as PropertyCategory,
+    furnishing_status: dbProperty.furnishing_status as FurnishingStatus,
     images: dbProperty.property_images?.map((img: { image_url: string }) => img.image_url) || []
   };
-  return property;
 };

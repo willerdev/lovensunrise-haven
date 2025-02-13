@@ -2,7 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { PropertyCard } from "@/components/PropertyCard";
-import { Property } from "@/types/property";
+import { Property, mapDbPropertyToProperty } from "@/types/property";
 import { PropertySkeleton } from "@/components/skeletons/PropertySkeleton";
 
 const Properties = () => {
@@ -23,7 +23,7 @@ const Properties = () => {
         .eq("status", "available");
 
       if (error) throw error;
-      return data || [];
+      return (data || []).map(mapDbPropertyToProperty);
     },
   });
 
