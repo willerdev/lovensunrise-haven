@@ -1,4 +1,7 @@
-import { useState, useEffect } from "react";
+
+import { useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface PropertyImagesProps {
   images: string[];
@@ -7,23 +10,44 @@ interface PropertyImagesProps {
 }
 
 export const PropertyImages = ({ images, currentImageIndex, onImageChange }: PropertyImagesProps) => {
-  useEffect(() => {
-    const timer = setInterval(() => {
-      onImageChange((currentImageIndex + 1) % images.length);
-    }, 5000); // Change image every 5 seconds
-
-    return () => clearInterval(timer);
-  }, [currentImageIndex, images.length, onImageChange]);
-
   return (
     <div className="space-y-4">
       <div className="aspect-video relative overflow-hidden rounded-lg">
         {images[currentImageIndex] && (
-          <img
-            src={images[currentImageIndex]}
-            alt={`Property ${currentImageIndex + 1}`}
-            className="w-full h-full object-cover transition-opacity duration-500"
-          />
+          <>
+            <img
+              src={images[currentImageIndex]}
+              alt={`Property ${currentImageIndex + 1}`}
+              className="w-full h-full object-cover transition-opacity duration-500"
+            />
+            <div className="absolute inset-x-0 bottom-4 flex justify-center gap-2">
+              {images.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => onImageChange(index)}
+                  className={`w-2 h-2 rounded-full transition-all ${
+                    index === currentImageIndex ? "bg-white w-4" : "bg-white/60"
+                  }`}
+                />
+              ))}
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/20 hover:bg-black/40 text-white"
+              onClick={() => onImageChange((currentImageIndex - 1 + images.length) % images.length)}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/20 hover:bg-black/40 text-white"
+              onClick={() => onImageChange((currentImageIndex + 1) % images.length)}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </>
         )}
       </div>
       

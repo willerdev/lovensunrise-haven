@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 
 export const Footer = () => {
@@ -33,6 +34,7 @@ export const Footer = () => {
             <ul className="space-y-2">
               <li className="text-gray-600">support@lovensunrise.com</li>
               <li className="text-gray-600">+1 (555) 123-4567</li>
+              <li className="text-gray-600">WorldRemit: +256 789 012 345</li>
             </ul>
           </div>
         </div>
