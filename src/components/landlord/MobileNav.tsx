@@ -1,3 +1,4 @@
+
 import { Link, useLocation } from "react-router-dom";
 import { Home, Calendar, CreditCard, User, FileText } from "lucide-react";
 
@@ -33,15 +34,18 @@ export const LandlordMobileNav = () => {
         <CreditCard size={20} />
         <span className="text-xs">Payments</span>
       </Link>
-      <Link
-        to="/procuration"
-        className={`flex flex-col items-center ${
-          location.pathname === "/procuration" ? "text-blue-600" : "text-gray-500"
-        }`}
-      >
-        <FileText size={20} />
-        <span className="text-xs">Power of Attorney</span>
-      </Link>
+      {/* Power of Attorney link hidden but preserved */}
+      {false && (
+        <Link
+          to="/procuration"
+          className={`flex flex-col items-center ${
+            location.pathname === "/procuration" ? "text-blue-600" : "text-gray-500"
+          }`}
+        >
+          <FileText size={20} />
+          <span className="text-xs">Power of Attorney</span>
+        </Link>
+      )}
       <Link
         to="/landlord-dashboard/profile"
         className={`flex flex-col items-center ${
