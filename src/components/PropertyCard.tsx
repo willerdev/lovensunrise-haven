@@ -47,6 +47,7 @@ export const PropertyCard = ({ property, onImageClick, isLand }: PropertyCardPro
 
   const handleLikeToggle = async (e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
@@ -96,8 +97,10 @@ export const PropertyCard = ({ property, onImageClick, isLand }: PropertyCardPro
     ? property.land_images?.[0]?.image_url 
     : (property.property_images?.[0]?.image_url || property.images?.[0]);
 
+  const detailPath = isLand ? `/land/${property.id}` : `/property/${property.id}`;
+
   return (
-    <div className="property-card">
+    <Link to={detailPath} className="property-card block">
       <div className="relative">
         {!imageLoaded && (
           <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-t-xl" />
@@ -105,11 +108,10 @@ export const PropertyCard = ({ property, onImageClick, isLand }: PropertyCardPro
         <img
           src={imageUrl}
           alt={property.title}
-          className={`w-full h-48 object-cover rounded-t-xl transition-opacity duration-300 cursor-pointer ${
+          className={`w-full h-48 object-cover rounded-t-xl transition-opacity duration-300 ${
             imageLoaded ? "opacity-100" : "opacity-0"
           }`}
           onLoad={() => setImageLoaded(true)}
-          onClick={onImageClick}
         />
         <button
           onClick={handleLikeToggle}
@@ -129,7 +131,7 @@ export const PropertyCard = ({ property, onImageClick, isLand }: PropertyCardPro
           {isLand ? "Land for Sale" : property.type?.includes('rent') ? "For Rent" : "For Sale"}
         </Badge>
       </div>
-      <Link to={isLand ? `/land/${property.id}` : `/property/${property.id}`} className="block p-4">
+      <div className="p-4">
         <h3 className="mt-2 text-lg font-semibold text-gray-900 line-clamp-1">
           {property.title}
         </h3>
@@ -153,7 +155,7 @@ export const PropertyCard = ({ property, onImageClick, isLand }: PropertyCardPro
           ${property.price.toLocaleString()}
           {property.type?.includes('rent') && '/month'}
         </p>
-      </Link>
-    </div>
+      </div>
+    </Link>
   );
 };
