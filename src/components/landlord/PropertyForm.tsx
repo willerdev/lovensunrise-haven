@@ -126,20 +126,22 @@ export const PropertyForm = ({ propertyId, onSuccess, onCancel }: PropertyFormPr
         title: formData.title,
         description: formData.description,
         price: Number(formData.price),
-        bedrooms: Number(formData.bedrooms),
-        bathrooms: Number(formData.bathrooms),
-        area: Number(formData.area),
+        bedrooms: formData.bedrooms ? Number(formData.bedrooms) : null,
+        bathrooms: formData.bathrooms ? Number(formData.bathrooms) : null,
+        area: formData.area ? Number(formData.area) : null,
         address: formData.address,
         city: formData.city,
         state: formData.state,
         zip_code: formData.zip_code,
-        status: formData.status,
+        status: "available",
         furnishing_status: formData.furnishing,
         type: formData.type,
         category: formData.category,
         owner_id: session.user.id,
       };
 
+      let property;
+      
       if (propertyId) {
         const { error: updateError } = await supabase
           .from("properties")
@@ -147,38 +149,40 @@ export const PropertyForm = ({ propertyId, onSuccess, onCancel }: PropertyFormPr
           .eq("id", propertyId);
 
         if (updateError) throw updateError;
+        property = { id: propertyId };
       } else {
-        const { data: property, error: insertError } = await supabase
+        const { data: insertedProperty, error: insertError } = await supabase
           .from("properties")
           .insert(propertyData)
           .select()
           .single();
 
         if (insertError) throw insertError;
+        property = insertedProperty;
+      }
 
-        if (selectedFiles.length > 0) {
-          const imagePromises = selectedFiles.map(async (file) => {
-            const fileExt = file.name.split(".").pop();
-            const filePath = `${property.id}/${crypto.randomUUID()}.${fileExt}`;
+      if (selectedFiles.length > 0) {
+        const imagePromises = selectedFiles.map(async (file) => {
+          const fileExt = file.name.split(".").pop();
+          const filePath = `${property.id}/${crypto.randomUUID()}.${fileExt}`;
 
-            const { error: uploadError } = await supabase.storage
-              .from("properties_images")
-              .upload(filePath, file);
+          const { error: uploadError } = await supabase.storage
+            .from("properties_images")
+            .upload(filePath, file);
 
-            if (uploadError) throw uploadError;
+          if (uploadError) throw uploadError;
 
-            const { data: { publicUrl } } = supabase.storage
-              .from("properties_images")
-              .getPublicUrl(filePath);
+          const { data: { publicUrl } } = supabase.storage
+            .from("properties_images")
+            .getPublicUrl(filePath);
 
-            return supabase.from("property_images").insert({
-              property_id: property.id,
-              image_url: publicUrl,
-            });
+          return supabase.from("property_images").insert({
+            property_id: property.id,
+            image_url: publicUrl,
           });
+        });
 
-          await Promise.all(imagePromises);
-        }
+        await Promise.all(imagePromises);
       }
 
       toast({
@@ -186,11 +190,11 @@ export const PropertyForm = ({ propertyId, onSuccess, onCancel }: PropertyFormPr
         description: propertyId ? "Property updated successfully" : "Property added successfully",
       });
       onSuccess();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error saving property:", error);
       toast({
         title: "Error",
-        description: propertyId ? "Failed to update property" : "Failed to add property",
+        description: error.message || (propertyId ? "Failed to update property" : "Failed to add property"),
         variant: "destructive",
       });
     } finally {
