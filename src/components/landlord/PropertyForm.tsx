@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
@@ -5,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PropertyBasicDetails } from "./PropertyBasicDetails";
 import { PropertyLocationDetails } from "./PropertyLocationDetails";
 import { PropertyImageUpload } from "./PropertyImageUpload";
-import { PropertyFormData, PropertyFormProps } from "@/types/formTypes";
+import { PropertyFormData, PropertyFormProps } from "@/types/propertyTypes";
 import { PropertyType } from "@/types/property";
 
 export const PropertyForm = ({ propertyId, onSuccess, onCancel }: PropertyFormProps) => {

@@ -1,3 +1,6 @@
+
+import { PropertyType, PropertyCategory, FurnishingStatus } from './property';
+
 export interface PropertyFormData {
   title: string;
   price: string;
@@ -10,6 +13,13 @@ export interface PropertyFormData {
   state: string;
   zip_code: string;
   status: "rent" | "sale";
-  furnishing: "furnished" | "unfurnished";
-  type: "house_rent" | "house_sell" | "apartment_rent" | "land_sell";
+  furnishing: FurnishingStatus;
+  type: PropertyType;
+  category: PropertyCategory;
+}
+
+export interface PropertyFormProps {
+  propertyId?: string;
+  onSuccess: () => void;
+  onCancel: () => void;
 }

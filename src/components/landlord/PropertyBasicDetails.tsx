@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { PropertyFormData } from "@/types/formTypes";
-import { PropertyType } from "@/types/property";
+import { PropertyType, PropertyCategory } from "@/types/property";
 
 interface PropertyBasicDetailsProps {
   formData: PropertyFormData;
@@ -12,7 +12,7 @@ interface PropertyBasicDetailsProps {
   onStatusChange: (value: string) => void;
   onFurnishingChange: (value: string) => void;
   onTypeChange: (value: PropertyType) => void;
-  onCategoryChange: (value: "VVIP" | "VIP" | "Middle Class" | "Lower Class") => void;
+  onCategoryChange: (value: PropertyCategory) => void;
 }
 
 export const PropertyBasicDetails = ({
