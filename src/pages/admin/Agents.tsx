@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -54,24 +55,6 @@ const Agents = () => {
     role: "",
   });
 
-  const { data: agents, isLoading, refetch } = useQuery({
-    queryKey: ["agents"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .in("role", ["loven_agent", "independent_agent"])
-        .order("created_at", { ascending: false });
-
-      if (error) {
-        toast.error("Failed to fetch agents");
-        throw error;
-      }
-
-      return (data || []) as Agent[];
-    },
-  });
-
   const handleAddAgent = async () => {
     try {
       if (!newAgent.email || !newAgent.full_name || !newAgent.role) {
@@ -95,6 +78,24 @@ const Agents = () => {
       toast.error("Failed to add agent");
     }
   };
+
+  const { data: agents, isLoading, refetch } = useQuery({
+    queryKey: ["agents"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .in("role", ["loven_agent", "independent_agent"])
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        toast.error("Failed to fetch agents");
+        throw error;
+      }
+
+      return (data || []) as Agent[];
+    },
+  });
 
   const filteredAgents = agents?.filter(
     (agent) =>

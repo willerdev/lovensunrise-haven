@@ -1,6 +1,6 @@
 
 import { Property } from "../types/property";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Heart } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,34 +18,7 @@ export const PropertyCard = ({ property, onImageClick, isLand }: PropertyCardPro
   const [isLiked, setIsLiked] = useState(false);
   const { toast } = useToast();
 
-  useEffect(() => {
-    const checkIfLiked = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session) return;
-
-        const { data, error } = await supabase
-          .from(isLand ? 'saved_lands' : 'saved_properties')
-          .select()
-          .eq(isLand ? 'land_id' : 'property_id', property.id)
-          .eq('user_id', session.user.id)
-          .single();
-
-        if (error && error.code !== 'PGRST116') {
-          console.error("Error checking if item is liked:", error);
-          return;
-        }
-
-        setIsLiked(!!data);
-      } catch (error) {
-        console.error("Error in checkIfLiked:", error);
-      }
-    };
-
-    checkIfLiked();
-  }, [property.id, isLand]);
-
-  const handleLikeToggle = async (e: React.MouseEvent) => {
+  const handleLikeToggle = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
     
@@ -100,7 +73,7 @@ export const PropertyCard = ({ property, onImageClick, isLand }: PropertyCardPro
   const detailPath = isLand ? `/land/${property.id}` : `/property/${property.id}`;
 
   return (
-    <Link to={detailPath} className="property-card block">
+    <Link to={detailPath} className="block">
       <div className="relative">
         {!imageLoaded && (
           <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-t-xl" />
