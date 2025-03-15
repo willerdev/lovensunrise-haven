@@ -155,6 +155,41 @@ export type Database = {
         }
         Relationships: []
       }
+      deposits: {
+        Row: {
+          amount: number
+          created_at: string
+          description: string | null
+          id: string
+          status: string | null
+          user_id: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          status?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          status?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deposits_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       land_images: {
         Row: {
           created_at: string
@@ -961,6 +996,47 @@ export type Database = {
           },
         ]
       }
+      signals: {
+        Row: {
+          action: string
+          created_at: string
+          entry_point: number
+          id: string
+          pair: string
+          status: string
+          stop_loss: number
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          entry_point: number
+          id?: string
+          pair: string
+          status?: string
+          stop_loss: number
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          entry_point?: number
+          id?: string
+          pair?: string
+          status?: string
+          stop_loss?: number
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "signals_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       site_settings: {
         Row: {
           created_at: string
@@ -984,6 +1060,38 @@ export type Database = {
           value?: string
         }
         Relationships: []
+      }
+      withdrawals: {
+        Row: {
+          amount: number
+          created_at: string
+          description: string | null
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "withdrawals_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

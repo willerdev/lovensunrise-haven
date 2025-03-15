@@ -1,4 +1,3 @@
-
 import { Property } from "../types/property";
 import { useState } from "react";
 import { Heart } from "lucide-react";
@@ -13,14 +12,12 @@ interface PropertyCardProps {
   isLand?: boolean;
 }
 
-type ToggleEvent = React.MouseEvent<HTMLButtonElement>;
-
 export const PropertyCard = ({ property, onImageClick, isLand }: PropertyCardProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const { toast } = useToast();
 
-  const handleLikeToggle = async (e: ToggleEvent) => {
+  const handleLikeToggle = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     
